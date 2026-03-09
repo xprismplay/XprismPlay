@@ -158,7 +158,7 @@ export const transaction = pgTable("transaction", {
 	timestamp: timestamp("timestamp", { withTimezone: true }).notNull().defaultNow(),
 	recipientUserId: integer('recipient_user_id').references(() => user.id, { onDelete: 'set null' }),
 	senderUserId: integer('sender_user_id').references(() => user.id, { onDelete: 'set null' }),
-    note: varchar('note', { length: 500 }),
+	note: varchar('note', { length: 500 }),
 }, (table) => {
 	return {
 		userIdIdx: index("transaction_user_id_idx").on(table.userId),
@@ -362,21 +362,6 @@ export const userAchievement = pgTable("user_achievement", {
 	userAchievementUnique: unique("user_achievement_unique").on(table.userId, table.achievementId),
 	userIdIdx: index("user_achievement_user_id_idx").on(table.userId),
 	achievementIdIdx: index("user_achievement_achievement_id_idx").on(table.achievementId),
-}));
-
-export const adminActionEnum = pgEnum('admin_action', ['BAN', 'UNBAN', 'PROMO_CREATE', 'PROMO_DELETE']);
-
-export const adminLog = pgTable("admin_log", {
-	id: serial("id").primaryKey(),
-	adminId: integer("admin_id").notNull().references(() => user.id, { onDelete: "cascade" }),
-	action: adminActionEnum("action").notNull(),
-	targetUserId: integer("target_user_id").references(() => user.id, { onDelete: "set null" }),
-	details: text("details"),
-	createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-}, (table) => ({
-	adminIdIdx: index("admin_log_admin_id_idx").on(table.adminId),
-	actionIdx: index("admin_log_action_idx").on(table.action),
-	createdAtIdx: index("admin_log_created_at_idx").on(table.createdAt),
 }));
 
 export const userBlock = pgTable("user_block", {

@@ -21,8 +21,7 @@
 		Calendar01Icon,
 		CancelCircleIcon,
 		Loading03Icon,
-		Tick01Icon,
-		Delete01Icon
+		Tick01Icon
 	} from '@hugeicons/core-free-icons';
 	import { USER_DATA } from '$lib/stores/user-data';
 	import { formatDate, getExpirationDate } from '$lib/utils';
@@ -127,29 +126,6 @@
 			hasCreateResult = true;
 		} finally {
 			isCreating = false;
-		}
-	}
-
-	let isDeleting = $state<number | null>(null);
-
-	async function deletePromoCode(id: number) {
-		isDeleting = id;
-		try {
-			const response = await fetch('/api/admin/promo', {
-				method: 'DELETE',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ id })
-			});
-			if (response.ok) {
-				promoCodes = promoCodes.filter(p => p.id !== id);
-			} else {
-				const result = await response.json();
-				console.error('Failed to delete promo code:', result.error);
-			}
-		} catch (e) {
-			console.error('Failed to delete promo code:', e);
-		} finally {
-			isDeleting = null;
 		}
 	}
 
@@ -346,23 +322,9 @@
 										<code class="bg-muted rounded px-2 py-1 font-mono text-sm font-semibold">
 											{promo.code}
 										</code>
-										<div class="flex items-center gap-2">
-											<Badge variant={promo.isActive ? 'default' : 'secondary'} class="text-xs">
-												{promo.isActive ? 'Active' : 'Inactive'}
-											</Badge>
-											<button
-												onclick={() => deletePromoCode(promo.id)}
-												disabled={isDeleting === promo.id}
-												class="text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
-												title="Delete promo code"
-											>
-												{#if isDeleting === promo.id}
-													<HugeiconsIcon icon={Loading03Icon} class="h-4 w-4 animate-spin" />
-												{:else}
-													<HugeiconsIcon icon={Delete01Icon} class="h-4 w-4" />
-												{/if}
-											</button>
-										</div>
+										<Badge variant={promo.isActive ? 'default' : 'secondary'} class="text-xs">
+											{promo.isActive ? 'Active' : 'Inactive'}
+										</Badge>
 									</div>
 
 									<div class="grid grid-cols-2 gap-3 text-xs">

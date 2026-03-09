@@ -19,13 +19,11 @@ const HEARTBEAT_INTERVAL = 30_000;
 type WebSocketData = {
 	coinSymbol?: string;
 	userId?: string;
-	isAdmin?: boolean;
 	lastActivity: number;
 };
 
 const coinSockets = new Map<string, Set<ServerWebSocket<WebSocketData>>>();
 const userSockets = new Map<string, Set<ServerWebSocket<WebSocketData>>>();
-const adminSockets = new Set<ServerWebSocket<WebSocketData>>();
 const pingIntervals = new WeakMap<ServerWebSocket<WebSocketData>, NodeJS.Timeout>();
 
 redis.on('error', (err) => console.error('Redis Client Error', err));
@@ -36,7 +34,7 @@ redis.on('connect', () => {
 		else console.log(`Successfully psubscribed to patterns. Active psubscriptions: ${count}`);
 	});
 
-	redis.subscribe('trades:all', 'trades:large', 'arcade:activity', 'admin:logs', (err, count) => {
+	redis.subscribe('trades:all', 'trades:large', 'arcade:activity', (err, count) => {
 		if (err) console.error("Failed to subscribe to channels", err);
 		else console.log(`Successfully subscribed to channels. Active subscriptions: ${count}`);
 	});
@@ -104,13 +102,6 @@ redis.on('message', (channel, msg) => {
 					}
 				}
 			}
-		} else if (channel === 'admin:logs') {
-			// Broadcast only to authenticated admin sockets
-			for (const ws of adminSockets) {
-				if (ws.readyState === WebSocket.OPEN) {
-					ws.send(msg);
-				}
-			}
 		} else if (channel === 'arcade:activity') {
 			const eventData = JSON.parse(msg);
 			const eventMessage = JSON.stringify({
@@ -163,7 +154,7 @@ function handleSetCoin(ws: ServerWebSocket<WebSocketData>, coinSymbol: string) {
 	}
 }
 
-function handleSetUser(ws: ServerWebSocket<WebSocketData>, userId: string, isAdmin: boolean = false) {
+function handleSetUser(ws: ServerWebSocket<WebSocketData>, userId: string) {
 	if (ws.data.userId) {
 		const prev = userSockets.get(ws.data.userId);
 		if (prev) {
@@ -172,17 +163,9 @@ function handleSetUser(ws: ServerWebSocket<WebSocketData>, userId: string, isAdm
 				userSockets.delete(ws.data.userId);
 			}
 		}
-		if (ws.data.isAdmin) {
-			adminSockets.delete(ws);
-		}
 	}
 
 	ws.data.userId = userId;
-	ws.data.isAdmin = isAdmin;
-
-	if (isAdmin) {
-		adminSockets.add(ws);
-	}
 
 	if (!userSockets.has(userId)) {
 		userSockets.set(userId, new Set([ws]));
@@ -240,13 +223,12 @@ const server = Bun.serve<WebSocketData, undefined>({
 					type: string;
 					coinSymbol?: string;
 					userId?: string;
-					isAdmin?: boolean;
 				};
 
 				if (data.type === 'set_coin' && data.coinSymbol) {
 					handleSetCoin(ws, data.coinSymbol);
 				} else if (data.type === 'set_user' && data.userId) {
-					handleSetUser(ws, data.userId, data.isAdmin === true);
+					handleSetUser(ws, data.userId);
 				} else if (data.type === 'pong') {
 					ws.data.lastActivity = Date.now();
 				}
@@ -291,7 +273,6 @@ const server = Bun.serve<WebSocketData, undefined>({
 					}
 				}
 			}
-			adminSockets.delete(ws);
 		}
 	}
 });

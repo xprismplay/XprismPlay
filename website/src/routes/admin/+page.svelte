@@ -9,8 +9,7 @@
 		Ticket01Icon, 
 		ArrowRight01Icon,
 		UserGroupIcon,
-		Analytics01Icon,
-		FileTextIcon
+		Analytics01Icon
 	} from '@hugeicons/core-free-icons';
 	import { goto } from '$app/navigation';
 
@@ -29,13 +28,6 @@
 			icon: Ticket01Icon,
 			url: '/admin/promo',
 			color: 'text-green-500'
-		},
-		{
-			title: 'Admin Logs',
-			description: 'Live feed of all moderator and admin actions.',
-			icon: FileTextIcon,
-			url: '/admin/logs',
-			color: 'text-orange-500'
 		}
 	];
 </script>
