@@ -484,9 +484,9 @@ export const twr_difficulty_config: Record<
 	TowerDifficulty,
 	{ tiles: number; bombs: number; label: string; max?: number; maxBet: number }
 > = {
-	easy: { tiles: 3, bombs: 0, label: 'Easy', maxBet: 1_000_000 },
+	easy: { tiles: 3, bombs: 1, label: 'Easy', maxBet: 1_000_000 },
 	medium: { tiles: 4, bombs: 2, label: 'Medium', maxBet: 100_000 },
-	hard: { tiles: 5, bombs: 0, label: 'Hard', maxBet: 10_000, max: 10_000 }
+	hard: { tiles: 5, bombs: 3, label: 'Hard', maxBet: 10_000, max: 10_000 }
 };
 
 export function calculateTowerMultiplier(floor: number, difficulty: TowerDifficulty): number {
