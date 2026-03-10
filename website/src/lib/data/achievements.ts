@@ -352,7 +352,7 @@ export const ACHIEVEMENTS: AchievementDef[] = [
 		id: 'tower_god',
 		name: 'Tower God',
 		description: 'Get to floor 10 on hard mode and cash out',
-		icon: '../facedev/bliptext.png',
+		icon: 'elevator.png',
 		difficulty: 'legendary',
 		cashReward: 100000,
 		gemReward: 600,
