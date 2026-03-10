@@ -50,8 +50,6 @@
 		"@better-auth/api-key": "^1.5.4",
 		"@hugeicons/core-free-icons": "^3.3.0",
 		"@hugeicons/svelte": "^1.1.1",
-		"@polar-sh/checkout": "^0.2.0",
-		"@polar-sh/sveltekit": "^0.7.4",
 		"@tailwindcss/postcss": "^4.2.1",
 		"@tailwindcss/typography": "^0.5.19",
 		"@visx/scale": "^3.12.0",

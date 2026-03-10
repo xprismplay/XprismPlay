@@ -1,12 +1,5 @@
 export type Rarity = 'uncommon' | 'rare' | 'epic' | 'legendary';
 
-export interface GemPackage {
-	id: string;
-	productEnvKey: string;
-	price: number;
-	gems: number;
-	bonusPct: number;
-}
 
 export interface NameColorItem {
 	key: string;
@@ -16,37 +9,6 @@ export interface NameColorItem {
 	classes: string;
 	style?: string;
 }
-
-export const GEM_PACKAGES: GemPackage[] = [
-	{
-		id: 'starter',
-		productEnvKey: 'PUBLIC_POLAR_PRODUCT_GEMS_500',
-		price: 1.99,
-		gems: 500,
-		bonusPct: 0
-	},
-	{
-		id: 'value',
-		productEnvKey: 'PUBLIC_POLAR_PRODUCT_GEMS_1300',
-		price: 4.99,
-		gems: 1300,
-		bonusPct: 5
-	},
-	{
-		id: 'builder',
-		productEnvKey: 'PUBLIC_POLAR_PRODUCT_GEMS_2800',
-		price: 9.99,
-		gems: 2800,
-		bonusPct: 15
-	},
-	{
-		id: 'whale',
-		productEnvKey: 'PUBLIC_POLAR_PRODUCT_GEMS_8000',
-		price: 24.99,
-		gems: 8000,
-		bonusPct: 30
-	}
-];
 
 export const RARITY_LABEL: Record<Rarity, string> = {
 	uncommon: 'Uncommon',
