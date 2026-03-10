@@ -8,7 +8,20 @@ export default {
 		price: 'Price',
 		name: 'Name',
 		reset: 'Reset',
-		apply: 'Apply'
+		apply: 'Apply',
+		coin: 'Coin',
+		max: 'Max',
+		cancel: 'Cancel',
+		try_again: 'Try Again',
+		type: 'Type',
+		sender: 'Sender',
+		receiver: 'Receiver',
+		unknown: 'Unknown',
+		quantity: 'Quantity',
+		amount: 'Amount',
+		date: 'Date',
+		note: 'Note',
+		value: 'Value'
 	},
 	greetings: {
 		good_morning: 'Good Morning, {{name}}!',
@@ -51,7 +64,8 @@ export default {
 				google: 'Continue with Google'
 			},
 			terms: ['By continuing, you agree to our', 'Terms of Service', 'and', 'Privacy Policy']
-		}
+		},
+		portfolio: ['You need to be logged in to view your portfolio', 'Sign In']
 	},
 	leaderboard: {
 		title: 'Leaderboard',
@@ -59,6 +73,7 @@ export default {
 		no_data: 'No data',
 		failed: {
 			title: 'Failed to load leaderboard',
+			// TODO: Removing this line soon
 			try_again: 'Try Again'
 		},
 		rugpullers: {
@@ -119,5 +134,52 @@ export default {
 				}
 			}
 		}
+	},
+	portfolio: {
+		title: 'Portfolio',
+		description: 'Manage your investments and transactions',
+		cash_balance: ['Cash Balance', '{{percent}}% of portfolio'],
+		coin_holdings: ['Coin Holdings', '{{quantity}} positions'],
+		your_holdings: ['Your Holdings', 'Current positions in your portfolio'],
+		recent_transactions: ['Recent Transactions', 'Your latest trading activity', 'View All'],
+		total: 'Total',
+		no_coins: [
+			'No coin holdings',
+			"You haven't invested in any coins yet. Start by buying existing coins.",
+			'Browse Coins'
+		],
+		send_money: {
+			title: 'Send Money',
+			send: ['Send', 'Sending...'],
+			description: 'Send cash or coins to another user',
+			recipient: ['Recipient', 'Enter username (without @)'],
+			type: ['Type', 'Cash ($)', 'Coins', 'Select transfer type'],
+			cash: [
+				'Amount ($)',
+				'Available: ${{balance}}',
+				'Minimum: $10.00 per transfer',
+				'Cash transfers require a minimum of $10.00',
+				'Insuficient Funds',
+				'Money sent successfully!',
+				'Sent ${{amount}} to @{{recipent}}'
+			],
+			coins: [
+				'Select Coin',
+				'Amount {{coinSymbol}}',
+				'Available: {{shares}}',
+				'Minimum estimated value: $10.00 per transfer',
+				'Coin transfers require a minimum estimated value of $10.00',
+				'Insufficient coins',
+				'Coins sent successfully!',
+				'Sent {{amount}} {{symbol}} (≈${{estimated}}) to @${{recipent}}',
+				'*{{symbol}} ({{quantity}}'
+			],
+			note: ['Note', '(optional)', 'Add a reference note to this transfer...'],
+			youre_sending: ["You're sending:", '{{amount}} USD', 'To:']
+		},
+		no_transactions: [
+			'No transactions yet',
+			"You haven't made any trades yet. Start by buying or selling coins."
+		]
 	}
 };

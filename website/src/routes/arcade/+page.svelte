@@ -16,7 +16,16 @@
 	import * as HoverCard from '$lib/components/ui/hover-card';
 	import UserProfilePreview from '$lib/components/self/UserProfilePreview.svelte';
 	import { HugeiconsIcon } from '@hugeicons/svelte';
-	import { Clock01Icon, PiggyBankIcon, CoinsDollarIcon, StarsIcon, BombIcon, DiceIcon, ElectricTower01Icon, SpadesIcon } from '@hugeicons/core-free-icons';
+	import {
+		Clock01Icon,
+		PiggyBankIcon,
+		CoinsDollarIcon,
+		StarsIcon,
+		BombIcon,
+		DiceIcon,
+		ElectricTower01Icon,
+		SpadesIcon
+	} from '@hugeicons/core-free-icons';
 	import { formatValue, formatRelativeTime, getPublicUrl } from '$lib/utils';
 	import { goto } from '$app/navigation';
 

@@ -1,7 +1,13 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card';
+	import {
+		Card,
+		CardContent,
+		CardDescription,
+		CardHeader,
+		CardTitle
+	} from '$lib/components/ui/card';
 	import confetti from 'canvas-confetti';
 	import { toast } from 'svelte-sonner';
 	import { formatValue, playSound, showConfetti } from '$lib/utils';
@@ -46,7 +52,7 @@
 	const maxBetAmount = 100000;
 
 	let currentHand = $derived(
-		gameState ? gameState.playerHands[gameState.currentHandIndex] ?? null : null
+		gameState ? (gameState.playerHands[gameState.currentHandIndex] ?? null) : null
 	);
 	let canHit = $derived(
 		gameState?.status === 'active' && currentHand?.status === 'active' && !isLoading
@@ -307,14 +313,21 @@
 					<div class="flex-1">
 						<p class="text-sm font-semibold">Dealer shows Ace</p>
 						<p class="text-muted-foreground text-xs">
-							Insurance pays 2:1 · Cost {formatValue(Math.floor(gameState.betAmount * 0.5 * 100) / 100)}
+							Insurance pays 2:1 · Cost {formatValue(
+								Math.floor(gameState.betAmount * 0.5 * 100) / 100
+							)}
 						</p>
 					</div>
 					<div class="flex gap-2">
 						<Button size="sm" onclick={() => takeInsurance(true)} disabled={isLoading}>
 							Take Insurance
 						</Button>
-						<Button size="sm" variant="outline" onclick={() => takeInsurance(false)} disabled={isLoading}>
+						<Button
+							size="sm"
+							variant="outline"
+							onclick={() => takeInsurance(false)}
+							disabled={isLoading}
+						>
 							Skip
 						</Button>
 					</div>
@@ -341,13 +354,35 @@
 							disabled={isLoading}
 							placeholder="Enter bet amount"
 						/>
-						<p class="text-muted-foreground mt-1 text-xs">Max bet: {maxBetAmount.toLocaleString()}</p>
+						<p class="text-muted-foreground mt-1 text-xs">
+							Max bet: {maxBetAmount.toLocaleString()}
+						</p>
 					</div>
 					<div class="grid grid-cols-4 gap-2">
-						<Button size="sm" variant="outline" onclick={() => setBetAmount(Math.floor(Math.min(balance || 0, maxBetAmount) * 0.25))} disabled={isLoading}>25%</Button>
-						<Button size="sm" variant="outline" onclick={() => setBetAmount(Math.floor(Math.min(balance || 0, maxBetAmount) * 0.5))} disabled={isLoading}>50%</Button>
-						<Button size="sm" variant="outline" onclick={() => setBetAmount(Math.floor(Math.min(balance || 0, maxBetAmount) * 0.75))} disabled={isLoading}>75%</Button>
-						<Button size="sm" variant="outline" onclick={() => setBetAmount(Math.floor(Math.min(balance || 0, maxBetAmount)))} disabled={isLoading}>Max</Button>
+						<Button
+							size="sm"
+							variant="outline"
+							onclick={() => setBetAmount(Math.floor(Math.min(balance || 0, maxBetAmount) * 0.25))}
+							disabled={isLoading}>25%</Button
+						>
+						<Button
+							size="sm"
+							variant="outline"
+							onclick={() => setBetAmount(Math.floor(Math.min(balance || 0, maxBetAmount) * 0.5))}
+							disabled={isLoading}>50%</Button
+						>
+						<Button
+							size="sm"
+							variant="outline"
+							onclick={() => setBetAmount(Math.floor(Math.min(balance || 0, maxBetAmount) * 0.75))}
+							disabled={isLoading}>75%</Button
+						>
+						<Button
+							size="sm"
+							variant="outline"
+							onclick={() => setBetAmount(Math.floor(Math.min(balance || 0, maxBetAmount)))}
+							disabled={isLoading}>Max</Button
+						>
 					</div>
 					<Button class="h-12 w-full text-lg" onclick={deal} disabled={!canDeal}>
 						{isLoading ? 'Dealing…' : 'Deal'}
@@ -371,7 +406,7 @@
 		overflow: hidden;
 	}
 
-.bj-zone {
+	.bj-zone {
 		display: flex;
 		flex-direction: column;
 		gap: 10px;
@@ -442,8 +477,20 @@
 		border-radius: 3px;
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		background-image:
-			repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(255, 255, 255, 0.04) 3px, rgba(255, 255, 255, 0.04) 6px),
-			repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(255, 255, 255, 0.04) 3px, rgba(255, 255, 255, 0.04) 6px);
+			repeating-linear-gradient(
+				45deg,
+				transparent,
+				transparent 3px,
+				rgba(255, 255, 255, 0.04) 3px,
+				rgba(255, 255, 255, 0.04) 6px
+			),
+			repeating-linear-gradient(
+				-45deg,
+				transparent,
+				transparent 3px,
+				rgba(255, 255, 255, 0.04) 3px,
+				rgba(255, 255, 255, 0.04) 6px
+			);
 	}
 
 	.bj-card-empty {
@@ -506,7 +553,9 @@
 		border-radius: 8px;
 		padding: 8px;
 		border: 1.5px solid transparent;
-		transition: border-color 0.15s, background 0.15s;
+		transition:
+			border-color 0.15s,
+			background 0.15s;
 	}
 
 	.bj-hand-active {

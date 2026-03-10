@@ -16,7 +16,7 @@
 	import { PORTFOLIO_DATA } from '$lib/stores/portfolio-data';
 	import { toast } from 'svelte-sonner';
 	import { haptic } from '$lib/stores/haptics';
-
+	import { _ } from 'svelte-i18n';
 	let {
 		open = $bindable(false),
 		onSuccess,
@@ -151,8 +151,12 @@
 			} else {
 				const estimatedValueForToast = estimatedValue;
 				haptic.trigger('success');
-				toast.success('Coins sent successfully!', {
-					description: `Sent ${result.amount.toFixed(6)} ${result.coinSymbol} (≈$${estimatedValueForToast.toFixed(2)}) to @${result.recipient}`
+				toast.success($_('portfolio.send_money.coins.6'), {
+					description: $_('portfolio.send_money.coins.7')
+						.replace('{{amount}}', result.amount.toFixed(6))
+						.replace('{{symbol}}', result.coinSymbol)
+						.replace('{{estimated}}', estimatedValueForToast.toFixed(2))
+						.replace('{{recipent}}', result.recipent) //`Sent ${result.amount.toFixed(6)} ${result.coinSymbol} (≈$${estimatedValueForToast.toFixed(2)}) to @${result.recipient}`
 				});
 			}
 
@@ -169,13 +173,13 @@
 	}
 
 	let transferTypeOptions = [
-		{ value: 'CASH', label: 'Cash ($)' },
-		{ value: 'COIN', label: 'Coins' }
+		{ value: 'CASH', label: $_('portfolio.send_money.type.1') },
+		{ value: 'COIN', label: $_('portfolio.send_money.type.2') }
 	];
 
 	let currentTransferTypeLabel = $derived(
 		transferTypeOptions.find((option) => option.value === transferType)?.label ||
-			'Select transfer type'
+			$_('portfolio.send_money.type.3')
 	);
 
 	let currentCoinLabel = $derived(
@@ -199,20 +203,20 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<HugeiconsIcon icon={SentIcon} class="h-5 w-5" />
-				Send
+				{$_('portfolio.send_money.send.0')}
 			</Dialog.Title>
-			<Dialog.Description>Send cash or coins to another user</Dialog.Description>
+			<Dialog.Description>{$_('portfolio.send_money.description')}</Dialog.Description>
 		</Dialog.Header>
 
 		<div class="space-y-4">
 			<!-- Recipient Username -->
 			<div class="space-y-2">
-				<Label for="recipient">Recipient</Label>
+				<Label for="recipient">{$_('portfolio.send_money.recipient.0')}</Label>
 				<Input
 					id="recipient"
 					type="text"
 					bind:value={recipientUsername}
-					placeholder="Enter username (without @)"
+					placeholder={$_('portfolio.send_money.recipient.1')}
 					class="flex-1"
 				/>
 			</div>
@@ -229,13 +233,13 @@
 							<Select.Item value="CASH" label="Cash ($)">
 								<div class="flex items-center gap-2">
 									<HugeiconsIcon icon={DollarCircleIcon} class="h-4 w-4" />
-									Cash ($)
+									{$_('portfolio.send_money.type.1')}
 								</div>
 							</Select.Item>
 							<Select.Item value="COIN" label="Coins" disabled={coinHoldings.length === 0}>
 								<div class="flex items-center gap-2">
 									<HugeiconsIcon icon={Coins01Icon} class="h-4 w-4" />
-									Coins
+									{$_('portfolio.send_money.type.2')}
 								</div>
 							</Select.Item>
 						</Select.Group>
@@ -246,7 +250,7 @@
 			<!-- Coin Selection (if coin transfer) -->
 			{#if transferType === 'COIN'}
 				<div class="space-y-2">
-					<Label>Select Coin</Label>
+					<Label>{$_('portfolio.send_money.coins.0')}</Label>
 					<Select.Root
 						type="single"
 						bind:value={selectedCoinSymbol}
@@ -271,7 +275,9 @@
 			<!-- Amount Input -->
 			<div class="space-y-2">
 				<Label for="amount">
-					{transferType === 'CASH' ? 'Amount ($)' : `Amount (${selectedCoinSymbol})`}
+					{transferType === 'CASH'
+						? $_('portfolio.send_money.cash.0')
+						: $_('portfolio.send_money.coins.1').replace('{{coinSymbol}}', selectedCoinSymbol)}
 				</Label>
 				<div class="flex gap-2">
 					<Input
@@ -283,15 +289,20 @@
 						placeholder="0.00"
 						class="flex-1"
 					/>
-					<Button variant="outline" size="icon" class="w-14" onclick={setMaxAmount}>Max</Button>
+					<Button variant="outline" size="icon" class="w-14" onclick={setMaxAmount}
+						>{$_('global.max')}</Button
+					>
 				</div>
 				<div class="flex justify-between text-xs">
 					<p class="text-muted-foreground">
-						Available: {transferType === 'CASH'
-							? `$${userBalance.toFixed(2)}`
-							: selectedCoinHolding
-								? `${selectedCoinHolding.quantity.toFixed(6)} ${selectedCoinSymbol}`
-								: '0'}
+						{transferType === 'CASH'
+							? $_('portfolio.send_money.cash.1').replace('{{balance}}', userBalance.toFixed(2))
+							: $_('portfolio.send_money.coins.2').replace(
+									'{{shares}}',
+									selectedCoinHolding
+										? `${selectedCoinHolding.quantity.toFixed(6)} ${selectedCoinSymbol}`
+										: '0'
+								)}
 					</p>
 					{#if transferType === 'COIN' && estimatedValue > 0}
 						<p class="text-muted-foreground">
@@ -300,21 +311,23 @@
 					{/if}
 				</div>
 				{#if transferType === 'CASH'}
-					<p class="text-muted-foreground text-xs">Minimum: $10.00 per transfer</p>
+					<p class="text-muted-foreground text-xs">{$_('portfolio.send_money.cash.2')}</p>
 				{:else if transferType === 'COIN'}
-					<p class="text-muted-foreground text-xs">Minimum estimated value: $10.00 per transfer</p>
+					<p class="text-muted-foreground text-xs">{$_('portfolio.send_money.coins.3')}</p>
 				{/if}
 			</div>
 
 			<!-- Optional Note -->
 			<div class="space-y-2">
 				<Label for="note"
-					>Note <span class="text-muted-foreground font-normal">(optional)</span></Label
+					>{$_('portfolio.send_money.note.0')}
+					<span class="text-muted-foreground font-normal">{$_('portfolio.send_money.note.1')}</span
+					></Label
 				>
 				<Textarea
 					id="note"
 					bind:value={note}
-					placeholder="Add a reference note to this transfer…"
+					placeholder={$_('portfolio.send_money.note.2')}
 					class="resize-none text-sm"
 					rows={3}
 				/>
@@ -333,18 +346,18 @@
 				</Badge>
 			{:else if !isWithinCashLimit && hasValidAmount}
 				<Badge variant="destructive" class="text-xs">
-					Cash transfers require a minimum of $10.00
+					{$_('portfolio.send_money.cash.3')}
 				</Badge>
 			{:else if !isWithinCoinValueLimit && hasValidAmount}
 				<Badge variant="destructive" class="text-xs">
-					Coin transfers require a minimum estimated value of $10.00
+					{$_('portfolio.send_money.coins.3')}
 				</Badge>
 			{/if}
 
 			{#if hasValidAmount && hasEnoughFunds && hasValidRecipient && isWithinCashLimit && isWithinCoinValueLimit}
 				<div class="bg-muted/50 rounded-lg p-3">
 					<div class="flex items-center justify-between">
-						<span class="text-sm font-medium">You're sending:</span>
+						<span class="text-sm font-medium">{$_('portfolio.send_money.youre_sending.0')}</span>
 						<div class="text-right">
 							<span class="block font-bold">
 								{transferType === 'CASH'
@@ -353,13 +366,16 @@
 							</span>
 							{#if transferType === 'COIN' && estimatedValue > 0}
 								<span class="text-muted-foreground text-xs">
-									≈ ${estimatedValue.toFixed(2)} USD
+									{$_('portfolio.send_money.youre_sending.1').replace(
+										'{{amount}}}',
+										estimatedValue.toFixed(2)
+									)}
 								</span>
 							{/if}
 						</div>
 					</div>
 					<div class="flex items-center justify-between">
-						<span class="text-sm font-medium">To:</span>
+						<span class="text-sm font-medium">{$_('portfolio.send_money.youre_sending.2')}</span>
 						<span class="font-bold">@{recipientUsername}</span>
 					</div>
 				</div>
@@ -371,10 +387,10 @@
 			<Button onclick={handleSend} disabled={!canSend}>
 				{#if loading}
 					<HugeiconsIcon icon={Loading03Icon} class="h-4 w-4 animate-spin" />
-					Sending...
+					{$_('portfolio.send_money.send.1')}
 				{:else}
 					<HugeiconsIcon icon={SentIcon} class="h-4 w-4" />
-					Send
+					{$_('portfolio.send_money.send.0')}
 				{/if}
 			</Button>
 		</Dialog.Footer>

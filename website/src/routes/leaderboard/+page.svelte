@@ -26,7 +26,6 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 	import ProfileBadges from '$lib/components/self/ProfileBadges.svelte';
 	import UserName from '$lib/components/self/UserName.svelte';
-	import AdSquare from '$lib/components/self/ads/AdSquare.svelte';
 	import { _ } from 'svelte-i18n';
 
 	let searchOffset = $state(0);
@@ -487,9 +486,7 @@
 					</Card.Content>
 				</Card.Root>
 
-				<div class="xl:col-span-2">
-					<AdSquare />
-				</div>
+				<div class="xl:col-span-2"></div>
 
 				<!-- Top Cash Holders -->
 				<Card.Root class="overflow-hidden">

@@ -10,7 +10,20 @@ export default {
 		price: 'Preço',
 		name: 'Nome',
 		reset: 'Resetar',
-		apply: 'Aplicar'
+		apply: 'Aplicar',
+		coin: 'Moeda',
+		max: 'Máx.',
+		cancel: 'Cancelar',
+		try_again: 'Tente Novamente',
+		type: 'Tipo',
+		sender: 'Remetente',
+		receiver: 'Destinatário',
+		unknown: 'Desconhecido',
+		quantity: 'Quantidade',
+		amount: 'Quantia',
+		date: 'Data',
+		note: 'Anotação',
+		value: 'Valor'
 	},
 	greetings: {
 		good_morning: 'Bom Dia, {{name}}!',
@@ -58,7 +71,8 @@ export default {
 				'e',
 				'Políticas de Privacidade'
 			]
-		}
+		},
+		portfolio: ['Você precisa estar logado para ver seu portfólio', 'Fazer Login']
 	},
 	leaderboard: {
 		title: 'Placar de Líderes',
@@ -126,5 +140,55 @@ export default {
 				}
 			}
 		}
+	},
+	portfolio: {
+		title: 'Portfólio',
+		description: 'Gerencie seus investimentos e transações',
+		cash_balance: ['Saldo em Dinheiro', '{{percent}}% do portfólio'],
+		coin_holdings: ['Participações em Moedas', '{{quantity}} posições'],
+		your_holdings: ['Suas Ações', 'As ações em seu portfólio'],
+		recent_transactions: ['Transações Recentes', 'Suas últimas atividades de troca', 'Ver todas'],
+		total: 'Total',
+		no_coins: [
+			'Sem Participações de Moedas',
+			'Você não tem participação de nenhuma moeda ainda. Começe comprando moedas existentes.',
+			'Pesquisar Moedas'
+		],
+		send_money: {
+			title: 'Enviar Dinheiro',
+			send: ['Enviar', 'Enviando...'],
+			description: 'Envie dinheiro ou moedas para outro usuário',
+			recipient: ['Destinatário', 'Digite o username (sem o @)'],
+			type: ['Tipo', 'Dinheiro ($)', 'Moedas', 'Selecione o tipo de transferência'],
+			cash: [
+				'Quantidade ($)',
+				'Disponível: ${{balance}}',
+				'Mínimo: $10.00 por transferência',
+				'Transferências de dinheiro precisam ser de pelo menos $10.00',
+				'Fundos insuficientes',
+				'Dinheiro enviado com sucesso!',
+				'Enviado ${{amount}} para @{{recipent}}'
+			],
+			coins: [
+				'Selecione a Moeda',
+				'Quantidade {{coinSymbol}}',
+				'Disponível: {{shares}}',
+				'Valor mínimo estimado: $10.00 por transferência',
+				'Transferências de moedas precisam de um valor estimado de pelo menos $10.00',
+				'Moedas não suficientes',
+				'Moedas enviadas com sucesso!',
+				'Enviou {{amount}} {{symbol}} (≈${{estimated}}) para @${{recipent}}'
+			],
+			note: [
+				'Anotação',
+				'(Opcional)',
+				'Adicione uma nota de referência para essa transferência...'
+			],
+			youre_sending: ['Você está mandando:', '{{amount}} USD', 'Para:']
+		},
+		no_transactions: [
+			'Sem transações ainda',
+			'Você não fez nenhuma troca ainda. Começe comprando ou vendendo moedas.'
+		]
 	}
 } satisfies typeof en;
