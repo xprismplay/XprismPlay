@@ -284,9 +284,10 @@ export const POST: RequestHandler = async ({ request }) => {
 				);
 				await publishArcadeActivity(userId, result.session.betAmount, won, 'blackjack', 2500);
 				await checkAndAwardAchievements(userId, ['arcade', 'wealth'], {
-					arcadeWon: won,
-					arcadeWager: result.session.betAmount
-				});
+              arcadeWon: won,
+              arcadeWager: updatedSession.betAmount,
+              cardsValue: value
+          });
 			}
 
 			return json({
