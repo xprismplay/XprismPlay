@@ -520,7 +520,7 @@ async function checkAchievement(
 				.select({ cnt: count() })
 				.from(userInventory)
 				.where(and(eq(userInventory.userId, userId), eq(userInventory.itemType, 'namecolor')));
-			return Number(result.cnt) >= 10;
+			return Number(result.cnt) >= 5;
 		}
 		case 'own_10_colors': {
 			const [result] = await db
@@ -534,7 +534,7 @@ async function checkAchievement(
 				.select({ cnt: count() })
 				.from(userInventory)
 				.where(and(eq(userInventory.userId, userId), eq(userInventory.itemType, 'namecolor')));
-			return Number(result.cnt) >= 10;
+			return Number(result.cnt) >= 15;
 		}
 
 		case 'open_50_crates': {
