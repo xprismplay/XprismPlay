@@ -555,7 +555,7 @@ export const ACHIEVEMENTS: AchievementDef[] = [
 		cashReward: 150000,
 		gemReward: 200,
 		category: 'prestige',
-		targetValue: 5
+		targetValue: 7
 	},
 
 	// HOPIUM (4)
