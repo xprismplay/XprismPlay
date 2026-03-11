@@ -14,7 +14,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	const [currentUser] = await db
-		.select({ isAdmin: user.isAdmin })
+		.select({ isAdmin: user.isAdmin, isHeadAdmin: user.isHeadAdmin })
 		.from(user)
 		.where(eq(user.id, Number(authSession.user.id)))
 		.limit(1);
@@ -30,8 +30,14 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	try {
+		// 2. Fetch the target user's details, including head admin status
 		const [targetUser] = await db
-			.select({ id: user.id, username: user.username, isAdmin: user.isAdmin })
+			.select({ 
+				id: user.id, 
+				username: user.username, 
+				isAdmin: user.isAdmin, 
+				isHeadAdmin: user.isHeadAdmin 
+			})
 			.from(user)
 			.where(eq(user.username, username.trim()))
 			.limit(1);
@@ -40,8 +46,13 @@ export const POST: RequestHandler = async ({ request }) => {
 			throw error(404, 'User not found');
 		}
 
-		if (targetUser.isAdmin) {
-			throw error(400, 'Cannot ban admin users');
+		// 3. New Permissions Logic
+		if (targetUser.isHeadAdmin) {
+			throw error(400, 'Cannot ban head admin users');
+		}
+
+		if (targetUser.isAdmin && !currentUser.isHeadAdmin) {
+			throw error(403, 'Only head admins can ban other admin users');
 		}
 
 		await db.transaction(async (tx) => {
@@ -50,6 +61,7 @@ export const POST: RequestHandler = async ({ request }) => {
 				.set({
 					isBanned: true,
 					banReason: reason.trim(),
+					isAdmin: false, // <-- Automatically strips admin status on ban
 					updatedAt: new Date()
 				})
 				.where(eq(user.id, targetUser.id));

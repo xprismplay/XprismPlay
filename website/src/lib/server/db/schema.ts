@@ -48,6 +48,7 @@ export const user = pgTable(
 		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 		updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 		isAdmin: boolean('is_admin').default(false),
+		isHeadAdmin: boolean('is_head_admin').default(false),
 		isBanned: boolean('is_banned').default(false),
 		banReason: text('ban_reason'),
 		baseCurrencyBalance: decimal('base_currency_balance', {
