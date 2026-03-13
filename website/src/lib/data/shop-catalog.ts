@@ -190,7 +190,7 @@ export const NAME_COLOR_CATALOG: NameColorItem[] = [
 		style: 'text-shadow: 0px 0px 10px var(--color-cyan-500);'
 	},
 	{
-		key: 'silvwr_glow',
+		key: 'silver_glow',
 		label: 'Silver Light',
 		rarity: 'mythic',
 		price: 7000,
