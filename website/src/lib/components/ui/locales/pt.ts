@@ -23,7 +23,8 @@ export default {
 		amount: 'Quantia',
 		date: 'Data',
 		note: 'Anotação',
-		value: 'Valor'
+		value: 'Valor',
+		live: '● AO VIVO'
 	},
 	greetings: {
 		good_morning: 'Bom Dia, {{name}}!',
@@ -59,7 +60,7 @@ export default {
 		'24hchange': 'Mudança em 24h',
 		marketcap: 'Capitalização de Mercado',
 		volume24h: 'Volume (24h)',
-
+		delisted: 'Deslistado',
 		createdBy: 'Criado por',
 		priceChart: [
 			'Gráfico de Preços ({{time}})',

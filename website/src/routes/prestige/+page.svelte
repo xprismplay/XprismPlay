@@ -17,7 +17,7 @@
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { USER_DATA } from '$lib/stores/user-data';
-	import { formatValue, getPublicUrl, PRESTIGE_COSTS, PRESTIGE_NAMES } from '$lib/utils';
+	import { formatValue, getPublicUrl, PRESTIGE_COLORS, PRESTIGE_COSTS, PRESTIGE_NAMES } from '$lib/utils';
 	import SEO from '$lib/components/self/SEO.svelte';
 	import SignInConfirmDialog from '$lib/components/self/SignInConfirmDialog.svelte';
 	import ProfileBadges from '$lib/components/self/ProfileBadges.svelte';
@@ -473,7 +473,7 @@
 							>
 								<div class="flex items-center gap-2">
 									{#if isAchieved}
-										<HugeiconsIcon icon={StarIcon} class="h-4 w-4 text-yellow-500" />
+										<HugeiconsIcon icon={StarIcon} class="h-4 w-4 {PRESTIGE_COLORS[levelNum as 1] as string}" />
 									{:else if isCurrentNext}
 										<HugeiconsIcon icon={ArrowRight01Icon} class="h-4 w-4 text-blue-500" />
 									{:else}
