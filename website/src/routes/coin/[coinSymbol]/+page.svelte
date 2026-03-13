@@ -580,7 +580,7 @@
 						class="border sm:size-16"
 					/>
 					<div class="min-w-0 flex-1">
-						<h1 class="text-2xl font-bold sm:text-4xl">{coin.name}</h1>
+						<h1 class="text-2xl font-bold sm:text-4xl max-w-200 truncate">{coin.name}</h1>
 						<div class="mt-1 flex flex-wrap items-center gap-2">
 							<Badge variant="outline" class="text-sm sm:text-lg">*{coin.symbol}</Badge>
 							{#if $isConnectedStore}

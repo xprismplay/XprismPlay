@@ -33,14 +33,14 @@
 	});
 
 	let nameError = $derived(
-		name.length > 0 && (name.length < 2 || name.length > 60)
-			? 'Name must be between 2 and 60 characters'
+		name.length > 0 && (name.length < 2 || name.length > 45)
+			? 'Name must be between 2 and 45 characters'
 			: ''
 	);
 
 	let symbolError = $derived(
-		symbol.length > 0 && (symbol.length < 2 || symbol.length > 13)
-			? 'Symbol must be between 2 and 13 characters'
+		symbol.length > 0 && (symbol.length < 2 || symbol.length > 16)
+			? 'Symbol must be between 2 and 16 characters'
 			: ''
 	);
 
@@ -200,6 +200,7 @@
 									type="text"
 									bind:value={name}
 									placeholder="e.g., Bitcoin"
+									maxlength={46 /* So user sees the warning */}
 									required
 								/>
 								{#if nameError}
@@ -225,6 +226,7 @@
 										bind:value={symbol}
 										placeholder="BTC"
 										class="pl-8 uppercase"
+										maxlength={17 /* So user sees the warning */}
 										required
 									/>
 								</div>

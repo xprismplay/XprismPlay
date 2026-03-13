@@ -121,7 +121,7 @@
 							<Card.Title class="flex items-center justify-between">
 								<div class="flex items-center gap-2">
 									<CoinIcon icon={coin.icon} symbol={coin.symbol} name={coin.name} size={6} />
-									<span>{coin.name} (*{coin.symbol})</span>
+									<span class="max-w-60 truncate">{coin.name} (*{coin.symbol})</span>
 								</div>
 								<Badge variant={coin.change24h >= 0 ? 'success' : 'destructive'} class="ml-2">
 									{coin.change24h >= 0 ? '+' : ''}{coin.change24h.toFixed(2)}%
