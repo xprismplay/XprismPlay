@@ -22,7 +22,8 @@ export const auth = betterAuth({
 		publicEnv.PUBLIC_BETTER_AUTH_URL,
 		'https://xprismplay.dpdns.org',
 		'http://xprismplay.dpdns.org',
-		'http://localhost:5173'
+		'http://localhost:5173',
+		'http://localhost:4173'
 	],
 
 	plugins: [
