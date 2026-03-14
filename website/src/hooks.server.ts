@@ -210,13 +210,13 @@ export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.userSession = userData;
 
 	if (event.url.pathname.startsWith('/api/') && !event.url.pathname.startsWith('/api/proxy/')) {
-		const response = await svelteKitHandler({ event, resolve, auth });
+		const response = await svelteKitHandler({ event, resolve, auth, building: false });
 		response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
 
 		return response;
 	}
 
-	return svelteKitHandler({ event, resolve, auth });
+	return svelteKitHandler({ event, resolve, auth, building: false });
 };
 
 export function clearUserCache(userId: string) {
