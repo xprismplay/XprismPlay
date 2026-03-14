@@ -158,8 +158,8 @@ export const coin = pgTable(
 	'coin',
 	{
 		id: serial('id').primaryKey(),
-		name: varchar('name', { length: 255 }).notNull(),
-		symbol: varchar('symbol', { length: 10 }).notNull().unique(),
+		name: varchar('name', { length: 45 }).notNull(),
+		symbol: varchar('symbol', { length: 16 }).notNull().unique(),
 		icon: text('icon'), // New field for coin icon
 		creatorId: integer('creator_id').references(() => user.id, { onDelete: 'set null' }), // Coin can exist even if creator is deleted
 		initialSupply: decimal('initial_supply', { precision: 30, scale: 8 }).notNull(),

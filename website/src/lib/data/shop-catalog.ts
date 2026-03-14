@@ -45,7 +45,14 @@ export const NAME_COLOR_CATALOG: NameColorItem[] = [
 	// Rare
 	{ key: 'purple', label: 'Purple Haze', rarity: 'rare', price: 700, classes: 'text-purple-500' },
 	{ key: 'red', label: 'Red Alert', rarity: 'rare', price: 700, classes: 'text-red-500' },
-	{ key: 'white', label: 'Default Color', rarity: 'rare', price: 700, classes: 'text-white' },
+	{
+		key: 'white',
+		label: 'Default Color',
+		rarity: 'rare',
+		price: 700,
+		style: 'color: var(--foreground)',
+		classes: ''
+	},
 	// Epic
 	{ key: 'gold', label: 'Gold Rush', rarity: 'epic', price: 1400, classes: 'text-yellow-400' },
 	{
@@ -203,7 +210,8 @@ export const NAME_COLOR_CATALOG: NameColorItem[] = [
 		rarity: 'mythic',
 		price: 7000,
 		classes: 'bg-clip-text text-transparent animate-diamond-shimmer',
-		style: 'background-image: linear-gradient(135deg, #5B3A29, #3E2723, #A0785A); text-shadow: 0px 0px 10px #3E2723;'
+		style:
+			'background-image: linear-gradient(135deg, #5B3A29, #3E2723, #A0785A); text-shadow: 0px 0px 10px #3E2723;'
 	},
 	{
 		key: 'face_glow',
@@ -211,16 +219,17 @@ export const NAME_COLOR_CATALOG: NameColorItem[] = [
 		rarity: 'mythic',
 		price: 7000,
 		classes: 'bg-clip-text text-transparent animate-diamond-shimmer',
-		style: 'background-image: linear-gradient(135deg, #000000, #ffffff); text-shadow: 0px 0px 6px #000;'
+		style:
+			'background-image: linear-gradient(135deg, #000000, #ffffff); text-shadow: 0px 0px 6px #000;'
 	},
 	{
 		key: 'default_glow',
 		label: 'Default Light',
 		rarity: 'mythic',
 		price: 7000,
-		classes: 'text-white',
-		style: 'text-shadow: 0px 0px 10px #fff;'
-	},
+		classes: '',
+		style: 'text-shadow: 0px 0px 10px var(--foreground);'
+	}
 ];
 
 export type CrateTierId = 'standard' | 'premium' | 'legendary' | 'mythic';

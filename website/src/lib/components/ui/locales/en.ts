@@ -21,7 +21,8 @@ export default {
 		amount: 'Amount',
 		date: 'Date',
 		note: 'Note',
-		value: 'Value'
+		value: 'Value',
+		live: '● LIVE'
 	},
 	greetings: {
 		good_morning: 'Good Morning, {{name}}!',
@@ -58,22 +59,32 @@ export default {
 		marketcap: 'Market Cap',
 		volume24h: 'Volume (24h)',
 		createdBy: 'Created by',
+		delisted: 'Delisted',
 		priceChart: [
-			'Price Chart ({{time}}',
+			'Price Chart ({{time}})',
 			'1 minute',
 			'5 minutes',
 			'15 minutes',
 			'1 hour',
 			'4 hours',
-			'1 day'
+			'1 day',
+			'No trading data available yet'
 		],
 		trade: {
 			title: 'Trade {{symbol}}',
+			youOwn: 'You own: {{shares}} {{symbol}}',
+			lock: ['🔒 Creator-only period: {{time}} remaining', '🔒 Trading unlocks in: {{time}}'],
 			buy: {
 				title: 'Buy {{symbol}}',
 				current: 'Current price: ${{price}} per {{symbol}}',
 				amountSpend: ['Amount to spend ($)', 'Balance: {{balance}}'],
 				buy: 'Buy {{symbol}}'
+			},
+			sell: {
+				title: 'Sell {{symbol}}'
+			},
+			burn: {
+				title: 'Burn {{symbol}} Tokens'
 			}
 		},
 		pool: {
@@ -91,6 +102,7 @@ export default {
 	},
 	sign_in: {
 		message: ['You need to', 'sign in', 'to play.'],
+		sign_in: 'Sign In',
 		form: {
 			title: 'Sign in to XprismPlay',
 			description:
@@ -100,7 +112,8 @@ export default {
 			},
 			terms: ['By continuing, you agree to our', 'Terms of Service', 'and', 'Privacy Policy']
 		},
-		portfolio: ['You need to be logged in to view your portfolio', 'Sign In']
+		portfolio: ['You need to be logged in to view your portfolio', 'Sign In'],
+		trade: 'Sign in to start trading'
 	},
 	leaderboard: {
 		title: 'Leaderboard',

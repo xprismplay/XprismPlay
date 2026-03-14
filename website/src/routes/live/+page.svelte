@@ -87,7 +87,7 @@
 						</p>
 					</div>
 				{:else}
-					{#each $allTradesStore as trade (trade.timestamp)}
+					{#each $allTradesStore as trade ('LIVETRADES' + trade.timestamp + trade.coinSymbol)}
 						<div
 							class="hover:bg-muted/50 flex flex-col gap-3 rounded-lg border p-3 transition-colors sm:flex-row sm:items-center sm:justify-between sm:p-4"
 						>

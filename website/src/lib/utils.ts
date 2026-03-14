@@ -342,6 +342,10 @@ export function showSchoolPrideCannons(confetti: any) {
 		}
 	})();
 }
+export function calcPrestigePrice(prestigeLevel: number) {
+	if(prestigeLevel === 1) return 100_000
+	return Math.round(100_000 * 2.1**(prestigeLevel-1))
+}
 
 export const formatMarketCap = formatValue;
 
@@ -360,15 +364,9 @@ export function timeToLocal(originalTime: number): number {
 	);
 }
 
-export const PRESTIGE_COSTS = {
-	1: 100_000,
-	2: 250_000, // 2.5x
-	3: 1_000_000, // 4x
-	4: 5_000_000, // 5x
-	5: 25_000_000, // 5x
-	6: 62_500_000, // 2.5x
-	7: 250_000_000 // 4x
-} as const;
+export const PRESTIGE_COSTS = Object.fromEntries(
+    Array.from({ length: getMaxPrestigeLevel() }, (_, i) => [i + 1, calcPrestigePrice(i + 1)])
+) as Record<number, number>;
 
 export const PRESTIGE_NAMES = {
 	1: 'Prestige I',
@@ -377,7 +375,15 @@ export const PRESTIGE_NAMES = {
 	4: 'Prestige IV',
 	5: 'Prestige V',
 	6: 'Prestige VI',
-	7: 'Prestige VII'
+	7: 'Prestige VII',
+	8: 'Prestige VIII',
+	9: 'Prestige IX',
+	10: 'Prestige X',
+	11: 'Prestige XI',
+	12: 'Prestige XII',
+	13: 'Prestige XIII',
+	14: 'Prestige XIX',
+	15: 'Prestige XV'
 } as const;
 
 export const PRESTIGE_COLORS = {
@@ -387,7 +393,15 @@ export const PRESTIGE_COLORS = {
 	4: 'text-orange-500',
 	5: 'text-red-500',
 	6: 'text-cyan-500',
-	7: 'text-emerald-500'
+	7: 'text-emerald-500',
+	8: 'text-lime-500',
+	9: 'text-pink-500',
+	10: 'text-red-700',
+	11: 'text-sky-500',
+	12: 'text-fuchsia-500',
+	13: 'text-emerald-700',
+	14: 'text-rose-500',
+	15: 'text-purple-500'
 } as const;
 
 export function getPrestigeName(level: number): string | null {
@@ -409,7 +423,7 @@ export function getPrestigeColor(level: number): string {
 }
 
 export function getMaxPrestigeLevel(): number {
-	return 7;
+	return 15;
 }
 
 export function validateBetAmount(

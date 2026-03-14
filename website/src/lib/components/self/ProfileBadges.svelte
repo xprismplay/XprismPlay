@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { UserProfile } from '$lib/types/user-profile';
 	import SilentBadge from './SilentBadge.svelte';
-	import { HashtagIcon, KnightShieldIcon, Fire02Icon, StarIcon } from '@hugeicons/core-free-icons';
+	import { HashtagIcon, KnightShieldIcon, Fire02Icon, StarIcon, Rocket01Icon } from '@hugeicons/core-free-icons';
 	import { getPrestigeName, getPrestigeColor } from '$lib/utils';
 
 	let {
@@ -38,6 +38,9 @@
 			text="{user.loginStreak} day streak"
 			class="text-orange-500 {badgeClass}"
 		/>
+	{/if}
+	{#if user.founderBadge}
+		<SilentBadge icon={Rocket01Icon} text="Supporter" class="text-cyan-400 {badgeClass}" />
 	{/if}
 	{#if user.isHeadAdmin}
 		<SilentBadge icon={KnightShieldIcon} text="Head Admin" class="text-orange-500 {badgeClass}" />

@@ -16,12 +16,12 @@ import { isNameAppropriate } from '$lib/server/moderation';
 import { checkAndAwardAchievements } from '$lib/server/achievements';
 
 async function validateInputs(name: string, symbol: string, iconFile: File | null) {
-	if (!name || name.length < 2 || name.length > 255) {
-		throw error(400, 'Name must be between 2 and 255 characters');
+	if (!name || name.length < 2 || name.length > 45) {
+		throw error(400, 'Name must be between 2 and 45 characters');
 	}
 
-	if (!symbol || symbol.length < 2 || symbol.length > 10) {
-		throw error(400, 'Symbol must be between 2 and 10 characters');
+	if (!symbol || symbol.length < 2 || symbol.length > 16) {
+		throw error(400, 'Symbol must be between 2 and 16 characters');
 	}
 
 	const alphanumericRegex = /^[a-zA-Z0-9]+$/;

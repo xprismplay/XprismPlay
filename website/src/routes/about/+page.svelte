@@ -5,8 +5,6 @@
 	import {
 		BookOpen01Icon,
 		GithubIcon,
-		YoutubeIcon,
-		TwitterIcon,
 		UserIcon,
 		Coins01Icon,
 		TradeUpIcon,
@@ -129,27 +127,7 @@
 						<Button
 							variant="outline"
 							size="sm"
-							href="https://youtube.com/@FaceDevStuff"
-							target="_blank"
-							rel="noopener"
-						>
-							<HugeiconsIcon icon={YoutubeIcon} class="h-4 w-4" />
-							YouTube
-						</Button>
-						<Button
-							variant="outline"
-							size="sm"
-							href="https://x.com/facedevstuff"
-							target="_blank"
-							rel="noopener"
-						>
-							<HugeiconsIcon icon={TwitterIcon} class="h-4 w-4" />
-							Twitter
-						</Button>
-						<Button
-							variant="outline"
-							size="sm"
-							href="https://github.com/outpoot/rugplay"
+							href="https://github.com/xprismplay/XprismPlay"
 							target="_blank"
 							rel="noopener"
 						>
@@ -159,7 +137,7 @@
 						<Button
 							variant="outline"
 							size="sm"
-							href="https://discord.gg/facedev"
+							href="https://discord.gg/BhSMmmT4tJ"
 							target="_blank"
 							rel="noopener"
 						>

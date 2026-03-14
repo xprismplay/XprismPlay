@@ -36,7 +36,7 @@
 	import { websocketController, type PriceUpdate, isConnectedStore } from '$lib/stores/websocket';
 	import SEO from '$lib/components/self/SEO.svelte';
 	import SignInConfirmDialog from '$lib/components/self/SignInConfirmDialog.svelte';
-
+	import { _ } from 'svelte-i18n';
 	const { data } = $props();
 	let coinSymbol = $derived(data.coinSymbol);
 	let coin = $state(data.coin);
@@ -59,12 +59,12 @@
 	let countdownInterval = $state<NodeJS.Timeout | null>(null);
 
 	const timeframeOptions = [
-		{ value: '1m', label: '1 minute' },
-		{ value: '5m', label: '5 minutes' },
-		{ value: '15m', label: '15 minutes' },
-		{ value: '1h', label: '1 hour' },
-		{ value: '4h', label: '4 hours' },
-		{ value: '1d', label: '1 day' }
+		{ value: '1m', label: $_('coin.priceChart.1') },
+		{ value: '5m', label: $_('coin.priceChart.2') },
+		{ value: '15m', label: $_('coin.priceChart.3') },
+		{ value: '1h', label: $_('coin.priceChart.4') },
+		{ value: '4h', label: $_('coin.priceChart.5') },
+		{ value: '1d', label: $_('coin.priceChart.6') }
 	];
 
 	$effect(() => {
@@ -580,7 +580,7 @@
 						class="border sm:size-16"
 					/>
 					<div class="min-w-0 flex-1">
-						<h1 class="text-2xl font-bold sm:text-4xl">{coin.name}</h1>
+						<h1 class="max-w-200 truncate text-2xl font-bold sm:text-4xl">{coin.name}</h1>
 						<div class="mt-1 flex flex-wrap items-center gap-2">
 							<Badge variant="outline" class="text-sm sm:text-lg">*{coin.symbol}</Badge>
 							{#if $isConnectedStore}
@@ -588,7 +588,7 @@
 									variant="outline"
 									class="animate-pulse border-green-500 text-xs text-green-500"
 								>
-									● LIVE
+									{$_('global.live')}
 								</Badge>
 							{/if}
 							{#if isTradingLocked}
@@ -597,7 +597,7 @@
 								</Badge>
 							{/if}
 							{#if !coin.isListed}
-								<Badge variant="destructive">Delisted</Badge>
+								<Badge variant="destructive">{$_("coin.delisted")}</Badge>
 							{/if}
 						</div>
 					</div>
@@ -624,7 +624,7 @@
 			<!-- Creator Info -->
 			{#if coin.creatorName}
 				<div class="text-muted-foreground flex flex-wrap items-center gap-2 text-sm">
-					<span>Created by</span>
+					<span>{$_('coin.createdBy')}</span>
 
 					<HoverCard.Root>
 						<HoverCard.Trigger
@@ -657,7 +657,7 @@
 							<div class="flex items-center justify-between">
 								<Card.Title class="flex items-center gap-2">
 									<HugeiconsIcon icon={Analytics01Icon} class="h-5 w-5" />
-									Price Chart ({selectedTimeframe})
+									{$_('coin.priceChart.0').replace('{{time}}', selectedTimeframe)}
 								</Card.Title>
 								<div class="w-24">
 									<Select.Root
@@ -685,7 +685,7 @@
 						<Card.Content class="flex-1 pt-0">
 							{#if chartData.length === 0}
 								<div class="flex h-full min-h-[500px] items-center justify-center">
-									<p class="text-muted-foreground">No trading data available yet</p>
+									<p class="text-muted-foreground">{$_('coin.priceChart.7')}</p>
 								</div>
 							{:else}
 								<div class="h-full min-h-[500px] w-full" bind:this={chartContainer}></div>
@@ -699,20 +699,20 @@
 					<!-- Trading Actions -->
 					<Card.Root>
 						<Card.Header>
-							<Card.Title>Trade {coin.symbol}</Card.Title>
+							<Card.Title>{$_('coin.trade.title').replace('{{symbol}}', coin.symbol)}</Card.Title>
 							{#if userHolding > 0}
 								<p class="text-muted-foreground text-sm">
-									You own: {formatSupply(userHolding)}
-									{coin.symbol}
+									{$_('coin.trade.youOwn')
+										.replace('{{shares}}', formatSupply(userHolding))
+										.replace('{{symbol}}', coin.symbol)}
 								</p>
 							{/if}
 							{#if isTradingLocked}
 								<p class="text-muted-foreground text-sm">
-									{#if isCreator}
-										🔒 Creator-only period: {countdown !== null ? formatCountdown(countdown) : ''} remaining
-									{:else}
-										🔒 Trading unlocks in: {countdown !== null ? formatCountdown(countdown) : ''}
-									{/if}
+									{$_(`coin.trade.lock.${isCreator ? '0' : '1'}`).replace(
+										'{{time}}',
+										countdown != null ? formatCountdown(countdown) : '0:00'
+									)}
 								</p>
 							{/if}
 						</Card.Header>
@@ -727,7 +727,7 @@
 										disabled={!coin.isListed || !canTrade}
 									>
 										<HugeiconsIcon icon={TradeUpIcon} class="h-4 w-4" />
-										Buy {coin.symbol}
+										{$_('coin.trade.buy.title').replace('{{symbol}}', coin.symbol)}
 									</Button>
 									<Button
 										class="w-full"
@@ -737,7 +737,7 @@
 										disabled={!coin.isListed || userHolding <= 0 || !canTrade}
 									>
 										<HugeiconsIcon icon={TradeDownIcon} class="h-4 w-4" />
-										Sell {coin.symbol}
+										{$_('coin.trade.sell.title').replace('{{symbol}}', coin.symbol)}
 									</Button>
 									<Button
 										class="w-full"
@@ -747,13 +747,13 @@
 										disabled={!coin.isListed || userHolding <= 0 || !canTrade}
 									>
 										<HugeiconsIcon icon={Coins01Icon} class="h-4 w-4" />
-										Burn {coin.symbol} Tokens
+										{$_('coin.trade.burn.title').replace('{{symbol}}', coin.symbol)}
 									</Button>
 								</div>
 							{:else}
 								<div class="py-4 text-center">
-									<p class="text-muted-foreground mb-3 text-sm">Sign in to start trading</p>
-									<Button onclick={() => (shouldSignIn = true)}>Sign In</Button>
+									<p class="text-muted-foreground mb-3 text-sm">{$_('sign_in.trade')}</p>
+									<Button onclick={() => (shouldSignIn = true)}>{$_('sign_in.sign_in')}</Button>
 								</div>
 							{/if}
 						</Card.Content>

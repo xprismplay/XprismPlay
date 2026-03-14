@@ -147,6 +147,11 @@
 		setOpenMobile(false);
 	}
 
+	function handleHeadAdminClick() {
+		goto('/admin/head');
+		setOpenMobile(false);
+	}
+
 	function handleUserManagementClick() {
 		goto('/admin/users');
 		setOpenMobile(false);
@@ -508,38 +513,49 @@
 								</DropdownMenu.Item>
 							</DropdownMenu.Group>
 
-							{#if $USER_DATA?.isAdmin}
+							{#if $USER_DATA?.isAdmin || $USER_DATA?.isHeadAdmin}
 								<DropdownMenu.Separator />
-								<!-- Admin Group -->
 								<DropdownMenu.Group>
-									<DropdownMenu.Item
-										onclick={handleAdminClick}
-										class="text-primary hover:text-primary!"
-									>
-										<HugeiconsIcon icon={Shield01Icon} class="text-primary" />
-										Admin Panel
-									</DropdownMenu.Item>
-									<DropdownMenu.Item
-										onclick={handleUserManagementClick}
-										class="text-primary hover:text-primary!"
-									>
-										<HugeiconsIcon icon={LegalHammerIcon} class="text-primary" />
-										User Management
-									</DropdownMenu.Item>
-									<DropdownMenu.Item
-										onclick={handlePromoCodesClick}
-										class="text-primary hover:text-primary!"
-									>
-										<HugeiconsIcon icon={Ticket01Icon} class="text-primary" />
-										Manage codes
-									</DropdownMenu.Item>
-									<DropdownMenu.Item
-										onclick={handleAdminLogsClick}
-										class="text-primary hover:text-primary!"
-									>
-										<HugeiconsIcon icon={Shield01Icon} class="text-primary" />
-										Admin Logs
-									</DropdownMenu.Item>
+									{#if $USER_DATA?.isHeadAdmin}
+										<DropdownMenu.Item
+											onclick={handleHeadAdminClick}
+											class="text-orange-500 focus:bg-orange-500/10 focus:text-orange-500!"
+										>
+											<HugeiconsIcon icon={Shield01Icon} class="text-orange-500" />
+											Head Admin Panel
+										</DropdownMenu.Item>
+									{/if}
+
+									{#if $USER_DATA?.isAdmin}
+										<DropdownMenu.Item
+											onclick={handleAdminClick}
+											class="text-primary hover:text-primary!"
+										>
+											<HugeiconsIcon icon={Shield01Icon} class="text-primary" />
+											Admin Panel
+										</DropdownMenu.Item>
+										<DropdownMenu.Item
+											onclick={handleUserManagementClick}
+											class="text-primary hover:text-primary!"
+										>
+											<HugeiconsIcon icon={LegalHammerIcon} class="text-primary" />
+											User Management
+										</DropdownMenu.Item>
+										<DropdownMenu.Item
+											onclick={handlePromoCodesClick}
+											class="text-primary hover:text-primary!"
+										>
+											<HugeiconsIcon icon={Ticket01Icon} class="text-primary" />
+											Manage codes
+										</DropdownMenu.Item>
+										<DropdownMenu.Item
+											onclick={handleAdminLogsClick}
+											class="text-primary hover:text-primary!"
+										>
+											<HugeiconsIcon icon={Shield01Icon} class="text-primary" />
+											Admin Logs
+										</DropdownMenu.Item>
+									{/if}
 								</DropdownMenu.Group>
 							{/if}
 

@@ -1,7 +1,7 @@
 const hourMs = 3600 * 1000;
 // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 export const timezoneList = [
-	-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -3.5, -2, -1, 0, 1, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5,
+	-12, -11, -10, -9, -8, -7, -6, -5, -4, -3.5, -3, -2, -1, 0, 1, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5,
 	5.75, 6, 6.5, 7, 8, 8.75, 9, 9.5, 10, 10.5, 11, 12, 12.75
 ];
 export function getTimezoneDate(offset: number) {
