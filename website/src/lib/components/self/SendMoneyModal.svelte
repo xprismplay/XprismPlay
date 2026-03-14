@@ -367,7 +367,7 @@
 							{#if transferType === 'COIN' && estimatedValue > 0}
 								<span class="text-muted-foreground text-xs">
 									{$_('portfolio.send_money.youre_sending.1').replace(
-										'{{amount}}}',
+										'{{amount}}',
 										estimatedValue.toFixed(2)
 									)}
 								</span>

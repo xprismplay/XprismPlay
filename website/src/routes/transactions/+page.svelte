@@ -58,6 +58,7 @@
 		{ value: 'all', label: 'All transactions' },
 		{ value: 'BUY', label: 'Buys only' },
 		{ value: 'SELL', label: 'Sells only' },
+		{ value: 'BURN', label: 'Burns only' },
 		{ value: 'TRANSFER_IN', label: 'Received transfers' },
 		{ value: 'TRANSFER_OUT', label: 'Sent transfers' }
 	];
@@ -438,8 +439,8 @@
 											{tx.isIncoming ? 'Received' : 'Sent'}
 										</Badge>
 									{:else}
-										<Badge variant={tx.type === 'BUY' ? 'success' : 'destructive'} class="text-xs">
-											{tx.type === 'BUY' ? 'Buy' : 'Sell'}
+										<Badge variant={tx.type === 'BUY' ? 'success' : tx.type === 'BURN' ? 'fire' : 'destructive'} class="text-xs">
+											{tx.type === 'BUY' ? 'Buy' : tx.type === 'BURN' ? 'Burn' : 'Sell'}
 										</Badge>
 									{/if}
 								</Table.Cell>

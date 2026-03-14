@@ -8,7 +8,10 @@
 		Activity01Icon,
 		TradeUpIcon,
 		TradeDownIcon,
-		Clock01Icon
+		Clock01Icon,
+
+		FireIcon
+
 	} from '@hugeicons/core-free-icons';
 	import { allTradesStore, isLoadingTrades, loadInitialTrades } from '$lib/stores/websocket';
 	import { goto } from '$app/navigation';
@@ -139,7 +142,7 @@
 												</span>
 											</button>
 											<span class="text-muted-foreground text-xs sm:text-sm">
-												{trade.type === 'BUY' ? 'bought by' : 'sold by'}
+												{trade.type === 'BUY' ? 'bought by' : trade.type === 'BURN' ? 'burned by' : 'sold by'}
 											</span>
 										{/if}
 
@@ -191,7 +194,7 @@
 										<span class="text-green-500">BUY</span>
 										<span class="text-muted-foreground">|</span>
 										<span>{formatValue(trade.totalValue)}</span>
-									{:else}
+									{:else if trade.type === 'SELL'}
 										<HugeiconsIcon
 											icon={TradeDownIcon}
 											class="h-3.5 w-3.5 text-red-500 sm:h-4 sm:w-4"
@@ -199,6 +202,12 @@
 										<span class="text-red-500">SELL</span>
 										<span class="text-muted-foreground">|</span>
 										<span>{formatValue(trade.totalValue)}</span>
+									{:else}
+										<HugeiconsIcon
+											icon={FireIcon}
+											class="h-3.5 w-3.5 text-orange-500 sm:h-4 sm:w-4"
+										/>
+										<span class="text-orange-500">BURN</span>
 									{/if}
 								</div>
 

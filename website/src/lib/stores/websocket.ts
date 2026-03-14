@@ -8,7 +8,7 @@ import { toast } from 'svelte-sonner';
 import { goto } from '$app/navigation';
 
 export interface LiveTrade {
-	type: 'BUY' | 'SELL' | 'TRANSFER_IN' | 'TRANSFER_OUT';
+	type: 'BUY' | 'SELL' | 'BURN' | 'TRANSFER_IN' | 'TRANSFER_OUT';
 	username: string;
 	amount: number;
 	coinSymbol: string;
