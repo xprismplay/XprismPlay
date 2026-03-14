@@ -51,6 +51,35 @@ export const POST: RequestHandler = async ({ request }) => {
 		if (action === 'start') {
 			const roundedBet = validateBetAmount(body.amount);
 
+            const shownNumber = randomInt(MIN, MAX);
+            const hiddenNumber = randomInt(MIN, MAX);
+
+            // transaction token for authentication stuff
+            const randomBytes = new Uint8Array(8);
+            crypto.getRandomValues(randomBytes);
+            const sessionToken = Array.from(randomBytes)
+                .map((b) => b.toString(16).padStart(2, '0'))
+                .join('');
+
+            const now = Date.now();
+
+            const sessionKey = `higherlower:session:${sessionToken}`;
+
+            const SESSION_TTL = 300; // 5 minutes
+            await redis.set(
+                sessionKey,
+                JSON.stringify({
+                    sessionToken,
+                    betAmount: roundedBet,
+                    shownNumber,
+                    hiddenNumber,
+                    startTime: now,
+                    userId,
+                    version: 0
+                }),
+                { EX: SESSION_TTL }
+            );
+
 			const result = await db.transaction(async (tx) => {
 				const [userData] = await tx
 					.select({ baseCurrencyBalance: user.baseCurrencyBalance })
@@ -68,33 +97,7 @@ export const POST: RequestHandler = async ({ request }) => {
 					);
 				}
 
-				const shownNumber = randomInt(MIN, MAX);
-				const hiddenNumber = randomInt(MIN, MAX);
-
-				// transaction token for authentication stuff
-                const randomBytes = new Uint8Array(8);
-                crypto.getRandomValues(randomBytes);
-                const sessionToken = Array.from(randomBytes)
-                    .map((b) => b.toString(16).padStart(2, '0'))
-                    .join('');
-
-				const now = Date.now();
-				const newBalance = roundedBalance - roundedBet;
-
-				const sessionKey = `higherlower:session:${sessionToken}`;
-
-				await redis.set(
-					sessionKey,
-					JSON.stringify({
-						sessionToken,
-						betAmount: roundedBet,
-						shownNumber,
-						hiddenNumber,
-						startTime: now,
-						userId,
-						version: 0
-					})
-				);
+                const newBalance = roundedBalance - roundedBet;
 
 				await tx
 					.update(user)
@@ -132,7 +135,23 @@ export const POST: RequestHandler = async ({ request }) => {
                 return json({ error: 'Session already processed' }, { status: 400 });
             }
 
-            const result = await db.transaction(async (tx) => {
+            let payout: number = 0;
+            let newBalance: number;
+            let result: "higher" | "lower" | "exact";
+            
+            if (game.hiddenNumber < game.shownNumber) {
+                result = "lower";
+            } else if (game.hiddenNumber > game.shownNumber) {
+                result = "higher";
+            } else {
+                result = "exact";
+            }
+
+            if (body.guess == result) {
+                payout = game.betAmount * getPayout(game.shownNumber, result);
+            }
+
+            const dbResult = await db.transaction(async (tx) => {
                 const [userData] = await tx
                     .select({
                         baseCurrencyBalance: user.baseCurrencyBalance,
@@ -149,39 +168,6 @@ export const POST: RequestHandler = async ({ request }) => {
                     .limit(1);
     
                 const currentBalance = Number(userData.baseCurrencyBalance);
-                let payout: number = 0;
-                let newBalance: number;
-                let result: "higher" | "lower" | "exact";
-                
-                if (game.hiddenNumber < game.shownNumber) {
-                    result = "lower";
-                } else if (game.hiddenNumber > game.shownNumber) {
-                    result = "higher";
-                } else {
-                    result = "exact";
-                }
-
-                console.log(result);
-
-                if (body.guess == result) {
-                    payout = game.betAmount * getPayout(game.shownNumber, result);
-                }
-    
-                /*
-                if (body.guess == "lower") {
-                    if (game.hiddenNumber < game.shownNumber) {
-                        payout = game.betAmount * getPayout(game.shownNumber, body.guess);
-                    }
-                } else if (body.guess == "higher") {
-                    if (game.hiddenNumber > game.shownNumber) {
-                        payout = game.betAmount * getPayout(game.shownNumber, body.guess);
-                    }
-                } else if (body.guess == "exact") {
-                    if (game.hiddenNumber == game.shownNumber) {
-                        payout = game.betAmount * getPayout(game.shownNumber, body.guess);
-                    }
-                }
-                */
                 const roundedPayout = Math.round(payout * 100000000) / 100000000;
                 newBalance = Math.round((currentBalance + roundedPayout) * 100000000) / 100000000;
     
@@ -219,7 +205,7 @@ export const POST: RequestHandler = async ({ request }) => {
                 };
             });
 
-            return json(result);
+            return json(dbResult);
         }
 
 		return json({ error: 'Invalid action' }, { status: 400 });
