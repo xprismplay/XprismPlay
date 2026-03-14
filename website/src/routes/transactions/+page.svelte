@@ -439,7 +439,14 @@
 											{tx.isIncoming ? 'Received' : 'Sent'}
 										</Badge>
 									{:else}
-										<Badge variant={tx.type === 'BUY' ? 'success' : tx.type === 'BURN' ? 'fire' : 'destructive'} class="text-xs">
+										<Badge
+											variant={tx.type === 'BUY'
+												? 'success'
+												: tx.type === 'BURN'
+													? 'fire'
+													: 'destructive'}
+											class="text-xs"
+										>
 											{tx.type === 'BUY' ? 'Buy' : tx.type === 'BURN' ? 'Burn' : 'Sell'}
 										</Badge>
 									{/if}

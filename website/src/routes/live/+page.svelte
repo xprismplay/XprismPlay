@@ -9,9 +9,7 @@
 		TradeUpIcon,
 		TradeDownIcon,
 		Clock01Icon,
-
 		FireIcon
-
 	} from '@hugeicons/core-free-icons';
 	import { allTradesStore, isLoadingTrades, loadInitialTrades } from '$lib/stores/websocket';
 	import { goto } from '$app/navigation';
@@ -142,7 +140,11 @@
 												</span>
 											</button>
 											<span class="text-muted-foreground text-xs sm:text-sm">
-												{trade.type === 'BUY' ? 'bought by' : trade.type === 'BURN' ? 'burned by' : 'sold by'}
+												{trade.type === 'BUY'
+													? 'bought by'
+													: trade.type === 'BURN'
+														? 'burned by'
+														: 'sold by'}
 											</span>
 										{/if}
 
