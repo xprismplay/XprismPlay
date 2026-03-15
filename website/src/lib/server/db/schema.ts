@@ -51,6 +51,10 @@ export const user = pgTable(
 		// @ts-expect-error
 		flags: bigint('flags', { mode: 'bigint' }).notNull().default('0'), // Check /website/src/lib/data/flags.ts
 
+		isAdmin: boolean('is_admin').default(false),
+		isHeadAdmin: boolean('is_head_admin').default(false),
+		founderBadge: boolean('founder_badge').notNull().default(false),
+		
 		// LEGACY: Getting removed after everything is done
 		disableMentions: boolean('disable_mentions').notNull().default(false),
 
