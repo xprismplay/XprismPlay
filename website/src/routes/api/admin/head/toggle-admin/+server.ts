@@ -2,9 +2,10 @@ import { auth } from '$lib/auth';
 import { error, json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { user } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { writeAdminLog } from '$lib/server/admin-log';
 import type { RequestHandler } from '@sveltejs/kit'; // <-- Changed this import
+import { hasFlag, UserFlags } from '$lib/data/flags';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const authSession = await auth.api.getSession({ headers: request.headers });
@@ -15,12 +16,12 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	// 1. Verify the requester is actually a Head Admin
 	const [currentUser] = await db
-		.select({ isHeadAdmin: user.isHeadAdmin })
+		.select({ flags: user.flags })
 		.from(user)
 		.where(eq(user.id, Number(authSession.user.id)))
 		.limit(1);
 
-	if (!currentUser?.isHeadAdmin) {
+	if (!hasFlag(currentUser.flags, 'IS_HEAD_ADMIN')) {
 		throw error(403, 'Head Admin access required');
 	}
 
@@ -36,8 +37,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			.select({
 				id: user.id,
 				username: user.username,
-				isAdmin: user.isAdmin,
-				isHeadAdmin: user.isHeadAdmin
+				flags: user.flags
 			})
 			.from(user)
 			.where(eq(user.username, username.trim()))
@@ -48,7 +48,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 
 		// 3. Prevent touching other Head Admins
-		if (targetUser.isHeadAdmin) {
+		if (hasFlag(targetUser.flags, 'IS_HEAD_ADMIN')) {
 			throw error(400, 'Cannot modify permissions of a Head Admin');
 		}
 
@@ -56,7 +56,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		await db
 			.update(user)
 			.set({
-				isAdmin: makeAdmin,
+				flags: makeAdmin ? sql`${targetUser.flags} | ${UserFlags.IS_ADMIN}` : sql`${targetUser.flags} & ~${UserFlags.IS_ADMIN}`,
 				updatedAt: new Date()
 			})
 			.where(eq(user.id, targetUser.id));

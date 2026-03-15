@@ -59,6 +59,7 @@
 	import { ARCADE_STATS, fetchArcadeStats } from '$lib/stores/arcade-stats';
 	import { GEMS_BALANCE, fetchGemsBalance } from '$lib/stores/gems';
 	import { _ } from 'svelte-i18n';
+	import { hasFlag, UserFlags } from '$lib/data/flags';
 	const data = {
 		navMain: [
 			{ title: $_('page_names.home'), url: '/', icon: Home03Icon },
@@ -202,7 +203,7 @@
 			<img src="/rugplay.svg" class="h-5 w-5" alt="twoblade" />
 			<div class="flex items-center gap-2">
 				<span class="text-base font-semibold">XprismPlay</span>
-				{#if $USER_DATA?.isAdmin}
+				{#if hasFlag($USER_DATA?.flags ?? 0n, 'IS_ADMIN')}
 					<span class="text-muted-foreground text-xs">| Admin</span>
 				{/if}
 			</div>
@@ -513,10 +514,10 @@
 								</DropdownMenu.Item>
 							</DropdownMenu.Group>
 
-							{#if $USER_DATA?.isAdmin || $USER_DATA?.isHeadAdmin}
+							{#if hasFlag($USER_DATA?.flags ?? 0n, 'IS_ADMIN', 'IS_HEAD_ADMIN')}
 								<DropdownMenu.Separator />
 								<DropdownMenu.Group>
-									{#if $USER_DATA?.isHeadAdmin}
+									{#if hasFlag($USER_DATA?.flags ?? 0n, 'IS_HEAD_ADMIN')}
 										<DropdownMenu.Item
 											onclick={handleHeadAdminClick}
 											class="text-orange-500 focus:bg-orange-500/10 focus:text-orange-500!"
@@ -526,7 +527,7 @@
 										</DropdownMenu.Item>
 									{/if}
 
-									{#if $USER_DATA?.isAdmin}
+									{#if hasFlag($USER_DATA.flags ?? 0n, 'IS_ADMIN', 'IS_HEAD_ADMIN')}
 										<DropdownMenu.Item
 											onclick={handleAdminClick}
 											class="text-primary hover:text-primary!"

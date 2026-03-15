@@ -7,6 +7,7 @@ import { redis } from '$lib/server/redis';
 import { createNotification } from '$lib/server/notification';
 import { calculate24hMetrics, executeSellTrade } from '$lib/server/amm';
 import { checkAndAwardAchievements } from '$lib/server/achievements';
+import { hasFlag } from '$lib/data/flags';
 
 export async function POST({ params, request }) {
 	const session = await auth.api.getSession({
@@ -16,6 +17,14 @@ export async function POST({ params, request }) {
 	if (!session?.user) {
 		throw error(401, 'Not authenticated');
 	}
+	const userId = Number(session.user.id);
+	const [currentUser] = await db
+		.select({ flags: user.flags })
+		.from(user)
+		.where(eq(user.id, userId))
+		.limit(1);
+	if (hasFlag(currentUser.flags, 'NO_ARCADE'))
+		return json({ message: "You aren't authorized to trade." }, { status: 403 });
 
 	const { coinSymbol } = params;
 	const { type, amount } = await request.json();
@@ -32,7 +41,6 @@ export async function POST({ params, request }) {
 		throw error(400, 'Amount too large');
 	}
 
-	const userId = Number(session.user.id);
 	const normalizedSymbol = coinSymbol.toUpperCase();
 
 	const [coinExists] = await db
@@ -43,7 +51,6 @@ export async function POST({ params, request }) {
 	if (!coinExists) {
 		throw error(404, 'Coin not found');
 	}
-
 	return await db.transaction(async (tx) => {
 		const [coinData] = await tx
 			.select({

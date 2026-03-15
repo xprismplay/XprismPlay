@@ -370,7 +370,9 @@
 				<HugeiconsIcon icon={Cancel01Icon} class="h-5 w-5 text-red-500" />
 				Remove Portfolio
 			</Card.Title>
-			<Card.Description>Remove a user's portfolio, remove coin hodlings, without giving them the money</Card.Description>
+			<Card.Description
+				>Remove a user's portfolio, remove coin hodlings, without giving them the money</Card.Description
+			>
 		</Card.Header>
 		<Card.Content>
 			<div class="max-w-md space-y-4">
@@ -394,7 +396,9 @@
 					<Button
 						variant="destructive"
 						onclick={removePortfolio}
-						disabled={!removePortfolioUsername.trim() || !removePortfolioSymbol.trim() || removePortfolioLoading}
+						disabled={!removePortfolioUsername.trim() ||
+							!removePortfolioSymbol.trim() ||
+							removePortfolioLoading}
 						class="w-full"
 					>
 						Remove Portfolio

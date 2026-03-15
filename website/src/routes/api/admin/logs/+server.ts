@@ -5,18 +5,20 @@ import { adminLog, user } from '$lib/server/db/schema';
 import { desc, eq } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import type { RequestHandler } from './$types';
+import { hasFlag } from '$lib/data/flags';
 
 export const GET: RequestHandler = async ({ request, url }) => {
 	const session = await auth.api.getSession({ headers: request.headers });
 	if (!session?.user) throw error(401, 'Not authenticated');
 
 	const [currentUser] = await db
-		.select({ isAdmin: user.isAdmin })
+		.select({ flags: user.flags })
 		.from(user)
 		.where(eq(user.id, Number(session.user.id)))
 		.limit(1);
 
-	if (!currentUser?.isAdmin) throw error(403, 'Admin access required');
+	if (!hasFlag(currentUser.flags, 'IS_ADMIN', 'IS_HEAD_ADMIN'))
+		throw error(403, 'Admin access required');
 
 	const limit = Math.min(parseInt(url.searchParams.get('limit') || '50'), 200);
 	const offset = Math.max(parseInt(url.searchParams.get('offset') || '0'), 0);

@@ -28,6 +28,7 @@
 	import { USER_DATA } from '$lib/stores/user-data';
 	import { formatDate, getExpirationDate } from '$lib/utils';
 	import type { PromoCode } from '$lib/types/promo-code';
+	import { hasFlag } from '$lib/data/flags';
 
 	let code = $state('');
 	let rewardAmount = $state('');
@@ -163,7 +164,7 @@
 	}
 
 	$effect(() => {
-		if ($USER_DATA?.isAdmin) {
+		if (hasFlag($USER_DATA?.flags ?? 0n, 'IS_ADMIN', 'IS_HEAD_ADMIN')) {
 			loadPromoCodes();
 		}
 	});
@@ -174,7 +175,7 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-{#if !$USER_DATA || !$USER_DATA.isAdmin}
+{#if !$USER_DATA || !hasFlag($USER_DATA?.flags ?? 0n, 'IS_ADMIN', 'IS_HEAD_ADMIN')}
 	<div class="flex h-screen items-center justify-center">
 		<div class="text-center">
 			<h1 class="text-2xl font-bold">Access Denied</h1>

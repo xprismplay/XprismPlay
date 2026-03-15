@@ -85,7 +85,6 @@ export const auth = betterAuth({
 	user: {
 		additionalFields: {
 			username: { type: 'string', required: true, input: false },
-			isAdmin: { type: 'boolean', required: true, input: false },
 			isBanned: { type: 'boolean', required: false, input: false },
 			banReason: { type: 'string', required: false, input: false },
 			baseCurrencyBalance: { type: 'string', required: false, input: false },

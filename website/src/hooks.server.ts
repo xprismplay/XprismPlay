@@ -9,6 +9,7 @@ import { user, gemTransactions } from '$lib/server/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import { minesCleanupInactiveGames, minesAutoCashout } from '$lib/server/games/mines';
 import { towerCleanupInactiveGames } from '$lib/server/games/tower';
+import { hasFlag, UserFlags } from '$lib/data/flags';
 
 async function initializeScheduler() {
 	if (building) return;
@@ -135,8 +136,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 					name: user.name,
 					username: user.username,
 					email: user.email,
-					isHeadAdmin: user.isHeadAdmin,
-					isAdmin: user.isAdmin,
+					flags: user.flags,
 					image: user.image,
 					isBanned: user.isBanned,
 					banReason: user.banReason,
@@ -145,7 +145,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 					volumeMaster: user.volumeMaster,
 					volumeMuted: user.volumeMuted,
 					nameColor: user.nameColor,
-					founderBadge: user.founderBadge,
 					prestigeLevel: user.prestigeLevel,
 					disableMentions: user.disableMentions,
 					timezone: user.timezone
@@ -179,8 +178,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 					name: userRecord.name,
 					username: userRecord.username,
 					email: userRecord.email,
-					isHeadAdmin: userRecord.isHeadAdmin || false,
-					isAdmin: userRecord.isAdmin || false,
+					flags: userRecord.flags,
+					isHeadAdmin: hasFlag(userRecord.flags, 'IS_HEAD_ADMIN') || false,
+					isAdmin: hasFlag(userRecord.flags, 'IS_HEAD_ADMIN', 'IS_ADMIN') || false,
 					image: userRecord.image || '',
 					isBanned: userRecord.isBanned || false,
 					banReason: userRecord.banReason,
@@ -190,14 +190,16 @@ export const handle: Handle = async ({ event, resolve }) => {
 					volumeMaster: parseFloat(userRecord.volumeMaster || '0.7'),
 					volumeMuted: userRecord.volumeMuted || false,
 					nameColor: userRecord.nameColor ?? null,
-					founderBadge: userRecord.founderBadge ?? false,
+					founderBadge: hasFlag(userRecord.flags, 'FOUNDER_BADGE') ?? false,
 					prestigeLevel: userRecord.prestigeLevel ?? 0,
 					disableMentions: userRecord.disableMentions ?? false,
 					hideAds: totalUsdSpent >= 499,
 					timezone: userRecord.timezone
 				};
 
-				const cacheTTL = userRecord.isAdmin ? CACHE_TTL * 2 : CACHE_TTL;
+				const cacheTTL = hasFlag(userRecord.flags, 'IS_ADMIN', 'IS_HEAD_ADMIN')
+					? CACHE_TTL * 2
+					: CACHE_TTL;
 				sessionCache.set(cacheKey, {
 					userData,
 					timestamp: now,

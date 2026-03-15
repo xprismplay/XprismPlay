@@ -23,16 +23,14 @@ export async function GET({ params }) {
 				image: true,
 				createdAt: true,
 				baseCurrencyBalance: true,
-				isAdmin: true,
-				isHeadAdmin: true,
 				loginStreak: true,
 				prestigeLevel: true,
-				halloweenBadge2025: true,
 				arcadeWins: true,
 				arcadeLosses: true,
 				nameColor: true,
 				founderBadge: true,
-				timezone: true
+				timezone: true,
+				flags: true
 			}
 		});
 
@@ -134,7 +132,8 @@ export async function GET({ params }) {
 			profile: {
 				...userProfile,
 				baseCurrencyBalance,
-				totalPortfolioValue
+				totalPortfolioValue,
+				flags: userProfile.flags.toString()
 			},
 			stats: {
 				totalPortfolioValue,

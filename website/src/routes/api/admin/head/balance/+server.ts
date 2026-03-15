@@ -5,6 +5,7 @@ import { user } from '$lib/server/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import { auth } from '$lib/auth';
 import type { RequestHandler } from '@sveltejs/kit'; // <-- Changed this import
+import { hasFlag } from '$lib/data/flags';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const session = await auth.api.getSession({ headers: request.headers });
@@ -13,12 +14,12 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	const [currentUser] = await db
-		.select({ isHeadAdmin: user.isHeadAdmin })
+		.select({ flags: user.flags })
 		.from(user)
 		.where(eq(user.id, Number(session.user.id)))
 		.limit(1);
 
-	if (!currentUser?.isHeadAdmin) {
+	if (!hasFlag(currentUser.flags, 'IS_HEAD_ADMIN')) {
 		return json({ message: 'Forbidden: Head Admin access required' }, { status: 403 });
 	}
 

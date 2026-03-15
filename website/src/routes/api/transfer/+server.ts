@@ -7,6 +7,7 @@ import { createNotification } from '$lib/server/notification';
 import { formatValue } from '$lib/utils';
 import { checkAndAwardAchievements } from '$lib/server/achievements';
 import type { RequestHandler } from './$types';
+import { hasFlag } from '$lib/data/flags';
 
 interface TransferRequest {
 	recipientUsername: string;
@@ -69,7 +70,8 @@ export const POST: RequestHandler = async ({ request }) => {
 				.select({
 					id: user.id,
 					username: user.username,
-					baseCurrencyBalance: user.baseCurrencyBalance
+					baseCurrencyBalance: user.baseCurrencyBalance,
+					flags: user.flags
 				})
 				.from(user)
 				.where(eq(user.id, senderId))
@@ -78,6 +80,9 @@ export const POST: RequestHandler = async ({ request }) => {
 
 			if (!senderData) {
 				throw error(404, 'Sender not found');
+			}
+			if (hasFlag(senderData.flags, 'NO_TRANSFER')) {
+				throw error(400, 'You aren\'t authorized to transfer.');
 			}
 
 			const [recipientData] = await tx

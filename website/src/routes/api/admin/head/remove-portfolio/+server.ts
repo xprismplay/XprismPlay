@@ -6,6 +6,7 @@ import { auth } from '$lib/auth';
 import { executeSellTrade, calculate24hMetrics } from '$lib/server/amm';
 import { redis } from '$lib/server/redis';
 import type { RequestHandler } from '@sveltejs/kit';
+import { hasFlag } from '$lib/data/flags';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const session = await auth.api.getSession({ headers: request.headers });
@@ -14,12 +15,12 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	const [currentUser] = await db
-		.select({ isHeadAdmin: user.isHeadAdmin })
+		.select({ flags: user.flags })
 		.from(user)
 		.where(eq(user.id, Number(session.user.id)))
 		.limit(1);
 
-	if (!currentUser?.isHeadAdmin) {
+	if (!hasFlag(currentUser.flags, 'IS_HEAD_ADMIN')) {
 		return json({ message: 'Forbidden: Head Admin access required' }, { status: 403 });
 	}
 
@@ -32,21 +33,13 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	const normalizedSymbol = coinSymbol.toUpperCase();
 
-	const [targetUser] = await db
-		.select()
-		.from(user)
-		.where(eq(user.username, username))
-		.limit(1);
+	const [targetUser] = await db.select().from(user).where(eq(user.username, username)).limit(1);
 
 	if (!targetUser) {
 		return json({ message: `User "${username}" not found.` }, { status: 404 });
 	}
 
-	const [coinData] = await db
-		.select()
-		.from(coin)
-		.where(eq(coin.symbol, normalizedSymbol))
-		.limit(1);
+	const [coinData] = await db.select().from(coin).where(eq(coin.symbol, normalizedSymbol)).limit(1);
 
 	if (!coinData) {
 		return json({ message: `Coin "${normalizedSymbol}" not found.` }, { status: 404 });
@@ -57,12 +50,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			const [portfolio] = await tx
 				.select()
 				.from(userPortfolio)
-				.where(
-					and(
-						eq(userPortfolio.userId, targetUser.id),
-						eq(userPortfolio.coinId, coinData.id)
-					)
-				)
+				.where(and(eq(userPortfolio.userId, targetUser.id), eq(userPortfolio.coinId, coinData.id)))
 				.limit(1);
 
 			if (!portfolio || Number(portfolio.quantity) <= 0) {
@@ -85,16 +73,12 @@ export const POST: RequestHandler = async ({ request }) => {
 			// Eliminate the holding from their portfolio so they don't possess it anymore
 			await tx
 				.delete(userPortfolio)
-				.where(
-					and(
-						eq(userPortfolio.userId, targetUser.id),
-						eq(userPortfolio.coinId, coinData.id)
-					)
-				);
+				.where(and(eq(userPortfolio.userId, targetUser.id), eq(userPortfolio.coinId, coinData.id)));
 
 			if (sellResult.success) {
 				// Update and sync the metrics globally with websockets to finalize the public crash
-				const metrics = sellResult.metrics || (await calculate24hMetrics(coinData.id, sellResult.newPrice));
+				const metrics =
+					sellResult.metrics || (await calculate24hMetrics(coinData.id, sellResult.newPrice));
 				const priceUpdateData = {
 					currentPrice: sellResult.newPrice,
 					marketCap: Number(freshCoinData.circulatingSupply) * sellResult.newPrice,
@@ -122,14 +106,22 @@ export const POST: RequestHandler = async ({ request }) => {
 				await redis.publish('trades:all', JSON.stringify({ type: 'all-trades', data: tradeData }));
 
 				if ((sellResult.baseCurrencyReceived as number) >= 1000) {
-					await redis.publish('trades:large', JSON.stringify({ type: 'live-trade', data: tradeData }));
+					await redis.publish(
+						'trades:large',
+						JSON.stringify({ type: 'live-trade', data: tradeData })
+					);
 				}
 			}
 		});
 
-		return json({ message: `Successfully wiped ${username}'s ${normalizedSymbol} portfolio and dumped the AMM.` });
+		return json({
+			message: `Successfully wiped ${username}'s ${normalizedSymbol} portfolio and dumped the AMM.`
+		});
 	} catch (error: any) {
 		console.error('Failed to remove portfolio:', error);
-		return json({ message: error.message || 'Database error while removing portfolio.' }, { status: 500 });
+		return json(
+			{ message: error.message || 'Database error while removing portfolio.' },
+			{ status: 500 }
+		);
 	}
 };

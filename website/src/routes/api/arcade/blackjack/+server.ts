@@ -21,6 +21,7 @@ import {
 	type Hand
 } from '$lib/server/games/blackjack';
 import type { RequestHandler } from './$types';
+import { hasFlag } from '$lib/data/flags';
 
 function buildClientState(session: BlackjackSession, revealDealer?: boolean) {
 	const reveal = session.status === 'done' || revealDealer === true;
@@ -126,8 +127,14 @@ async function loadSession(sessionToken: string): Promise<BlackjackSession> {
 export const POST: RequestHandler = async ({ request }) => {
 	const authSession = await auth.api.getSession({ headers: request.headers });
 	if (!authSession?.user) throw error(401, 'Not authenticated');
-
 	const userId = Number(authSession.user.id);
+	const [currentUser] = await db
+		.select({ flags: user.flags })
+		.from(user)
+		.where(eq(user.id, userId))
+		.limit(1);
+	if (hasFlag(currentUser.flags, 'NO_ARCADE'))
+		return json({ error: "You aren't authorized to play Arcade games." }, { status: 403 });
 
 	try {
 		const body = await request.json();

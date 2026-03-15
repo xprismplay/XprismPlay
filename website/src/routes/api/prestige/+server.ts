@@ -276,7 +276,6 @@ export const GET: RequestHandler = async ({ request }) => {
 			image: user.image,
 			createdAt: user.createdAt,
 			baseCurrencyBalance: user.baseCurrencyBalance,
-			isAdmin: user.isAdmin,
 			loginStreak: user.loginStreak,
 			prestigeLevel: user.prestigeLevel
 		})

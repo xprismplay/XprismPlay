@@ -6,6 +6,7 @@ import { auth } from '$lib/auth';
 import { executeSellTrade, calculate24hMetrics } from '$lib/server/amm';
 import { redis } from '$lib/server/redis';
 import type { RequestHandler } from '@sveltejs/kit';
+import { hasFlag } from '$lib/data/flags';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const session = await auth.api.getSession({ headers: request.headers });
@@ -14,12 +15,12 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	const [currentUser] = await db
-		.select({ isHeadAdmin: user.isHeadAdmin })
+		.select({ flags: user.flags })
 		.from(user)
 		.where(eq(user.id, Number(session.user.id)))
 		.limit(1);
 
-	if (!currentUser?.isHeadAdmin) {
+	if (!hasFlag(currentUser.flags, 'IS_HEAD_ADMIN')) {
 		return json({ message: 'Forbidden: Head Admin access required' }, { status: 403 });
 	}
 
@@ -32,11 +33,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	const normalizedSymbol = coinSymbol.toUpperCase();
 
-	const [coinData] = await db
-		.select()
-		.from(coin)
-		.where(eq(coin.symbol, normalizedSymbol))
-		.limit(1);
+	const [coinData] = await db.select().from(coin).where(eq(coin.symbol, normalizedSymbol)).limit(1);
 
 	if (!coinData) {
 		return json({ message: `Coin "${normalizedSymbol}" not found.` }, { status: 404 });
@@ -80,18 +77,16 @@ export const POST: RequestHandler = async ({ request }) => {
 				await tx
 					.delete(userPortfolio)
 					.where(
-						and(
-							eq(userPortfolio.userId, topHolder.userId),
-							eq(userPortfolio.coinId, coinData.id)
-						)
+						and(eq(userPortfolio.userId, topHolder.userId), eq(userPortfolio.coinId, coinData.id))
 					);
 
 				if (sellResult.success) {
-					// NOTE: We intentionally bypass attributing the `sellResult.baseCurrencyReceived` 
+					// NOTE: We intentionally bypass attributing the `sellResult.baseCurrencyReceived`
 					// to the user's `baseCurrencyBalance` here. The money is essentially burned/vanished!
 
 					// Update and sync the metrics globally with websockets to finalize the public crash
-					const metrics = sellResult.metrics || (await calculate24hMetrics(coinData.id, sellResult.newPrice));
+					const metrics =
+						sellResult.metrics || (await calculate24hMetrics(coinData.id, sellResult.newPrice));
 					const priceUpdateData = {
 						currentPrice: sellResult.newPrice,
 						marketCap: Number(freshCoinData.circulatingSupply) * sellResult.newPrice,
@@ -116,24 +111,32 @@ export const POST: RequestHandler = async ({ request }) => {
 					};
 
 					await redis.publish(`prices:${normalizedSymbol}`, JSON.stringify(priceUpdateData));
-					await redis.publish('trades:all', JSON.stringify({ type: 'all-trades', data: tradeData }));
+					await redis.publish(
+						'trades:all',
+						JSON.stringify({ type: 'all-trades', data: tradeData })
+					);
 
 					if ((sellResult.baseCurrencyReceived as number) >= 1000) {
-						await redis.publish('trades:large', JSON.stringify({ type: 'live-trade', data: tradeData }));
+						await redis.publish(
+							'trades:large',
+							JSON.stringify({ type: 'live-trade', data: tradeData })
+						);
 					}
 				}
 			}
 
 			// Finalize the delist sequence
-			await tx
-				.update(coin)
-				.set({ isListed: false })
-				.where(eq(coin.id, coinData.id));
+			await tx.update(coin).set({ isListed: false }).where(eq(coin.id, coinData.id));
 		});
 
-		return json({ message: `Successfully delisted ${normalizedSymbol} and rugged the top holder.` });
+		return json({
+			message: `Successfully delisted ${normalizedSymbol} and rugged the top holder.`
+		});
 	} catch (error: any) {
 		console.error('Failed to delist coin:', error);
-		return json({ message: error.message || 'Database error while delisting coin.' }, { status: 500 });
+		return json(
+			{ message: error.message || 'Database error while delisting coin.' },
+			{ status: 500 }
+		);
 	}
 };

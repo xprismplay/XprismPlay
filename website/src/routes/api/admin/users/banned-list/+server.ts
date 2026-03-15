@@ -4,6 +4,7 @@ import { db } from '$lib/server/db';
 import { user } from '$lib/server/db/schema';
 import { desc, eq, and, not, like } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
+import { hasFlag } from '$lib/data/flags';
 
 export const GET: RequestHandler = async ({ request }) => {
 	const session = await auth.api.getSession({ headers: request.headers });
@@ -13,12 +14,12 @@ export const GET: RequestHandler = async ({ request }) => {
 	}
 
 	const [currentUser] = await db
-		.select({ isAdmin: user.isAdmin })
+		.select({ flags: user.flags })
 		.from(user)
 		.where(eq(user.id, Number(session.user.id)))
 		.limit(1);
 
-	if (!currentUser?.isAdmin) {
+	if (!hasFlag(currentUser.flags ?? 0n, 'IS_ADMIN', 'IS_HEAD_ADMIN')) {
 		throw error(403, 'Admin access required');
 	}
 

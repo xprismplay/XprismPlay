@@ -156,7 +156,7 @@
 												<button
 													class="flex cursor-pointer items-center gap-2"
 													type="button"
-													on:click={() => goto(`/user/${activity.username}`)}
+													onclick={() => goto(`/user/${activity.username}`)}
 												>
 													<Avatar.Root class="h-6 w-6">
 														<Avatar.Image

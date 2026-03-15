@@ -13,6 +13,7 @@
 		Ticket01Icon,
 		Cancel01Icon
 	} from '@hugeicons/core-free-icons';
+	import { hasFlag, UserFlags } from '$lib/data/flags';
 
 	let historicalLogs = $state<AdminLogEntry[]>([]);
 	let isLoading = $state(true);
@@ -98,7 +99,7 @@
 	}
 
 	onMount(() => {
-		if ($USER_DATA?.isAdmin) {
+		if (hasFlag($USER_DATA?.flags ?? 0n, 'IS_ADMIN', 'IS_HEAD_ADMIN')) {
 			loadLogs(true);
 		}
 	});
@@ -109,7 +110,7 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-{#if !$USER_DATA || !$USER_DATA.isAdmin}
+{#if !$USER_DATA || !hasFlag($USER_DATA?.flags ?? 0n, 'IS_ADMIN', 'IS_HEAD_ADMIN')}
 	<div class="flex h-[80vh] items-center justify-center">
 		<div class="text-center">
 			<h1 class="text-2xl font-bold">Access Denied</h1>

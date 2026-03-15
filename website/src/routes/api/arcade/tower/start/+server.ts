@@ -7,11 +7,20 @@ import { redis } from '$lib/server/redis';
 import { getSessionKey, twr_floors } from '$lib/server/games/tower';
 import { validateBetAmount, twr_difficulty_config, type TowerDifficulty } from '$lib/utils';
 import type { RequestHandler } from './$types';
+import { hasFlag } from '$lib/data/flags';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const session = await auth.api.getSession({ headers: request.headers });
 	if (!session?.user) throw error(401, 'Not authenticated');
 
+	const userId = Number(session.user.id);
+	const [currentUser] = await db
+		.select({ flags: user.flags })
+		.from(user)
+		.where(eq(user.id, userId))
+		.limit(1);
+	if (hasFlag(currentUser.flags, 'NO_ARCADE'))
+		return json({ error: "You aren't authorized to play Arcade games." }, { status: 403 });
 	try {
 		const { betAmount, difficulty } = await request.json();
 		const userId = Number(session.user.id);

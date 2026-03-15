@@ -2,9 +2,10 @@ import { auth } from '$lib/auth';
 import { error, json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { user, session } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { writeAdminLog } from '$lib/server/admin-log';
 import type { RequestHandler } from './$types';
+import { hasFlag, UserFlags } from '$lib/data/flags';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const authSession = await auth.api.getSession({ headers: request.headers });
@@ -14,12 +15,12 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	const [currentUser] = await db
-		.select({ isAdmin: user.isAdmin, isHeadAdmin: user.isHeadAdmin })
+		.select({ flags: user.flags })
 		.from(user)
 		.where(eq(user.id, Number(authSession.user.id)))
 		.limit(1);
 
-	if (!currentUser?.isAdmin) {
+	if (!hasFlag(currentUser.flags, 'IS_ADMIN', 'IS_HEAD_ADMIN')) {
 		throw error(403, 'Admin access required');
 	}
 
@@ -35,8 +36,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			.select({
 				id: user.id,
 				username: user.username,
-				isAdmin: user.isAdmin,
-				isHeadAdmin: user.isHeadAdmin
+				flags: user.flags
 			})
 			.from(user)
 			.where(eq(user.username, username.trim()))
@@ -47,12 +47,15 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 
 		// 3. New Permissions Logic
-		if (targetUser.isHeadAdmin) {
+		if (hasFlag(targetUser.flags, 'IS_HEAD_ADMIN')) {
 			throw error(400, 'Cannot ban head admin users');
 		}
 
-		if (targetUser.isAdmin && !currentUser.isHeadAdmin) {
+		if (hasFlag(targetUser.flags, 'IS_ADMIN') && !hasFlag(currentUser.flags, 'IS_HEAD_ADMIN')) {
 			throw error(403, 'Only head admins can ban other admin users');
+		}
+		if (targetUser.id === Number(authSession.user.id)) {
+			throw error(403, "Can't ban yourself");
 		}
 
 		await db.transaction(async (tx) => {
@@ -61,7 +64,7 @@ export const POST: RequestHandler = async ({ request }) => {
 				.set({
 					isBanned: true,
 					banReason: reason.trim(),
-					isAdmin: false, // <-- Automatically strips admin status on ban
+					flags: sql`${targetUser.flags} & ~${UserFlags.IS_ADMIN}`, // <-- Automatically strips admin status on ban
 					updatedAt: new Date()
 				})
 				.where(eq(user.id, targetUser.id));

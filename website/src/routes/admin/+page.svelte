@@ -12,6 +12,7 @@
 		Analytics01Icon
 	} from '@hugeicons/core-free-icons';
 	import { goto } from '$app/navigation';
+	import { hasFlag } from '$lib/data/flags';
 
 	const adminSections = [
 		{
@@ -43,7 +44,7 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-{#if !$USER_DATA || !$USER_DATA.isAdmin}
+{#if !$USER_DATA || !hasFlag($USER_DATA?.flags ?? 0n, 'IS_ADMIN', 'IS_HEAD_ADMIN')}
 	<div class="flex h-[80vh] items-center justify-center">
 		<div class="text-center">
 			<h1 class="text-2xl font-bold">Access Denied</h1>

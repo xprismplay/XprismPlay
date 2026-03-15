@@ -20,7 +20,7 @@
 		won: boolean;
 		number: number;
 		hiddenNumber: number;
-		result: "higher" | "lower" | "exact";
+		result: 'higher' | 'lower' | 'exact';
 		newBalance: number;
 		payout: number;
 		amountWagered: number;
@@ -79,7 +79,7 @@
 		betAmountDisplay = betAmount.toLocaleString();
 	}
 
-	async function guess(guess: "higher" | "lower" | "exact") {
+	async function guess(guess: 'higher' | 'lower' | 'exact') {
 		if (!isPlaying || !sessionToken || revealing) return;
 		haptic.trigger('selection');
 		revealing = true;
@@ -90,7 +90,7 @@
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
-					action: "end",
+					action: 'end',
 					guess: guess,
 					sessionToken: sessionToken
 				})
@@ -110,7 +110,7 @@
 			if (resultData.won) {
 				haptic.trigger('success');
 				showConfetti(confetti);
-				if (resultData.result == "exact") {
+				if (resultData.result == 'exact') {
 					showSchoolPrideCannons(confetti);
 				}
 			} else {
@@ -151,7 +151,7 @@
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
-					action: "start",
+					action: 'start',
 					amount: betAmount
 				})
 			});
@@ -227,14 +227,14 @@
 								<p class="text-success font-semibold">WIN</p>
 								<p class="text-sm">
 									Won {formatValue(lastResult.payout)}
-									<br>
+									<br />
 									The number was {lastResult.hiddenNumber}
 								</p>
 							{:else}
 								<p class="text-destructive font-semibold">LOSS</p>
 								<p class="text-sm">
 									Lost {formatValue(lastResult.amountWagered)}
-									<br>
+									<br />
 									The number was {lastResult.hiddenNumber}
 								</p>
 							{/if}
@@ -245,27 +245,33 @@
 
 			<div class="space-y-4">
 				{#if isPlaying}
-				<div>
-					<div class="mb-2 block text-sm font-medium">The hidden number is...</div>
-					<div class="grid grid-cols-3 gap-2">
-						<Button
-							variant={'outline'}
-							onclick={function() {guess("lower")}}
-							disabled={!isPlaying}
-						>Lower</Button>
-						<Button
-							variant={'outline'}
-							onclick={function() {guess("higher")}}
-							disabled={!isPlaying}
-						>Higher</Button>
-						<Button
-							variant={'outline'}
-							onclick={function() {guess("exact")}}
-							disabled={!isPlaying}
-						>Exact</Button>
+					<div>
+						<div class="mb-2 block text-sm font-medium">The hidden number is...</div>
+						<div class="grid grid-cols-3 gap-2">
+							<Button
+								variant={'outline'}
+								onclick={function () {
+									guess('lower');
+								}}
+								disabled={!isPlaying}>Lower</Button
+							>
+							<Button
+								variant={'outline'}
+								onclick={function () {
+									guess('higher');
+								}}
+								disabled={!isPlaying}>Higher</Button
+							>
+							<Button
+								variant={'outline'}
+								onclick={function () {
+									guess('exact');
+								}}
+								disabled={!isPlaying}>Exact</Button
+							>
+						</div>
+						<div class="mb-2 block text-sm font-medium">than the shown number</div>
 					</div>
-					<div class="mb-2 block text-sm font-medium">than the shown number</div>
-				</div>
 				{/if}
 
 				<div>

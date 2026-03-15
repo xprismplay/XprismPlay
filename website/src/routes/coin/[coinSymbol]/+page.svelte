@@ -780,7 +780,7 @@
 										<div class="flex justify-between">
 											<span class="text-muted-foreground text-sm">Burned Coins:</span>
 											<span class="font-mono text-sm">
-												{formatSupply(Number(1_000_000_000 - coin.circulatingSupply).toFixed(2))}
+												{formatSupply(+Number(1_000_000_000 - coin.circulatingSupply).toFixed(2))}
 											</span>
 										</div>
 									</div>

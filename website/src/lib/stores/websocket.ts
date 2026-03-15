@@ -6,6 +6,7 @@ import { NEW_ACHIEVEMENTS_COUNT } from './achievements';
 import { USER_DATA } from './user-data';
 import { toast } from 'svelte-sonner';
 import { goto } from '$app/navigation';
+import { hasFlag, UserFlags } from '$lib/data/flags';
 
 export interface LiveTrade {
 	type: 'BUY' | 'SELL' | 'BURN' | 'TRANSFER_IN' | 'TRANSFER_OUT';
@@ -370,7 +371,7 @@ function connect(): void {
 					JSON.stringify({
 						type: 'set_user',
 						userId: String(user.id),
-						isAdmin: user.isAdmin === true
+						isAdmin: hasFlag(user.flags, 'IS_ADMIN', 'IS_HEAD_ADMIN')
 					})
 				);
 			}

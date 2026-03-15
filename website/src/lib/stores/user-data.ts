@@ -5,8 +5,7 @@ export type User = {
 	name: string;
 	username: string;
 	email: string;
-	isHeadAdmin: boolean;
-	isAdmin: boolean;
+	flags: bigint;
 	image: string;
 	isBanned: boolean;
 	banReason: string | null;
@@ -20,9 +19,7 @@ export type User = {
 	volumeMuted: boolean;
 
 	nameColor: string | null;
-	founderBadge: boolean;
 	prestigeLevel: number;
-	disableMentions: boolean;
 	hideAds: boolean;
 } | null;
 

@@ -9,6 +9,7 @@
 		Rocket01Icon
 	} from '@hugeicons/core-free-icons';
 	import { getPrestigeName, getPrestigeColor } from '$lib/utils';
+	import { hasFlag } from '$lib/data/flags';
 
 	let {
 		user,
@@ -45,12 +46,12 @@
 			class="text-orange-500 {badgeClass}"
 		/>
 	{/if}
-	{#if user.founderBadge}
+	{#if hasFlag(user.flags, 'FOUNDER_BADGE')}
 		<SilentBadge icon={Rocket01Icon} text="Supporter" class="text-cyan-400 {badgeClass}" />
 	{/if}
-	{#if user.isHeadAdmin}
+	{#if hasFlag(user.flags, 'IS_HEAD_ADMIN')}
 		<SilentBadge icon={KnightShieldIcon} text="Head Admin" class="text-orange-500 {badgeClass}" />
-	{:else if user.isAdmin}
+	{:else if hasFlag(user.flags, 'IS_ADMIN')}
 		<SilentBadge icon={KnightShieldIcon} text="Admin" class="text-primary {badgeClass}" />
 	{/if}
 </div>
