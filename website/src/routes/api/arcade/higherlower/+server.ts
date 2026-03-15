@@ -9,6 +9,7 @@ import { checkAndAwardAchievements } from '$lib/server/achievements';
 import { validateBetAmount } from '$lib/utils';
 import type { RequestHandler } from './$types';
 import { redis } from '$lib/server/redis';
+import { hasFlag } from '$lib/data/flags';
 
 type Guess = 'higher' | 'lower' | 'exact';
 
@@ -44,6 +45,13 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	const userId = Number(authSession.user.id);
 
+	const [currentUser] = await db
+		.select({ flags: user.flags })
+		.from(user)
+		.where(eq(user.id, userId))
+		.limit(1);
+	if (hasFlag(currentUser.flags, 'NO_ARCADE'))
+		throw new Error(`You are not authorized to play Arcade Games.`);
 	try {
 		const body = await request.json();
 		const action: string = body.action;

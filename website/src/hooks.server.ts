@@ -180,8 +180,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 					username: userRecord.username,
 					email: userRecord.email,
 					flags: userRecord.flags,
-					isHeadAdmin:
-						hasFlag(userRecord.flags, 'IS_HEAD_ADMIN') || false,
+					isHeadAdmin: hasFlag(userRecord.flags, 'IS_HEAD_ADMIN') || false,
 					isAdmin: hasFlag(userRecord.flags, 'IS_HEAD_ADMIN', 'IS_ADMIN') || false,
 					image: userRecord.image || '',
 					isBanned: userRecord.isBanned || false,
@@ -199,7 +198,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 					timezone: userRecord.timezone
 				};
 
-				const cacheTTL = hasFlag(userRecord.flags, 'IS_ADMIN', 'IS_HEAD_ADMIN') ? CACHE_TTL * 2 : CACHE_TTL;
+				const cacheTTL = hasFlag(userRecord.flags, 'IS_ADMIN', 'IS_HEAD_ADMIN')
+					? CACHE_TTL * 2
+					: CACHE_TTL;
 				sessionCache.set(cacheKey, {
 					userData,
 					timestamp: now,

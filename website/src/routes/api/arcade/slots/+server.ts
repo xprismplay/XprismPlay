@@ -8,6 +8,7 @@ import { publishArcadeActivity } from '$lib/server/arcade-activity';
 import { checkAndAwardAchievements } from '$lib/server/achievements';
 import { validateBetAmount } from '$lib/utils';
 import type { RequestHandler } from './$types';
+import { hasFlag } from '$lib/data/flags';
 
 function getRandomSymbol(symbols: string[]): string {
 	const randomValue = randomBytes(1)[0];
@@ -23,6 +24,14 @@ export const POST: RequestHandler = async ({ request }) => {
 	if (!session?.user) {
 		throw error(401, 'Not authenticated');
 	}
+		const userId = Number(session.user.id);
+		const [currentUser] = await db
+			.select({ flags: user.flags })
+			.from(user)
+			.where(eq(user.id, userId))
+			.limit(1);
+		if (hasFlag(currentUser.flags, 'NO_ARCADE'))
+			throw new Error(`You are not authorized to play Arcade Games.`);
 
 	try {
 		const { amount } = await request.json();

@@ -7,6 +7,7 @@ import { redis } from '$lib/server/redis';
 import { getSessionKey } from '$lib/server/games/mines';
 import { validateBetAmount } from '$lib/utils';
 import type { RequestHandler } from './$types';
+import { hasFlag } from '$lib/data/flags';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const session = await auth.api.getSession({
@@ -16,7 +17,15 @@ export const POST: RequestHandler = async ({ request }) => {
 	if (!session?.user) {
 		throw error(401, 'Not authenticated');
 	}
-
+	const userId = Number(session.user.id);
+	const [currentUser] = await db
+		.select({ flags: user.flags })
+		.from(user)
+		.where(eq(user.id, userId))
+		.limit(1);
+	if (hasFlag(currentUser.flags, 'NO_ARCADE'))
+		throw new Error(`You are not authorized to play Arcade Games.`);
+	
 	try {
 		const { betAmount, mineCount } = await request.json();
 		const userId = Number(session.user.id);
