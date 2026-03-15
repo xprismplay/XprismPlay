@@ -46,6 +46,7 @@ export default {
 		live_trades: 'Live Trades',
 		settings: 'Settings',
 		admin: {
+			main: 'Admin',
 			promo: 'Promo Codes'
 		}
 	},

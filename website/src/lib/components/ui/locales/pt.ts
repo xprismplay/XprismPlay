@@ -48,6 +48,7 @@ export default {
 		live_trades: 'Negociações ao vivo',
 		settings: 'Configurações',
 		admin: {
+			main: 'Admin',
 			promo: 'Promo Codes'
 		}
 	},

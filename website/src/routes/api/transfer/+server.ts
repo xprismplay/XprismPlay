@@ -82,7 +82,7 @@ export const POST: RequestHandler = async ({ request }) => {
 				throw error(404, 'Sender not found');
 			}
 			if (hasFlag(senderData.flags, 'NO_TRANSFER')) {
-				throw error(400, 'You aren\'t authorized to transfer.');
+				throw error(400, "You aren't authorized to transfer.");
 			}
 
 			const [recipientData] = await tx

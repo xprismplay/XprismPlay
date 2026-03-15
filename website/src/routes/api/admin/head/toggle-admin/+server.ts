@@ -56,7 +56,9 @@ export const POST: RequestHandler = async ({ request }) => {
 		await db
 			.update(user)
 			.set({
-				flags: makeAdmin ? sql`${targetUser.flags} | ${UserFlags.IS_ADMIN}` : sql`${targetUser.flags} & ~${UserFlags.IS_ADMIN}`,
+				flags: makeAdmin
+					? sql`${targetUser.flags} | ${UserFlags.IS_ADMIN}`
+					: sql`${targetUser.flags} & ~${UserFlags.IS_ADMIN}`,
 				updatedAt: new Date()
 			})
 			.where(eq(user.id, targetUser.id));

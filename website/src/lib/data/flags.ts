@@ -4,7 +4,7 @@ export const UserFlags = {
 	FOUNDER_BADGE: 1n << 2n,
 	NO_ARCADE: 1n << 3n,
 	NO_TRADING: 1n << 4n,
-    NO_TRANSFER: 1n << 5n
+	NO_TRANSFER: 1n << 5n
 } as const;
 export function hasFlag(
 	_flags: bigint | number | string | undefined,
