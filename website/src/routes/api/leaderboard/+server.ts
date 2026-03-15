@@ -2,7 +2,6 @@ import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { user, transaction, userPortfolio, coin } from '$lib/server/db/schema';
 import { eq, desc, gte, and, sql, inArray, ilike, count } from 'drizzle-orm';
-import { hasFlag } from '$lib/data/flags.js';
 
 async function getLeaderboardData() {
 	try {
@@ -39,9 +38,9 @@ async function getLeaderboardData() {
 				nameColor: user.nameColor,
 				type: transaction.type,
 				coinId: transaction.coinId,
+				flags: user.flags,
 				totalAmount: sql<number>`CAST(${transaction.totalBaseCurrencyAmount} AS NUMERIC)`,
 				quantity: sql<number>`CAST(${transaction.quantity} AS NUMERIC)`,
-				flags: user.flags
 			})
 			.from(transaction)
 			.innerJoin(user, eq(transaction.userId, user.id))
@@ -56,7 +55,6 @@ async function getLeaderboardData() {
 					name: tx.name,
 					image: tx.image,
 					nameColor: tx.nameColor,
-					founderBadge: hasFlag(tx.flags, 'FOUNDER_BADGE'),
 					totalBought: 0,
 					totalSold: 0,
 					coinHoldings: new Map()
@@ -127,6 +125,7 @@ async function getLeaderboardData() {
 					username: user.username,
 					name: user.name,
 					image: user.image,
+					flags: user.flags,
 					nameColor: user.nameColor,
 					baseCurrencyBalance: user.baseCurrencyBalance,
 					coinValue: sql<number>`COALESCE(SUM(CAST(${userPortfolio.quantity} AS NUMERIC) * CAST(${coin.currentPrice} AS NUMERIC)), 0)`
@@ -152,6 +151,7 @@ async function getLeaderboardData() {
 					name: user.name,
 					image: user.image,
 					nameColor: user.nameColor,
+					flags: user.flags,
 					baseCurrencyBalance: user.baseCurrencyBalance,
 					coinValue: sql<number>`COALESCE(SUM(CAST(${userPortfolio.quantity} AS NUMERIC) * CAST(${coin.currentPrice} AS NUMERIC)), 0)`
 				})
@@ -181,6 +181,7 @@ async function getLeaderboardData() {
 
 			return {
 				...user,
+				flags: user.flags.toString(),
 				baseCurrencyBalance,
 				coinValue,
 				totalPortfolioValue,
@@ -191,6 +192,7 @@ async function getLeaderboardData() {
 		const processedRugpullers = topRugpullers
 			.map((user) => ({
 				...user,
+				flags: user.flags.toString(),
 				totalExtracted: Number(user.totalSold) - Number(user.totalBought)
 			}))
 			.filter((user) => user.totalExtracted > 0);
@@ -229,6 +231,7 @@ async function getSearchedUsers(query: string, limit = 9, offset = 0) {
 				image: user.image,
 				nameColor: user.nameColor,
 				bio: user.bio,
+				flags: user.flags,
 				baseCurrencyBalance: user.baseCurrencyBalance,
 				coinValue: sql<number>`COALESCE(SUM(CAST(${userPortfolio.quantity} AS NUMERIC) * CAST(${coin.currentPrice} AS NUMERIC)), 0)`,
 				totalPortfolioValue: sql<number>`CAST(${user.baseCurrencyBalance} AS NUMERIC) + COALESCE(SUM(CAST(${userPortfolio.quantity} AS NUMERIC) * CAST(${coin.currentPrice} AS NUMERIC)), 0)`,
