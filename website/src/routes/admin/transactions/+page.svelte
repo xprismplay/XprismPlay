@@ -384,7 +384,7 @@
 				<HugeiconsIcon icon={ReceiptDollarIcon} class="h-5 w-5" />
 				History
 			</Card.Title>
-			<Card.Description>Complete record of your trading activity and transfers</Card.Description>
+			<Card.Description>Complete history of transactions and trading activity based on your filters</Card.Description>
 		</Card.Header>
 		<Card.Content>
 			{#if loading}
