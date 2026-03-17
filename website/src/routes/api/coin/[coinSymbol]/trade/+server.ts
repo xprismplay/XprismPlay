@@ -7,502 +7,382 @@ import { redis } from '$lib/server/redis';
 import { createNotification } from '$lib/server/notification';
 import { calculate24hMetrics, executeSellTrade } from '$lib/server/amm';
 import { checkAndAwardAchievements } from '$lib/server/achievements';
-import { hasFlag } from '$lib/data/flags';
 
 export async function POST({ params, request }) {
-	const session = await auth.api.getSession({
-		headers: request.headers
-	});
+    const session = await auth.api.getSession({
+        headers: request.headers
+    });
 
-	if (!session?.user) {
-		throw error(401, 'Not authenticated');
-	}
-	const userId = Number(session.user.id);
-	const [currentUser] = await db
-		.select({ flags: user.flags })
-		.from(user)
-		.where(eq(user.id, userId))
-		.limit(1);
-	if (hasFlag(currentUser.flags, 'NO_ARCADE'))
-		return json({ message: "You aren't authorized to trade." }, { status: 403 });
+    if (!session?.user) {
+        throw error(401, 'Not authenticated');
+    }
 
-	const { coinSymbol } = params;
-	const { type, amount } = await request.json();
+    const { coinSymbol } = params;
+    const { type, amount } = await request.json();
 
-	if (!['BUY', 'SELL', 'BURN'].includes(type)) {
-		throw error(400, 'Invalid transaction type');
-	}
+    if (!['BUY', 'SELL'].includes(type)) {
+        throw error(400, 'Invalid transaction type');
+    }
 
-	if (!amount || typeof amount !== 'number' || !Number.isFinite(amount) || amount <= 0) {
-		throw error(400, 'Invalid amount - must be a positive finite number');
-	}
+    if (!amount || typeof amount !== 'number' || !Number.isFinite(amount) || amount <= 0) {
+        throw error(400, 'Invalid amount - must be a positive finite number');
+    }
 
-	if (amount > Number.MAX_SAFE_INTEGER) {
-		throw error(400, 'Amount too large');
-	}
+    if (amount > Number.MAX_SAFE_INTEGER) {
+        throw error(400, 'Amount too large');
+    }
 
-	const normalizedSymbol = coinSymbol.toUpperCase();
+    const userId = Number(session.user.id);
+    const normalizedSymbol = coinSymbol.toUpperCase();
 
-	const [coinExists] = await db
-		.select({ id: coin.id })
-		.from(coin)
-		.where(eq(coin.symbol, normalizedSymbol))
-		.limit(1);
-	if (!coinExists) {
-		throw error(404, 'Coin not found');
-	}
-	return await db.transaction(async (tx) => {
-		const [coinData] = await tx
-			.select({
-				id: coin.id,
-				symbol: coin.symbol,
-				name: coin.name,
-				icon: coin.icon,
-				currentPrice: coin.currentPrice,
-				poolCoinAmount: coin.poolCoinAmount,
-				poolBaseCurrencyAmount: coin.poolBaseCurrencyAmount,
-				circulatingSupply: coin.circulatingSupply,
-				isListed: coin.isListed,
-				creatorId: coin.creatorId,
-				tradingUnlocksAt: coin.tradingUnlocksAt,
-				isLocked: coin.isLocked,
-				change24h: coin.change24h,
-				createdAt: coin.createdAt,
-				volume24h: coin.volume24h
-			})
-			.from(coin)
-			.where(eq(coin.symbol, normalizedSymbol))
-			.for('update')
-			.limit(1);
+    const [coinExists] = await db.select({ id: coin.id }).from(coin).where(eq(coin.symbol, normalizedSymbol)).limit(1);
+    if (!coinExists) {
+        throw error(404, 'Coin not found');
+    }
 
-		if (!coinData) {
-			throw error(404, 'Coin not found');
-		}
+    return await db.transaction(async (tx) => {
+        const [coinData] = await tx.select({
+            id: coin.id,
+            symbol: coin.symbol,
+            name: coin.name,
+            icon: coin.icon,
+            currentPrice: coin.currentPrice,
+            poolCoinAmount: coin.poolCoinAmount,
+            poolBaseCurrencyAmount: coin.poolBaseCurrencyAmount,
+            circulatingSupply: coin.circulatingSupply,
+            isListed: coin.isListed,
+            creatorId: coin.creatorId,
+            tradingUnlocksAt: coin.tradingUnlocksAt,
+            isLocked: coin.isLocked,
+            change24h: coin.change24h,
+            createdAt: coin.createdAt
+        }).from(coin).where(eq(coin.symbol, normalizedSymbol)).for('update').limit(1);
 
-		if (!coinData.isListed) {
-			throw error(400, 'This coin is delisted and cannot be traded');
-		}
+        if (!coinData) {
+            throw error(404, 'Coin not found');
+        }
 
-		if (coinData.isLocked && coinData.tradingUnlocksAt && userId !== coinData.creatorId) {
-			const unlockTime = new Date(coinData.tradingUnlocksAt);
-			if (new Date() < unlockTime) {
-				const remainingSeconds = Math.ceil((unlockTime.getTime() - Date.now()) / 1000);
-				throw error(400, `Trading is locked. Unlocks in ${remainingSeconds} seconds.`);
-			}
+        if (!coinData.isListed) {
+            throw error(400, 'This coin is delisted and cannot be traded');
+        }
 
-			await tx.update(coin).set({ isLocked: false }).where(eq(coin.id, coinData.id));
-		}
+        if (coinData.isLocked && coinData.tradingUnlocksAt && userId !== coinData.creatorId) {
+            const unlockTime = new Date(coinData.tradingUnlocksAt);
+            if (new Date() < unlockTime) {
+                const remainingSeconds = Math.ceil((unlockTime.getTime() - Date.now()) / 1000);
+                throw error(400, `Trading is locked. Unlocks in ${remainingSeconds} seconds.`);
+            }
+            
+            await tx.update(coin)
+                .set({ isLocked: false })
+                .where(eq(coin.id, coinData.id));
+        }
 
-		const [userData] = await tx
-			.select({
-				baseCurrencyBalance: user.baseCurrencyBalance,
-				username: user.username,
-				image: user.image
-			})
-			.from(user)
-			.where(eq(user.id, userId))
-			.for('update')
-			.limit(1);
+        const [userData] = await tx.select({
+            baseCurrencyBalance: user.baseCurrencyBalance,
+            username: user.username,
+            image: user.image
+        }).from(user).where(eq(user.id, userId)).for('update').limit(1);
 
-		if (!userData) {
-			throw error(404, 'User not found');
-		}
+        if (!userData) {
+            throw error(404, 'User not found');
+        }
 
-		const userBalance = Number(userData.baseCurrencyBalance);
-		const poolCoinAmount = Number(coinData.poolCoinAmount);
-		const poolBaseCurrencyAmount = Number(coinData.poolBaseCurrencyAmount);
-		const currentPrice = Number(coinData.currentPrice);
+        const userBalance = Number(userData.baseCurrencyBalance);
+        const poolCoinAmount = Number(coinData.poolCoinAmount);
+        const poolBaseCurrencyAmount = Number(coinData.poolBaseCurrencyAmount);
+        const currentPrice = Number(coinData.currentPrice);
 
-		let newPrice: number;
-		let totalCost: number;
-		let priceImpact: number = 0;
+        let newPrice: number;
+        let totalCost: number;
+        let priceImpact: number = 0;
 
-		if (poolCoinAmount <= 0 || poolBaseCurrencyAmount <= 0) {
-			throw error(400, 'Liquidity pool is not properly initialized or is empty. Trading halted.');
-		}
+        if (poolCoinAmount <= 0 || poolBaseCurrencyAmount <= 0) {
+            throw error(400, 'Liquidity pool is not properly initialized or is empty. Trading halted.');
+        }
 
-		if (type === 'BUY') {
-			// AMM BUY: amount = dollars to spend
-			const k = poolCoinAmount * poolBaseCurrencyAmount;
-			const newPoolBaseCurrency = poolBaseCurrencyAmount + amount;
-			const newPoolCoin = k / newPoolBaseCurrency;
-			const coinsBought = poolCoinAmount - newPoolCoin;
+        if (type === 'BUY') {
+            // AMM BUY: amount = dollars to spend
+            const k = poolCoinAmount * poolBaseCurrencyAmount;
+            const newPoolBaseCurrency = poolBaseCurrencyAmount + amount;
+            const newPoolCoin = k / newPoolBaseCurrency;
+            const coinsBought = poolCoinAmount - newPoolCoin;
 
-			totalCost = amount;
-			newPrice = newPoolBaseCurrency / newPoolCoin;
-			priceImpact = ((newPrice - currentPrice) / currentPrice) * 100;
+            totalCost = amount;
+            newPrice = newPoolBaseCurrency / newPoolCoin;
+            priceImpact = ((newPrice - currentPrice) / currentPrice) * 100;
 
-			if (userBalance < totalCost) {
-				throw error(
-					400,
-					`Insufficient funds. You need *${totalCost.toFixed(6)} BUSS but only have *${userBalance.toFixed(6)} BUSS`
-				);
-			}
+            if (userBalance < totalCost) {
+                throw error(400, `Insufficient funds. You need *${totalCost.toFixed(6)} BUSS but only have *${userBalance.toFixed(6)} BUSS`);
+            }
 
-			if (coinsBought <= 0) {
-				throw error(400, 'Trade amount too small - would result in zero tokens');
-			}
+            if (coinsBought <= 0) {
+                throw error(400, 'Trade amount too small - would result in zero tokens');
+            }
 
-			await tx
-				.update(user)
-				.set({
-					baseCurrencyBalance: (userBalance - totalCost).toString(),
-					updatedAt: new Date()
-				})
-				.where(eq(user.id, userId));
+            await tx.update(user)
+                .set({
+                    baseCurrencyBalance: (userBalance - totalCost).toString(),
+                    updatedAt: new Date()
+                })
+                .where(eq(user.id, userId));
 
-			const [existingHolding] = await tx
-				.select({ quantity: userPortfolio.quantity })
-				.from(userPortfolio)
-				.where(and(eq(userPortfolio.userId, userId), eq(userPortfolio.coinId, coinData.id)))
-				.limit(1);
+            const [existingHolding] = await tx
+                .select({ quantity: userPortfolio.quantity })
+                .from(userPortfolio)
+                .where(and(
+                    eq(userPortfolio.userId, userId),
+                    eq(userPortfolio.coinId, coinData.id)
+                ))
+                .limit(1);
 
-			if (existingHolding) {
-				const newQuantity = Number(existingHolding.quantity) + coinsBought;
-				await tx
-					.update(userPortfolio)
-					.set({
-						quantity: newQuantity.toString(),
-						updatedAt: new Date()
-					})
-					.where(and(eq(userPortfolio.userId, userId), eq(userPortfolio.coinId, coinData.id)));
-			} else {
-				await tx.insert(userPortfolio).values({
-					userId,
-					coinId: coinData.id,
-					quantity: coinsBought.toString()
-				});
-			}
+            if (existingHolding) {
+                const newQuantity = Number(existingHolding.quantity) + coinsBought;
+                await tx.update(userPortfolio)
+                    .set({
+                        quantity: newQuantity.toString(),
+                        updatedAt: new Date()
+                    })
+                    .where(and(
+                        eq(userPortfolio.userId, userId),
+                        eq(userPortfolio.coinId, coinData.id)
+                    ));
+            } else {
+                await tx.insert(userPortfolio).values({
+                    userId,
+                    coinId: coinData.id,
+                    quantity: coinsBought.toString()
+                });
+            }
 
-			await tx.insert(transaction).values({
-				userId,
-				coinId: coinData.id,
-				type: 'BUY',
-				quantity: coinsBought.toString(),
-				pricePerCoin: (totalCost / coinsBought).toString(),
-				totalBaseCurrencyAmount: totalCost.toString()
-			});
+            await tx.insert(transaction).values({
+                userId,
+                coinId: coinData.id,
+                type: 'BUY',
+                quantity: coinsBought.toString(),
+                pricePerCoin: (totalCost / coinsBought).toString(),
+                totalBaseCurrencyAmount: totalCost.toString()
+            });
 
-			await tx.insert(priceHistory).values({
-				coinId: coinData.id,
-				price: newPrice.toString()
-			});
+            await tx.insert(priceHistory).values({
+                coinId: coinData.id,
+                price: newPrice.toString()
+            });
 
-			const metrics = await calculate24hMetrics(coinData.id, newPrice);
+            const metrics = await calculate24hMetrics(coinData.id, newPrice);
 
-			const MAX_STORABLE = 1e38;
-			const safeMarketCap = Math.min(Number(coinData.circulatingSupply) * newPrice, MAX_STORABLE);
-			const safeVolume = Math.min(metrics.volume24h, MAX_STORABLE);
+            const MAX_STORABLE = 1e38;
+            const safeMarketCap = Math.min(Number(coinData.circulatingSupply) * newPrice, MAX_STORABLE);
+            const safeVolume = Math.min(metrics.volume24h, MAX_STORABLE);
 
-			await tx
-				.update(coin)
-				.set({
-					currentPrice: newPrice.toString(),
-					marketCap: safeMarketCap.toString(),
-					poolCoinAmount: newPoolCoin.toString(),
-					poolBaseCurrencyAmount: newPoolBaseCurrency.toString(),
-					change24h: metrics.change24h.toString(),
-					volume24h: safeVolume.toString(),
-					updatedAt: new Date()
-				})
-				.where(eq(coin.id, coinData.id));
+            await tx.update(coin)
+                .set({
+                    currentPrice: newPrice.toString(),
+                    marketCap: safeMarketCap.toString(),
+                    poolCoinAmount: newPoolCoin.toString(),
+                    poolBaseCurrencyAmount: newPoolBaseCurrency.toString(),
+                    change24h: metrics.change24h.toString(),
+                    volume24h: safeVolume.toString(),
+                    updatedAt: new Date()
+                })
+                .where(eq(coin.id, coinData.id));
 
-			const priceUpdateData = {
-				currentPrice: newPrice,
-				marketCap: safeMarketCap,
-				change24h: metrics.change24h,
-				volume24h: safeVolume,
-				poolCoinAmount: newPoolCoin,
-				poolBaseCurrencyAmount: newPoolBaseCurrency
-			};
+            const priceUpdateData = {
+                currentPrice: newPrice,
+                marketCap: safeMarketCap,
+                change24h: metrics.change24h,
+                volume24h: safeVolume,
+                poolCoinAmount: newPoolCoin,
+                poolBaseCurrencyAmount: newPoolBaseCurrency
+            };
 
-			const tradeData = {
-				type: 'BUY',
-				username: userData.username,
-				userImage: userData.image || '',
-				amount: coinsBought,
-				coinSymbol: normalizedSymbol,
-				coinName: coinData.name,
-				coinIcon: coinData.icon || '',
-				totalValue: totalCost,
-				price: newPrice,
-				timestamp: Date.now(),
-				userId: userId.toString()
-			};
+            const tradeData = {
+                type: 'BUY',
+                username: userData.username,
+                userImage: userData.image || '',
+                amount: coinsBought,
+                coinSymbol: normalizedSymbol,
+                coinName: coinData.name,
+                coinIcon: coinData.icon || '',
+                totalValue: totalCost,
+                price: newPrice,
+                timestamp: Date.now(),
+                userId: userId.toString()
+            };
 
-			await redis.publish(`prices:${normalizedSymbol}`, JSON.stringify(priceUpdateData));
+            await redis.publish(`prices:${normalizedSymbol}`, JSON.stringify(priceUpdateData));
 
-			await redis.publish(
-				'trades:all',
-				JSON.stringify({
-					type: 'all-trades',
-					data: tradeData
-				})
-			);
+            await redis.publish('trades:all', JSON.stringify({
+                type: 'all-trades',
+                data: tradeData
+            }));
 
-			if (totalCost >= 1000) {
-				await redis.publish(
-					'trades:large',
-					JSON.stringify({
-						type: 'live-trade',
-						data: tradeData
-					})
-				);
-			}
+            if (totalCost >= 1000) {
+                await redis.publish('trades:large', JSON.stringify({
+                    type: 'live-trade',
+                    data: tradeData
+                }));
+            }
 
-			checkAndAwardAchievements(userId, ['trading', 'wealth', 'special'], {
-				tradeType: 'BUY',
-				tradeAmount: totalCost,
-				coinChange24h: Number(coinData.change24h || 0),
-				newBalance: userBalance - totalCost,
-				newPrice,
-				oldPrice: currentPrice
-			});
+            checkAndAwardAchievements(userId, ['trading', 'wealth', 'special'], {
+                tradeType: 'BUY',
+                tradeAmount: totalCost,
+                coinChange24h: Number(coinData.change24h || 0),
+                newBalance: userBalance - totalCost,
+                newPrice,
+                oldPrice: currentPrice
+            });
 
-			return json({
-				success: true,
-				type: 'BUY',
-				coinsBought,
-				totalCost,
-				newPrice,
-				priceImpact,
-				newBalance: userBalance - totalCost
-			});
-		} else if (type === 'SELL') {
-			// AMM SELL: amount = number of coins to sell
-			const [userHolding] = await tx
-				.select({ quantity: userPortfolio.quantity })
-				.from(userPortfolio)
-				.where(and(eq(userPortfolio.userId, userId), eq(userPortfolio.coinId, coinData.id)))
-				.limit(1);
+            return json({
+                success: true,
+                type: 'BUY',
+                coinsBought,
+                totalCost,
+                newPrice,
+                priceImpact,
+                newBalance: userBalance - totalCost
+            });
 
-			if (!userHolding || Number(userHolding.quantity) < amount) {
-				throw error(
-					400,
-					`Insufficient coins. You have ${userHolding ? Number(userHolding.quantity) : 0} but trying to sell ${amount}`
-				);
-			}
+        } else {
+            // AMM SELL: amount = number of coins to sell
+            const [userHolding] = await tx
+                .select({ quantity: userPortfolio.quantity })
+                .from(userPortfolio)
+                .where(and(
+                    eq(userPortfolio.userId, userId),
+                    eq(userPortfolio.coinId, coinData.id)
+                ))
+                .limit(1);
 
-			// Allow more aggressive selling for rug pull simulation - prevent only mathematical breakdown
-			const maxSellable = Math.floor(Number(coinData.poolCoinAmount) * 0.995);
-			if (amount > maxSellable) {
-				throw error(
-					400,
-					`Cannot sell more than 99.5% of pool tokens. Max sellable: ${maxSellable} tokens`
-				);
-			}
+            if (!userHolding || Number(userHolding.quantity) < amount) {
+                throw error(400, `Insufficient coins. You have ${userHolding ? Number(userHolding.quantity) : 0} but trying to sell ${amount}`);
+            }
 
-			const sellResult = await executeSellTrade(tx, coinData, userId, amount);
+            // Allow more aggressive selling for rug pull simulation - prevent only mathematical breakdown
+            const maxSellable = Math.floor(Number(coinData.poolCoinAmount) * 0.995);
+            if (amount > maxSellable) {
+                throw error(400, `Cannot sell more than 99.5% of pool tokens. Max sellable: ${maxSellable} tokens`);
+            }
 
-			if (!sellResult.success) {
-				throw error(400, 'Trade failed - insufficient liquidity or invalid parameters');
-			}
+            const sellResult = await executeSellTrade(tx, coinData, userId, amount);
 
-			totalCost = sellResult.baseCurrencyReceived ?? 0;
-			newPrice = sellResult.newPrice;
-			priceImpact = sellResult.priceImpact;
+            if (!sellResult.success) {
+                throw error(400, 'Trade failed - insufficient liquidity or invalid parameters');
+            }
 
-			if (totalCost <= 0) {
-				throw error(400, 'Trade amount results in zero base currency received');
-			}
+            totalCost = sellResult.baseCurrencyReceived ?? 0;
+            newPrice = sellResult.newPrice;
+            priceImpact = sellResult.priceImpact;
 
-			await tx
-				.update(user)
-				.set({
-					baseCurrencyBalance: (userBalance + totalCost).toString(),
-					updatedAt: new Date()
-				})
-				.where(eq(user.id, userId));
+            if (totalCost <= 0) {
+                throw error(400, 'Trade amount results in zero base currency received');
+            }
 
-			const newQuantity = Number(userHolding.quantity) - amount;
-			if (newQuantity > 0.000001) {
-				await tx
-					.update(userPortfolio)
-					.set({
-						quantity: newQuantity.toString(),
-						updatedAt: new Date()
-					})
-					.where(and(eq(userPortfolio.userId, userId), eq(userPortfolio.coinId, coinData.id)));
-			} else {
-				await tx
-					.delete(userPortfolio)
-					.where(and(eq(userPortfolio.userId, userId), eq(userPortfolio.coinId, coinData.id)));
-			}
+            await tx.update(user)
+                .set({
+                    baseCurrencyBalance: (userBalance + totalCost).toString(),
+                    updatedAt: new Date()
+                })
+                .where(eq(user.id, userId));
 
-			const metrics = sellResult.metrics || (await calculate24hMetrics(coinData.id, newPrice));
+            const newQuantity = Number(userHolding.quantity) - amount;
+            if (newQuantity > 0.000001) {
+                await tx.update(userPortfolio)
+                    .set({
+                        quantity: newQuantity.toString(),
+                        updatedAt: new Date()
+                    })
+                    .where(and(
+                        eq(userPortfolio.userId, userId),
+                        eq(userPortfolio.coinId, coinData.id)
+                    ));
+            } else {
+                await tx.delete(userPortfolio)
+                    .where(and(
+                        eq(userPortfolio.userId, userId),
+                        eq(userPortfolio.coinId, coinData.id)
+                    ));
+            }
 
-			const priceUpdateData = {
-				currentPrice: newPrice,
-				marketCap: Number(coinData.circulatingSupply) * newPrice,
-				change24h: metrics.change24h,
-				volume24h: metrics.volume24h,
-				poolCoinAmount: sellResult.newPoolCoin,
-				poolBaseCurrencyAmount: sellResult.newPoolBaseCurrency
-			};
+            const metrics = sellResult.metrics || await calculate24hMetrics(coinData.id, newPrice);
 
-			const tradeData = {
-				type: 'SELL',
-				username: userData.username,
-				userImage: userData.image || '',
-				amount: amount,
-				coinSymbol: normalizedSymbol,
-				coinName: coinData.name,
-				coinIcon: coinData.icon || '',
-				totalValue: totalCost,
-				price: newPrice,
-				timestamp: Date.now(),
-				userId: userId.toString()
-			};
+            const priceUpdateData = {
+                currentPrice: newPrice,
+                marketCap: Number(coinData.circulatingSupply) * newPrice,
+                change24h: metrics.change24h,
+                volume24h: metrics.volume24h,
+                poolCoinAmount: sellResult.newPoolCoin,
+                poolBaseCurrencyAmount: sellResult.newPoolBaseCurrency
+            };
 
-			await redis.publish(`prices:${normalizedSymbol}`, JSON.stringify(priceUpdateData));
+            const tradeData = {
+                type: 'SELL',
+                username: userData.username,
+                userImage: userData.image || '',
+                amount: amount,
+                coinSymbol: normalizedSymbol,
+                coinName: coinData.name,
+                coinIcon: coinData.icon || '',
+                totalValue: totalCost,
+                price: newPrice,
+                timestamp: Date.now(),
+                userId: userId.toString()
+            };
 
-			await redis.publish(
-				'trades:all',
-				JSON.stringify({
-					type: 'all-trades',
-					data: tradeData
-				})
-			);
+            await redis.publish(`prices:${normalizedSymbol}`, JSON.stringify(priceUpdateData));
 
-			if (totalCost >= 1000) {
-				await redis.publish(
-					'trades:large',
-					JSON.stringify({
-						type: 'live-trade',
-						data: tradeData
-					})
-				);
-			}
+            await redis.publish('trades:all', JSON.stringify({
+                type: 'all-trades',
+                data: tradeData
+            }));
 
-			checkAndAwardAchievements(userId, ['trading', 'wealth', 'creation', 'special'], {
-				tradeType: 'SELL',
-				tradeAmount: totalCost,
-				coinChange24h: metrics.change24h,
-				newBalance: userBalance + totalCost,
-				newPrice,
-				oldPrice: currentPrice,
-				coinCreatedAt: coinData.createdAt,
-				firstInvestmentAt: await getFirstBuyTimestamp(userId, coinData.id)
-			});
+            if (totalCost >= 1000) {
+                await redis.publish('trades:large', JSON.stringify({
+                    type: 'live-trade',
+                    data: tradeData
+                }));
+            }
 
-			return json({
-				success: true,
-				type: 'SELL',
-				coinsSold: amount,
-				totalReceived: totalCost,
-				newPrice,
-				priceImpact,
-				newBalance: userBalance + totalCost
-			});
-		} else if (type === 'BURN') {
-			// AMM BURN: destroy tokens from user's wallet
-			const [userHolding] = await tx
-				.select({ quantity: userPortfolio.quantity })
-				.from(userPortfolio)
-				.where(and(eq(userPortfolio.userId, userId), eq(userPortfolio.coinId, coinData.id)))
-				.limit(1);
+            checkAndAwardAchievements(userId, ['trading', 'wealth', 'creation', 'special'], {
+                tradeType: 'SELL',
+                tradeAmount: totalCost,
+                coinChange24h: metrics.change24h,
+                newBalance: userBalance + totalCost,
+                newPrice,
+                oldPrice: currentPrice,
+                coinCreatedAt: coinData.createdAt,
+                firstInvestmentAt: await getFirstBuyTimestamp(userId, coinData.id)
+            });
 
-			if (!userHolding || Number(userHolding.quantity) < amount) {
-				throw error(
-					400,
-					`Insufficient coins. You have ${userHolding ? Number(userHolding.quantity) : 0} but trying to burn ${amount}`
-				);
-			}
-
-			// 1. Remove from user portfolio
-			const newQuantity = Number(userHolding.quantity) - amount;
-			if (newQuantity > 0.000001) {
-				await tx
-					.update(userPortfolio)
-					.set({
-						quantity: newQuantity.toString(),
-						updatedAt: new Date()
-					})
-					.where(and(eq(userPortfolio.userId, userId), eq(userPortfolio.coinId, coinData.id)));
-			} else {
-				await tx
-					.delete(userPortfolio)
-					.where(and(eq(userPortfolio.userId, userId), eq(userPortfolio.coinId, coinData.id)));
-			}
-
-			// 2. Reduce circulating supply & market cap
-			const newCirculatingSupply = Number(coinData.circulatingSupply) - amount;
-			const newMarketCap = Math.min(newCirculatingSupply * currentPrice, 1e38);
-
-			await tx
-				.update(coin)
-				.set({
-					circulatingSupply: newCirculatingSupply.toString(),
-					marketCap: newMarketCap.toString(),
-					updatedAt: new Date()
-				})
-				.where(eq(coin.id, coinData.id));
-
-			// 3. Insert transaction
-			await tx.insert(transaction).values({
-				userId,
-				coinId: coinData.id,
-				type: 'BURN',
-				quantity: amount.toString(),
-				pricePerCoin: currentPrice.toString(),
-				totalBaseCurrencyAmount: '0', // Burning yields $0
-				note: 'Token burn'
-			});
-
-			// 4. Update live feeds
-			const tradeData = {
-				type: 'BURN',
-				username: userData.username,
-				userImage: userData.image || '',
-				amount: amount,
-				coinSymbol: normalizedSymbol,
-				coinName: coinData.name,
-				coinIcon: coinData.icon || '',
-				totalValue: amount * currentPrice, // Show the value of what was burned
-				price: currentPrice,
-				timestamp: Date.now(),
-				userId: userId.toString()
-			};
-
-			const priceUpdateData = {
-				currentPrice: currentPrice,
-				marketCap: newMarketCap,
-				change24h: Number(coinData.change24h),
-				volume24h: Number(coinData.volume24h),
-				poolCoinAmount: poolCoinAmount,
-				poolBaseCurrencyAmount: poolBaseCurrencyAmount
-			};
-
-			await redis.publish(`prices:${normalizedSymbol}`, JSON.stringify(priceUpdateData));
-			await redis.publish('trades:all', JSON.stringify({ type: 'all-trades', data: tradeData }));
-
-			return json({
-				success: true,
-				type: 'BURN',
-				coinsBurned: amount,
-				newBalance: userBalance
-			});
-		}
-		return json({});
-	});
+            return json({
+                success: true,
+                type: 'SELL',
+                coinsSold: amount,
+                totalReceived: totalCost,
+                newPrice,
+                priceImpact,
+                newBalance: userBalance + totalCost
+            });
+        }
+    });
 }
 
 async function getFirstBuyTimestamp(userId: number, coinId: number): Promise<Date | undefined> {
-	try {
-		const [firstBuy] = await db
-			.select({ timestamp: transaction.timestamp })
-			.from(transaction)
-			.where(
-				and(
-					eq(transaction.userId, userId),
-					eq(transaction.coinId, coinId),
-					eq(transaction.type, 'BUY')
-				)
-			)
-			.orderBy(asc(transaction.timestamp))
-			.limit(1);
-		return firstBuy?.timestamp ?? undefined;
-	} catch {
-		return undefined;
-	}
+    try {
+        const [firstBuy] = await db
+            .select({ timestamp: transaction.timestamp })
+            .from(transaction)
+            .where(
+                and(
+                    eq(transaction.userId, userId),
+                    eq(transaction.coinId, coinId),
+                    eq(transaction.type, 'BUY')
+                )
+            )
+            .orderBy(asc(transaction.timestamp))
+            .limit(1);
+        return firstBuy?.timestamp ?? undefined;
+    } catch {
+        return undefined;
+    }
 }

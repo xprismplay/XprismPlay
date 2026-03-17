@@ -36,7 +36,7 @@
 </script>
 
 <svelte:head>
-	<title>{status} | XprismPlay</title>
+	<title>{status} | Rugplay</title>
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
@@ -49,7 +49,8 @@
 			{message}
 		</p>
 		<div class="flex flex-col">
-			<Button variant="link" href="https://discord.gg/HKZ7EQEgaZ" target="_blank">@Discord</Button>
+			<Button variant="link" href="https://discord.gg/cKWNV2uZUP" target="_blank">@Discord</Button>
+			<Button variant="link" href="https://x.com/facedevstuff" target="_blank">@X</Button>
 		</div>
 	</div>
 
@@ -70,14 +71,14 @@
 		<img
 			src="/404.gif"
 			alt="404 Error Illustration"
-			class="h-64 w-64 cursor-pointer object-contain transition-transform duration-300 hover:scale-110 hover:rotate-12"
+			class="h-64 w-64 cursor-pointer object-contain transition-transform duration-300 hover:rotate-12 hover:scale-110"
 		/>
 		<div
-			class="absolute -top-12 left-1/2 z-10 -translate-x-1/2 transform rounded-lg bg-black px-3 py-1 text-sm whitespace-nowrap text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+			class="absolute -top-12 left-1/2 z-10 -translate-x-1/2 transform whitespace-nowrap rounded-lg bg-black px-3 py-1 text-sm text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100"
 		>
 			{tooltipMessage}
 			<div
-				class="absolute top-full left-1/2 h-0 w-0 -translate-x-1/2 transform border-t-4 border-r-4 border-l-4 border-transparent border-t-black"
+				class="absolute left-1/2 top-full h-0 w-0 -translate-x-1/2 transform border-l-4 border-r-4 border-t-4 border-transparent border-t-black"
 			></div>
 		</div>
 	</div>

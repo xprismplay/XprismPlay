@@ -334,7 +334,7 @@
 								mineCount = val;
 							}}
 							disabled={isPlaying}
-							class="w-12 [appearance:textfield] text-center [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+							class="w-12 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
 						/>
 						<Button
 							variant="secondary"
@@ -347,11 +347,7 @@
 					<p class="text-muted-foreground mt-1 text-xs">
 						You will get
 						<span class="text-success font-semibold">
-							{calculateMinesMultiplier(
-								isPlaying ? revealedTiles.length + 1 : 1,
-								mineCount,
-								betAmount
-							).toFixed(2)}x
+							{calculateMinesMultiplier(isPlaying ? revealedTiles.length + 1 : 1, mineCount, betAmount).toFixed(2)}x
 						</span>
 						per tile, probability of winning:
 						<span class="text-success font-semibold">
@@ -443,9 +439,7 @@
 									<span>Next Tile:</span>
 									<span>
 										+{formatValue(
-											betAmount *
-												(calculateMinesMultiplier(revealedTiles.length + 1, mineCount, betAmount) -
-													1)
+											betAmount * (calculateMinesMultiplier(revealedTiles.length + 1, mineCount, betAmount) - 1)
 										)}
 									</span>
 								</div>

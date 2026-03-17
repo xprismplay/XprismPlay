@@ -96,7 +96,7 @@
 </script>
 
 <SEO
-	title="Notifications - XprismPlay"
+	title="Notifications - Rugplay"
 	description="View your notifications and updates from Rugplay."
 />
 
@@ -157,7 +157,7 @@
 										{/if}
 									</div>
 
-									<p class="text-muted-foreground text-xs leading-relaxed whitespace-pre-wrap">
+									<p class="text-muted-foreground text-xs leading-relaxed">
 										{notification.message}
 									</p>
 

@@ -58,22 +58,21 @@
 	import { NEW_ACHIEVEMENTS_COUNT } from '$lib/stores/achievements';
 	import { ARCADE_STATS, fetchArcadeStats } from '$lib/stores/arcade-stats';
 	import { GEMS_BALANCE, fetchGemsBalance } from '$lib/stores/gems';
-	import { _ } from 'svelte-i18n';
-	import { hasFlag, UserFlags } from '$lib/data/flags';
+
 	const data = {
 		navMain: [
-			{ title: $_('page_names.home'), url: '/', icon: Home03Icon },
-			{ title: $_('page_names.market'), url: '/market', icon: Store01Icon },
-			{ title: $_('page_names.hopium'), url: '/hopium', icon: ArrowUpDownIcon },
-			{ title: $_('page_names.arcade'), url: '/arcade', icon: Joystick04Icon },
-			{ title: $_('page_names.leaderboard'), url: '/leaderboard', icon: ChampionIcon },
-			{ title: $_('page_names.shop'), url: '/shop', icon: ShoppingBasket01Icon },
-			{ title: $_('page_names.achievements'), url: '/achievements', icon: Award05Icon },
-			{ title: $_('page_names.portfolio'), url: '/portfolio', icon: Briefcase01Icon },
-			{ title: $_('page_names.treemap'), url: '/treemap', icon: Analytics01Icon },
-			{ title: $_('page_names.create_coin'), url: '/coin/create', icon: Coins02Icon },
-			{ title: $_('page_names.notifications'), url: '/notifications', icon: Notification01Icon },
-			{ title: $_('page_names.about'), url: '/about', icon: InformationCircleIcon }
+			{ title: 'Home', url: '/', icon: Home03Icon },
+			{ title: 'Market', url: '/market', icon: Store01Icon },
+			{ title: 'Hopium', url: '/hopium', icon: ArrowUpDownIcon },
+			{ title: 'Arcade', url: '/arcade', icon: Joystick04Icon },
+			{ title: 'Leaderboard', url: '/leaderboard', icon: ChampionIcon },
+			{ title: 'Shop', url: '/shop', icon: ShoppingBasket01Icon },
+			{ title: 'Achievements', url: '/achievements', icon: Award05Icon },
+			{ title: 'Portfolio', url: '/portfolio', icon: Briefcase01Icon },
+			{ title: 'Treemap', url: '/treemap', icon: Analytics01Icon },
+			{ title: 'Create coin', url: '/coin/create', icon: Coins02Icon },
+			{ title: 'Notifications', url: '/notifications', icon: Notification01Icon },
+			{ title: 'About', url: '/about', icon: InformationCircleIcon }
 		]
 	};
 	type MenuButtonProps = HTMLAttributes<HTMLAnchorElement | HTMLButtonElement>;
@@ -148,11 +147,6 @@
 		setOpenMobile(false);
 	}
 
-	function handleHeadAdminClick() {
-		goto('/admin/head');
-		setOpenMobile(false);
-	}
-
 	function handleUserManagementClick() {
 		goto('/admin/users');
 		setOpenMobile(false);
@@ -160,11 +154,6 @@
 
 	function handlePromoCodesClick() {
 		goto('/admin/promo');
-		setOpenMobile(false);
-	}
-
-	function handleAdminLogsClick() {
-		goto('/admin/logs');
 		setOpenMobile(false);
 	}
 
@@ -202,8 +191,8 @@
 		<div class="flex items-center gap-2 px-2 py-2">
 			<img src="/rugplay.svg" class="h-5 w-5" alt="twoblade" />
 			<div class="flex items-center gap-2">
-				<span class="text-base font-semibold">XprismPlay</span>
-				{#if hasFlag($USER_DATA?.flags, 'IS_ADMIN')}
+				<span class="text-base font-semibold">Rugplay</span>
+				{#if $USER_DATA?.isAdmin}
 					<span class="text-muted-foreground text-xs">| Admin</span>
 				{/if}
 			</div>
@@ -396,22 +385,13 @@
 								</div>
 								<div class="flex justify-between">
 									<span>Coins:</span>
-									<span class="font-mono" style="color: #00ff0d"
-										>${formatCurrency($PORTFOLIO_SUMMARY.totalCoinValue)}</span
+									<span class="font-mono" style="color: #00ff0d">${formatCurrency($PORTFOLIO_SUMMARY.totalCoinValue)}</span
 									>
 								</div>
 								{#if $GEMS_BALANCE !== null}
 									<div class="flex justify-between">
 										<span>Gems:</span>
-										<span class="font-mono" style="color: #ca00ff"
-											><HugeiconsIcon
-												icon={GemIcon}
-												size={14}
-												strokeWidth={2}
-												style="display: inline; vertical-align: middle; color: #ca00ff"
-											/>
-											{$GEMS_BALANCE.toLocaleString()}</span
-										>
+										<span class="font-mono" style="color: #ca00ff"><HugeiconsIcon icon={GemIcon} size={14} strokeWidth={2} style="display: inline; vertical-align: middle; color: #ca00ff" /> {$GEMS_BALANCE.toLocaleString()}</span>
 									</div>
 								{/if}
 							</div>
@@ -514,49 +494,31 @@
 								</DropdownMenu.Item>
 							</DropdownMenu.Group>
 
-							{#if hasFlag($USER_DATA?.flags, 'IS_ADMIN', 'IS_HEAD_ADMIN')}
+							{#if $USER_DATA?.isAdmin}
 								<DropdownMenu.Separator />
+								<!-- Admin Group -->
 								<DropdownMenu.Group>
-									{#if hasFlag($USER_DATA?.flags, 'IS_HEAD_ADMIN')}
-										<DropdownMenu.Item
-											onclick={handleHeadAdminClick}
-											class="text-orange-500 focus:bg-orange-500/10 focus:text-orange-500!"
-										>
-											<HugeiconsIcon icon={Shield01Icon} class="text-orange-500" />
-											Head Admin Panel
-										</DropdownMenu.Item>
-									{/if}
-
-									{#if hasFlag($USER_DATA.flags, 'IS_ADMIN', 'IS_HEAD_ADMIN')}
-										<DropdownMenu.Item
-											onclick={handleAdminClick}
-											class="text-primary hover:text-primary!"
-										>
-											<HugeiconsIcon icon={Shield01Icon} class="text-primary" />
-											Admin Panel
-										</DropdownMenu.Item>
-										<DropdownMenu.Item
-											onclick={handleUserManagementClick}
-											class="text-primary hover:text-primary!"
-										>
-											<HugeiconsIcon icon={LegalHammerIcon} class="text-primary" />
-											User Management
-										</DropdownMenu.Item>
-										<DropdownMenu.Item
-											onclick={handlePromoCodesClick}
-											class="text-primary hover:text-primary!"
-										>
-											<HugeiconsIcon icon={Ticket01Icon} class="text-primary" />
-											Manage codes
-										</DropdownMenu.Item>
-										<DropdownMenu.Item
-											onclick={handleAdminLogsClick}
-											class="text-primary hover:text-primary!"
-										>
-											<HugeiconsIcon icon={Shield01Icon} class="text-primary" />
-											Admin Logs
-										</DropdownMenu.Item>
-									{/if}
+									<DropdownMenu.Item
+										onclick={handleAdminClick}
+										class="text-primary hover:text-primary!"
+									>
+										<HugeiconsIcon icon={Shield01Icon} class="text-primary" />
+										Admin Panel
+									</DropdownMenu.Item>
+									<DropdownMenu.Item
+										onclick={handleUserManagementClick}
+										class="text-primary hover:text-primary!"
+									>
+										<HugeiconsIcon icon={LegalHammerIcon} class="text-primary" />
+										User Management
+									</DropdownMenu.Item>
+									<DropdownMenu.Item
+										onclick={handlePromoCodesClick}
+										class="text-primary hover:text-primary!"
+									>
+										<HugeiconsIcon icon={Ticket01Icon} class="text-primary" />
+										Manage codes
+									</DropdownMenu.Item>
 								</DropdownMenu.Group>
 							{/if}
 

@@ -128,7 +128,7 @@
 	</Card.Header>
 	<Card.Content class="relative">
 		{#if loading}
-			<HoldersSkeleton />
+            <HoldersSkeleton />
 		{:else if !holdersData || holdersData.holders.length === 0}
 			<div class="py-4 text-center">
 				<HugeiconsIcon icon={UserGroupIcon} class="text-muted-foreground mx-auto mb-2 h-8 w-8" />
@@ -217,10 +217,7 @@
 			{:else}
 				<div class="flex h-full items-center justify-center py-12 text-center">
 					<div>
-						<HugeiconsIcon
-							icon={UserGroupIcon}
-							class="text-muted-foreground mx-auto mb-4 h-12 w-12"
-						/>
+						<HugeiconsIcon icon={UserGroupIcon} class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
 						<h3 class="mb-2 text-lg font-semibold">No holders found</h3>
 						<p class="text-muted-foreground">This coin doesn't have any holders yet.</p>
 					</div>

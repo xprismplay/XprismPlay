@@ -11,16 +11,13 @@ export async function GET({ params }) {
 	const isNumeric = /^\d+$/.test(userId);
 	const userData = await db.query.user.findFirst({
 		where: isNumeric ? eq(user.id, parseInt(userId)) : eq(user.username, userId),
-		columns: { id: true }
+		columns: { id: true },
 	});
 
 	if (!userData) throw error(404, 'User not found');
 
 	const unlocked = await db
-		.select({
-			achievementId: userAchievement.achievementId,
-			unlockedAt: userAchievement.unlockedAt
-		})
+		.select({ achievementId: userAchievement.achievementId, unlockedAt: userAchievement.unlockedAt })
 		.from(userAchievement)
 		.where(eq(userAchievement.userId, userData.id));
 
@@ -29,7 +26,7 @@ export async function GET({ params }) {
 	const achievements = ACHIEVEMENTS.map((a) => ({
 		...a,
 		unlocked: unlockedMap.has(a.id),
-		unlockedAt: unlockedMap.get(a.id) ?? null
+		unlockedAt: unlockedMap.get(a.id) ?? null,
 	}));
 
 	return json({ achievements });

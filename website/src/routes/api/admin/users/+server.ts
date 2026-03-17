@@ -4,24 +4,24 @@ import { db } from '$lib/server/db';
 import { user } from '$lib/server/db/schema';
 import { desc, eq } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
-import { hasFlag } from '$lib/data/flags';
 
 export const GET: RequestHandler = async ({ request }) => {
 	const session = await auth.api.getSession({ headers: request.headers });
-
+	
 	if (!session?.user) {
 		throw error(401, 'Not authenticated');
 	}
 
 	const [currentUser] = await db
-		.select({ flags: user.flags })
+		.select({ isAdmin: user.isAdmin })
 		.from(user)
 		.where(eq(user.id, Number(session.user.id)))
 		.limit(1);
 
-	if (!hasFlag(currentUser.flags, 'IS_ADMIN', 'IS_HEAD_ADMIN')) {
+	if (!currentUser?.isAdmin) {
 		throw error(403, 'Admin access required');
 	}
+
 	try {
 		const users = await db
 			.select({
@@ -29,13 +29,14 @@ export const GET: RequestHandler = async ({ request }) => {
 				name: user.name,
 				username: user.username,
 				email: user.email,
-				flags: user.flags,
+				isAdmin: user.isAdmin,
 				isBanned: user.isBanned,
 				banReason: user.banReason,
 				createdAt: user.createdAt
 			})
 			.from(user)
 			.orderBy(desc(user.createdAt));
+
 		return json(users);
 	} catch (e) {
 		console.error('Failed to fetch users:', e);

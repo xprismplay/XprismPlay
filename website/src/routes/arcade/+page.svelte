@@ -9,37 +9,15 @@
 	import SEO from '$lib/components/self/SEO.svelte';
 	import Dice from '$lib/components/self/games/Dice.svelte';
 	import Tower from '$lib/components/self/games/Tower.svelte';
-	import Blackjack from '$lib/components/self/games/Blackjack.svelte';
-	import HigherLower from '$lib/components/self/games/HigherLower.svelte';
+	import Poker from '$lib/components/self/games/Poker.svelte';
 	import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '$lib/components/ui/card';
 	import { arcadeActivityStore } from '$lib/stores/websocket';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import * as HoverCard from '$lib/components/ui/hover-card';
 	import UserProfilePreview from '$lib/components/self/UserProfilePreview.svelte';
 	import { HugeiconsIcon } from '@hugeicons/svelte';
-	import {
-		Clock01Icon,
-		PiggyBankIcon,
-		CoinsDollarIcon,
-		StarsIcon,
-		BombIcon,
-		DiceIcon,
-		ElectricTower01Icon,
-		SpadesIcon,
-		CurvyUpDownDirectionIcon
-	} from '@hugeicons/core-free-icons';
+	import { Clock01Icon, PiggyBankIcon } from '@hugeicons/core-free-icons';
 	import { formatValue, formatRelativeTime, getPublicUrl } from '$lib/utils';
-	import { goto } from '$app/navigation';
-
-	const games = [
-		{ id: 'coinflip', label: 'Coinflip', icon: CoinsDollarIcon },
-		{ id: 'slots', label: 'Slots', icon: StarsIcon },
-		{ id: 'mines', label: 'Mines', icon: BombIcon },
-		{ id: 'dice', label: 'Dice', icon: DiceIcon },
-		{ id: 'tower', label: 'Tower', icon: ElectricTower01Icon },
-		{ id: 'blackjack', label: 'Blackjack', icon: SpadesIcon },
-		{ id: 'higherlower', label: 'Higher/Lower', icon: CurvyUpDownDirectionIcon }
-	];
 
 	let shouldSignIn = $state(false);
 	let balance = $state(0);
@@ -73,8 +51,8 @@
 	});
 </script>
 
-<SEO
-	title="Arcade - XprismPlay"
+<SEO 
+	title="Arcade - Rugplay"
 	description="Play virtual arcade games with simulated currency in Rugplay. Try coinflip, slots, and mines games using virtual money with no real-world value - purely for entertainment."
 	keywords="virtual arcade simulation, coinflip game, slots game, mines game, virtual arcade, simulated games, entertainment games"
 />
@@ -95,17 +73,43 @@
 	{:else}
 		<div class="mx-auto max-w-4xl space-y-6">
 			<!-- Game Selection -->
-			<div class="grid grid-cols-3 gap-2 sm:grid-cols-6">
-				{#each games as game}
-					<Button
-						variant={activeGame === game.id ? 'default' : 'outline'}
-						class="flex h-auto w-full flex-col gap-1 py-3"
-						onclick={() => (activeGame = game.id)}
-					>
-						<HugeiconsIcon icon={game.icon} class="h-5 w-5" />
-						<span class="text-xs">{game.label}</span>
-					</Button>
-				{/each}
+			<div class="flex justify-center gap-4">
+				<Button
+					variant={activeGame === 'coinflip' ? 'default' : 'outline'}
+					onclick={() => (activeGame = 'coinflip')}
+				>
+					Coinflip
+				</Button>
+				<Button
+					variant={activeGame === 'slots' ? 'default' : 'outline'}
+					onclick={() => (activeGame = 'slots')}
+				>
+					Slots
+				</Button>
+				<Button
+					variant={activeGame === 'mines' ? 'default' : 'outline'}
+					onclick={() => (activeGame = 'mines')}
+				>
+					Mines
+				</Button>
+				<Button
+					variant={activeGame === 'dice' ? 'default' : 'outline'}
+					onclick={() => (activeGame = 'dice')}
+				>
+					Dice
+				</Button>
+				<Button
+					variant={activeGame === 'tower' ? 'default' : 'outline'}
+					onclick={() => (activeGame = 'tower')}
+				>
+					Tower
+				</Button>
+				<Button
+					variant={activeGame === 'poker' ? 'default' : 'outline'}
+					onclick={() => (activeGame = 'poker')}
+				>
+					Poker
+				</Button>
 			</div>
 
 			<!-- Game Content -->
@@ -119,10 +123,8 @@
 				<Dice bind:balance onBalanceUpdate={handleBalanceUpdate} />
 			{:else if activeGame === 'tower'}
 				<Tower bind:balance onBalanceUpdate={handleBalanceUpdate} />
-			{:else if activeGame === 'blackjack'}
-				<Blackjack bind:balance onBalanceUpdate={handleBalanceUpdate} />
-			{:else if activeGame === 'higherlower'}
-				<HigherLower bind:balance onBalanceUpdate={handleBalanceUpdate} />
+			{:else if activeGame === 'poker'}
+				<Poker bind:balance onBalanceUpdate={handleBalanceUpdate} />
 			{/if}
 
 			<!-- Live Arcade Activity Feed -->
@@ -134,10 +136,7 @@
 					<div class="space-y-3">
 						{#if filteredActivities.length === 0}
 							<div class="flex flex-col items-center justify-center py-8 text-center">
-								<HugeiconsIcon
-									icon={PiggyBankIcon}
-									class="text-muted-foreground/50 mb-4 h-12 w-12"
-								/>
+								<HugeiconsIcon icon={PiggyBankIcon} class="text-muted-foreground/50 mb-4 h-12 w-12" />
 								<h3 class="mb-2 text-base font-semibold">Waiting for activity...</h3>
 								<p class="text-muted-foreground text-sm">
 									High stakes arcade activity will appear here in real-time.
@@ -153,11 +152,7 @@
 											<HoverCard.Trigger
 												class="cursor-pointer font-medium underline-offset-4 hover:underline"
 											>
-												<button
-													class="flex cursor-pointer items-center gap-2"
-													type="button"
-													onclick={() => goto(`/user/${activity.username}`)}
-												>
+												<div class="flex items-center gap-2">
 													<Avatar.Root class="h-6 w-6">
 														<Avatar.Image
 															src={getPublicUrl(activity.userImage ?? null)}
@@ -168,16 +163,14 @@
 														>
 													</Avatar.Root>
 													<span class="text-sm">@{activity.username}</span>
-												</button>
+												</div>
 											</HoverCard.Trigger>
 											<HoverCard.Content class="w-80" side="top" sideOffset={3}>
 												<UserProfilePreview userId={parseInt(activity.userId)} />
 											</HoverCard.Content>
 										</HoverCard.Root>
 
-										<span class="text-muted-foreground text-sm"
-											>{activity.won ? 'won' : 'lost'}</span
-										>
+										<span class="text-muted-foreground text-sm">{activity.won ? 'won' : 'lost'}</span>
 										<span
 											class="font-mono text-sm font-medium {activity.won
 												? 'text-green-500'
@@ -190,8 +183,7 @@
 
 									<div class="text-muted-foreground flex items-center gap-1 text-xs">
 										<HugeiconsIcon icon={Clock01Icon} class="h-3 w-3" />
-										<span class="font-mono">{formatRelativeTime(new Date(activity.timestamp))}</span
-										>
+										<span class="font-mono">{formatRelativeTime(new Date(activity.timestamp))}</span>
 									</div>
 								</div>
 							{/each}

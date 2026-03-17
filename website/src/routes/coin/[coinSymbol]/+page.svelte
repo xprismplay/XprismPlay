@@ -36,7 +36,8 @@
 	import { websocketController, type PriceUpdate, isConnectedStore } from '$lib/stores/websocket';
 	import SEO from '$lib/components/self/SEO.svelte';
 	import SignInConfirmDialog from '$lib/components/self/SignInConfirmDialog.svelte';
-	import { _ } from 'svelte-i18n';
+	import AdSquare from '$lib/components/self/ads/AdSquare.svelte';
+
 	const { data } = $props();
 	let coinSymbol = $derived(data.coinSymbol);
 	let coin = $state(data.coin);
@@ -49,7 +50,6 @@
 	let userHolding = $state(0);
 	let buyModalOpen = $state(false);
 	let sellModalOpen = $state(false);
-	let burnModalOpen = $state(false);
 	let selectedTimeframe = $state(data.timeframe || '1m');
 	let lastPriceUpdateTime = 0;
 	let shouldSignIn = $state(false);
@@ -59,12 +59,12 @@
 	let countdownInterval = $state<NodeJS.Timeout | null>(null);
 
 	const timeframeOptions = [
-		{ value: '1m', label: $_('coin.priceChart.1') },
-		{ value: '5m', label: $_('coin.priceChart.2') },
-		{ value: '15m', label: $_('coin.priceChart.3') },
-		{ value: '1h', label: $_('coin.priceChart.4') },
-		{ value: '4h', label: $_('coin.priceChart.5') },
-		{ value: '1d', label: $_('coin.priceChart.6') }
+		{ value: '1m', label: '1 minute' },
+		{ value: '5m', label: '5 minutes' },
+		{ value: '15m', label: '15 minutes' },
+		{ value: '1h', label: '1 hour' },
+		{ value: '4h', label: '4 hours' },
+		{ value: '1d', label: '1 day' }
 	];
 
 	$effect(() => {
@@ -106,12 +106,12 @@
 	$effect(() => {
 		if (coin?.isLocked && coin?.tradingUnlocksAt) {
 			const unlockTime = new Date(coin.tradingUnlocksAt).getTime();
-
+			
 			const updateCountdown = () => {
 				const now = Date.now();
 				const remaining = Math.max(0, Math.ceil((unlockTime - now) / 1000));
 				countdown = remaining;
-
+				
 				if (remaining === 0 && countdownInterval) {
 					clearInterval(countdownInterval);
 					countdownInterval = null;
@@ -120,7 +120,7 @@
 					}
 				}
 			};
-
+			
 			updateCountdown();
 			countdownInterval = setInterval(updateCountdown, 1000);
 		} else {
@@ -130,7 +130,7 @@
 				countdownInterval = null;
 			}
 		}
-
+		
 		return () => {
 			if (countdownInterval) {
 				clearInterval(countdownInterval);
@@ -177,9 +177,6 @@
 		}
 	}
 	async function handleTradeSuccess() {
-		await Promise.all([loadCoinData(), loadUserHolding(), fetchPortfolioSummary()]);
-	}
-	async function handleBurnSuccess() {
 		await Promise.all([loadCoinData(), loadUserHolding(), fetchPortfolioSummary()]);
 	}
 	function handlePriceUpdate(priceUpdate: PriceUpdate) {
@@ -259,8 +256,7 @@
 	}
 
 	async function loadOlderChartData() {
-		if (isLoadingHistory || noMoreHistory || !oldestTimestamp || !candlestickSeries || !chart)
-			return;
+		if (isLoadingHistory || noMoreHistory || !oldestTimestamp || !candlestickSeries || !chart) return;
 
 		isLoadingHistory = true;
 		try {
@@ -402,20 +398,18 @@
 				1
 			);
 
-			const processedChartData = chartData.map(
-				(candle: { open: any; close: any; high: number; low: number }) => {
-					if (candle.open === candle.close) {
-						const basePrice = candle.open;
-						const variation = basePrice * 0.001;
-						return {
-							...candle,
-							high: Math.max(candle.high, basePrice + variation),
-							low: Math.min(candle.low, basePrice - variation)
-						};
-					}
-					return candle;
+			const processedChartData = chartData.map((candle: { open: any; close: any; high: number; low: number; }) => {
+				if (candle.open === candle.close) {
+					const basePrice = candle.open;
+					const variation = basePrice * 0.001;
+					return {
+						...candle,
+						high: Math.max(candle.high, basePrice + variation),
+						low: Math.min(candle.low, basePrice - variation)
+					};
 				}
-			);
+				return candle;
+			});
 
 			candlestickSeries.setData(processedChartData);
 			volumeSeries.setData(generateVolumeData(chartData, volumeData));
@@ -520,12 +514,13 @@
 	let isCreator = $derived(coin && $USER_DATA && coin.creatorId === Number($USER_DATA.id));
 	let isTradingLocked = $derived(coin?.isLocked && countdown !== null && countdown > 0);
 	let canTrade = $derived(!isTradingLocked || isCreator);
+
 </script>
 
 <SEO
 	title={coin
-		? `${coin.name} (*${coin.symbol}) - XprismPlay`
-		: `Loading ${coinSymbol.toUpperCase()} - XprismPlay`}
+		? `${coin.name} (*${coin.symbol}) - Rugplay`
+		: `Loading ${coinSymbol.toUpperCase()} - Rugplay`}
 	description={coin
 		? `Trade ${coin.name} (*${coin.symbol}) in the Rugplay simulation game. Current price: $${formatPrice(coin.currentPrice)}, Market cap: ${formatMarketCap(coin.marketCap)}, 24h change: ${coin.change24h >= 0 ? '+' : ''}${coin.change24h.toFixed(2)}%.`
 		: `Virtual cryptocurrency trading page for ${coinSymbol.toUpperCase()} in the Rugplay simulation game.`}
@@ -547,14 +542,6 @@
 		{coin}
 		{userHolding}
 		onSuccess={handleTradeSuccess}
-	/>
-	<!-- (marking here with a change for my development later) -->
-	<TradeModal
-		bind:open={burnModalOpen}
-		type="BURN"
-		{coin}
-		{userHolding}
-		onSuccess={handleBurnSuccess}
 	/>
 {/if}
 <div class="container mx-auto max-w-7xl p-6">
@@ -580,7 +567,7 @@
 						class="border sm:size-16"
 					/>
 					<div class="min-w-0 flex-1">
-						<h1 class="max-w-200 truncate text-2xl font-bold sm:text-4xl">{coin.name}</h1>
+						<h1 class="text-2xl font-bold sm:text-4xl">{coin.name}</h1>
 						<div class="mt-1 flex flex-wrap items-center gap-2">
 							<Badge variant="outline" class="text-sm sm:text-lg">*{coin.symbol}</Badge>
 							{#if $isConnectedStore}
@@ -588,7 +575,7 @@
 									variant="outline"
 									class="animate-pulse border-green-500 text-xs text-green-500"
 								>
-									{$_('global.live')}
+									● LIVE
 								</Badge>
 							{/if}
 							{#if isTradingLocked}
@@ -597,7 +584,7 @@
 								</Badge>
 							{/if}
 							{#if !coin.isListed}
-								<Badge variant="destructive">{$_('coin.delisted')}</Badge>
+								<Badge variant="destructive">Delisted</Badge>
 							{/if}
 						</div>
 					</div>
@@ -624,11 +611,11 @@
 			<!-- Creator Info -->
 			{#if coin.creatorName}
 				<div class="text-muted-foreground flex flex-wrap items-center gap-2 text-sm">
-					<span>{$_('coin.createdBy')}</span>
+					<span>Created by</span>
 
 					<HoverCard.Root>
 						<HoverCard.Trigger
-							class="flex max-w-[200px] min-w-0 cursor-pointer items-center gap-1 rounded-sm underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-8 sm:max-w-[250px]"
+							class="flex min-w-0 max-w-[200px] cursor-pointer items-center gap-1 rounded-sm underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-8 sm:max-w-[250px]"
 							onclick={() => goto(`/user/${coin.creatorUsername}`)}
 						>
 							<Avatar.Root class="h-4 w-4 flex-shrink-0">
@@ -636,7 +623,7 @@
 								<Avatar.Fallback>{coin.creatorName.charAt(0)}</Avatar.Fallback>
 							</Avatar.Root>
 							<span class="block truncate font-medium"
-								><UserName name={coin.creatorName} nameColor={coin.creatorNameColor} /> (@{coin.creatorUsername})</span
+							><UserName name={coin.creatorName} nameColor={coin.creatorNameColor} /> (@{coin.creatorUsername})</span
 							>
 						</HoverCard.Trigger>
 						<HoverCard.Content class="w-80" side="bottom" sideOffset={3}>
@@ -657,7 +644,7 @@
 							<div class="flex items-center justify-between">
 								<Card.Title class="flex items-center gap-2">
 									<HugeiconsIcon icon={Analytics01Icon} class="h-5 w-5" />
-									{$_('coin.priceChart.0').replace('{{time}}', selectedTimeframe)}
+									Price Chart ({selectedTimeframe})
 								</Card.Title>
 								<div class="w-24">
 									<Select.Root
@@ -685,7 +672,7 @@
 						<Card.Content class="flex-1 pt-0">
 							{#if chartData.length === 0}
 								<div class="flex h-full min-h-[500px] items-center justify-center">
-									<p class="text-muted-foreground">{$_('coin.priceChart.7')}</p>
+									<p class="text-muted-foreground">No trading data available yet</p>
 								</div>
 							{:else}
 								<div class="h-full min-h-[500px] w-full" bind:this={chartContainer}></div>
@@ -699,20 +686,20 @@
 					<!-- Trading Actions -->
 					<Card.Root>
 						<Card.Header>
-							<Card.Title>{$_('coin.trade.title').replace('{{symbol}}', coin.symbol)}</Card.Title>
+							<Card.Title>Trade {coin.symbol}</Card.Title>
 							{#if userHolding > 0}
 								<p class="text-muted-foreground text-sm">
-									{$_('coin.trade.youOwn')
-										.replace('{{shares}}', formatSupply(userHolding))
-										.replace('{{symbol}}', coin.symbol)}
+									You own: {formatSupply(userHolding)}
+									{coin.symbol}
 								</p>
 							{/if}
 							{#if isTradingLocked}
 								<p class="text-muted-foreground text-sm">
-									{$_(`coin.trade.lock.${isCreator ? '0' : '1'}`).replace(
-										'{{time}}',
-										countdown != null ? formatCountdown(countdown) : '0:00'
-									)}
+									{#if isCreator}
+										🔒 Creator-only period: {countdown !== null ? formatCountdown(countdown) : ''} remaining
+									{:else}
+										🔒 Trading unlocks in: {countdown !== null ? formatCountdown(countdown) : ''}
+									{/if}
 								</p>
 							{/if}
 						</Card.Header>
@@ -727,7 +714,7 @@
 										disabled={!coin.isListed || !canTrade}
 									>
 										<HugeiconsIcon icon={TradeUpIcon} class="h-4 w-4" />
-										{$_('coin.trade.buy.title').replace('{{symbol}}', coin.symbol)}
+										Buy {coin.symbol}
 									</Button>
 									<Button
 										class="w-full"
@@ -737,23 +724,13 @@
 										disabled={!coin.isListed || userHolding <= 0 || !canTrade}
 									>
 										<HugeiconsIcon icon={TradeDownIcon} class="h-4 w-4" />
-										{$_('coin.trade.sell.title').replace('{{symbol}}', coin.symbol)}
-									</Button>
-									<Button
-										class="w-full"
-										variant="outline"
-										size="lg"
-										onclick={() => (burnModalOpen = true)}
-										disabled={!coin.isListed || userHolding <= 0 || !canTrade}
-									>
-										<HugeiconsIcon icon={Coins01Icon} class="h-4 w-4" />
-										{$_('coin.trade.burn.title').replace('{{symbol}}', coin.symbol)}
+										Sell {coin.symbol}
 									</Button>
 								</div>
 							{:else}
 								<div class="py-4 text-center">
-									<p class="text-muted-foreground mb-3 text-sm">{$_('sign_in.trade')}</p>
-									<Button onclick={() => (shouldSignIn = true)}>{$_('sign_in.sign_in')}</Button>
+									<p class="text-muted-foreground mb-3 text-sm">Sign in to start trading</p>
+									<Button onclick={() => (shouldSignIn = true)}>Sign In</Button>
 								</div>
 							{/if}
 						</Card.Content>
@@ -775,12 +752,6 @@
 											<span class="text-muted-foreground text-sm">Base Currency:</span>
 											<span class="font-mono text-sm">
 												${Number(coin.poolBaseCurrencyAmount).toLocaleString()}
-											</span>
-										</div>
-										<div class="flex justify-between">
-											<span class="text-muted-foreground text-sm">Burned Coins:</span>
-											<span class="font-mono text-sm">
-												{formatSupply(+Number(1_000_000_000 - coin.circulatingSupply).toFixed(2))}
 											</span>
 										</div>
 									</div>
@@ -878,6 +849,8 @@
 					</Card.Content>
 				</Card.Root>
 			</div>
+
+			<AdSquare />
 
 			<!-- Comments Section -->
 			<CommentSection {coinSymbol} />

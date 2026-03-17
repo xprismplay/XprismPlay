@@ -9,7 +9,6 @@
 	import { getPublicUrl } from '$lib/utils';
 	import { HugeiconsIcon } from '@hugeicons/svelte';
 	import { ArrowUp01Icon, ArrowDown01Icon, ArrowUpDownIcon } from '@hugeicons/core-free-icons';
-	import { _ } from 'svelte-i18n';
 
 	interface Column {
 		key: string;
@@ -26,7 +25,7 @@
 		onRowClick,
 		emptyMessage = 'No data available',
 		emptyIcon,
-		emptyTitle = $_('leaderboard.no_data'),
+		emptyTitle = 'No data',
 		emptyDescription = '',
 		enableUserPreview = false
 	}: {
@@ -201,7 +200,7 @@
 							{:else if cellData.type === 'coin'}
 								<div class="flex items-center gap-2">
 									<CoinIcon icon={cellData.icon} symbol={cellData.symbol} size={cellData.size} />
-									<span class="max-w-44 truncate font-medium">{cellData.name}</span>
+									<span class="font-medium max-w-44 truncate">{cellData.name}</span>
 								</div>
 							{:else if cellData.type === 'rank'}
 								<div class="flex items-center gap-2">
@@ -224,12 +223,7 @@
 													</Avatar.Fallback>
 												</Avatar.Root>
 												<div class="flex flex-col items-start">
-													<UserName
-														name={cellData.name}
-														nameColor={cellData.nameColor}
-														founderBadge={cellData.founderBadge}
-														class="text-sm font-medium"
-													/>
+													<UserName name={cellData.name} nameColor={cellData.nameColor} founderBadge={cellData.founderBadge} class="text-sm font-medium" />
 													<span class="text-muted-foreground text-xs">@{cellData.username}</span>
 												</div>
 											</div>
@@ -247,12 +241,7 @@
 											>
 										</Avatar.Root>
 										<div class="flex flex-col items-start">
-											<UserName
-												name={cellData.name}
-												nameColor={cellData.nameColor}
-												founderBadge={cellData.founderBadge}
-												class="text-sm font-medium"
-											/>
+											<UserName name={cellData.name} nameColor={cellData.nameColor} founderBadge={cellData.founderBadge} class="text-sm font-medium" />
 											<span class="text-muted-foreground text-xs">@{cellData.username}</span>
 										</div>
 									</div>

@@ -15,13 +15,16 @@
 
 <span class="inline-flex items-center gap-1">
 	{#if colorItem}
-		<span class="{colorItem.classes} {className}" style={colorItem.style ?? ''}>
+		<span
+			class="{colorItem.classes} {className}"
+			style={colorItem.style ?? ''}
+		>
 			{name}
 		</span>
 	{:else}
 		<span class={className}>{name}</span>
 	{/if}
 	{#if founderBadge}
-		<span title="Founder" class="text-xs text-cyan-400">💎</span>
+		<span title="Founder" class="text-cyan-400 text-xs">💎</span>
 	{/if}
 </span>

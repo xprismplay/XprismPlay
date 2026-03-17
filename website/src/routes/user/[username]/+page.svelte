@@ -22,14 +22,13 @@
 		PercentIcon,
 		Invoice03Icon,
 		Award05Icon,
-		UnavailableIcon,
-		ClockIcon
+		UnavailableIcon
 	} from '@hugeicons/core-free-icons';
 	import { goto } from '$app/navigation';
 	import { USER_DATA } from '$lib/stores/user-data';
 	import * as Tooltip from '$lib/components/ui/tooltip';
+	import AdLong from '$lib/components/self/ads/AdLong.svelte';
 	import { haptic } from '$lib/stores/haptics';
-	import { formatTimezone, getTimezoneDate, timezoneList } from '$lib/utils/timezones.js';
 
 	let { data } = $props();
 	let username = $derived(data.username);
@@ -37,7 +36,6 @@
 	let profileData = $state(data.profileData);
 	let recentTransactions = $state(data.recentTransactions);
 	let loading = $state(false);
-	let usersTimezone = getTimezoneDate(profileData?.profile?.timezone);
 	let userAchievements = $state<any[]>([]);
 
 	let previousUsername = $state<string | null>(null);
@@ -62,9 +60,7 @@
 				const data = await res.json();
 				isBlocked = data.blocks?.some((b: any) => b.username === username) ?? false;
 			}
-		} catch {
-			/* silent */
-		}
+		} catch { /* silent */ }
 	}
 
 	async function toggleBlock() {
@@ -72,7 +68,7 @@
 		blockLoading = true;
 		try {
 			const res = await fetch(`/api/user/${username}/block`, {
-				method: isBlocked ? 'DELETE' : 'POST'
+				method: isBlocked ? 'DELETE' : 'POST',
 			});
 			if (res.ok) {
 				isBlocked = !isBlocked;
@@ -221,7 +217,9 @@
 	);
 	let totalPlayed = $derived(arcadeWins + arcadeLosses);
 	let netProfit = $derived(arcadeWins - arcadeLosses);
-	let winRate = $derived(totalPlayed > 0 ? ((arcadeWins / totalPlayed) * 100).toFixed(1) : '0.0');
+	let winRate = $derived(
+		totalPlayed > 0 ? ((arcadeWins / totalPlayed) * 100).toFixed(1) : '0.0'
+	);
 
 	const createdCoinsColumns = [
 		{
@@ -291,8 +289,8 @@
 				}
 				return {
 					component: 'badge',
-					variant: value === 'BUY' ? 'success' : value === 'BURN' ? 'fire' : 'destructive',
-					text: value === 'BUY' ? 'Buy' : value === 'BURN' ? 'Burn' : 'Sell',
+					variant: value === 'BUY' ? 'success' : 'destructive',
+					text: value === 'BUY' ? 'Buy' : 'Sell',
 					class: 'text-xs'
 				};
 			}
@@ -416,34 +414,19 @@
 			label: 'Date',
 			class: 'hidden md:table-cell md:w-[18%] text-muted-foreground text-sm',
 			render: (value: any) => formatDate(value)
-		},
-		{
-			key: 'note',
-			label: 'Note',
-			class: 'hidden lg:table-cell w-[20%] text-muted-foreground text-sm',
-			render: (value: any, row: any) => {
-				const isTransfer =
-					row.isTransfer || row.type === 'TRANSFER_IN' || row.type === 'TRANSFER_OUT';
-				if (!isTransfer || !value) {
-					return { component: 'text', text: '-', class: 'text-muted-foreground' };
-				}
-				return { component: 'text', text: value, class: 'text-sm italic truncate max-w-[180px]' };
-			}
 		}
 	];
 </script>
 
 <SEO
 	title={profileData?.profile?.name
-		? `${profileData.profile.name} (@${profileData.profile.username}) - XprismPlay`
-		: `@${username} - XprismPlay`}
+		? `${profileData.profile.name} (@${profileData.profile.username}) - Rugplay`
+		: `@${username} - Rugplay`}
 	description={profileData?.profile?.bio
 		? `${profileData.profile.bio} - View ${profileData.profile.name}'s simulated trading activity and virtual portfolio in the Rugplay cryptocurrency simulation game.`
 		: `View @${username}'s profile and simulated trading activity in Rugplay - cryptocurrency trading simulation game platform.`}
 	type="profile"
-	image={profileData?.profile?.image
-		? getPublicUrl(profileData.profile.image)
-		: '/apple-touch-icon.png'}
+	image={profileData?.profile?.image ? getPublicUrl(profileData.profile.image) : '/apple-touch-icon.png'}
 	imageAlt={profileData?.profile?.name
 		? `${profileData.profile.name}'s profile picture`
 		: `@${username}'s profile`}
@@ -483,12 +466,7 @@
 					<div class="min-w-0 flex-1">
 						<div class="mb-3">
 							<div class="mb-1 flex flex-wrap items-center gap-2">
-								<h1 class="text-2xl font-bold sm:text-3xl">
-									<UserName
-										name={profileData.profile.name}
-										nameColor={profileData.profile.nameColor}
-									/>
-								</h1>
+								<h1 class="text-2xl font-bold sm:text-3xl"><UserName name={profileData.profile.name} nameColor={profileData.profile.nameColor} /></h1>
 
 								<!-- Badges -->
 								<ProfileBadges user={profileData.profile} />
@@ -503,21 +481,10 @@
 						{/if}
 
 						<div class="text-muted-foreground flex items-center gap-2 text-sm">
-							<HugeiconsIcon icon={ClockIcon} class="h-4 w-4" />
-							<span
-								><b
-									>{usersTimezone.getHours().toString().padStart(2, '0')}:{usersTimezone
-										.getMinutes()
-										.toString()
-										.padStart(2, '0')}h</b
-								>
-								(UTC{formatTimezone(profileData?.profile?.timezone ?? 0)})</span
-							>
-						</div>
-						<div class="text-muted-foreground flex items-center gap-2 text-sm">
 							<HugeiconsIcon icon={Calendar01Icon} class="h-4 w-4" />
 							<span>Joined {memberSince}</span>
 						</div>
+
 					</div>
 					{#if $USER_DATA && !isOwnProfile}
 						<div class="ml-auto self-start">
@@ -529,9 +496,7 @@
 											size="icon"
 											onclick={toggleBlock}
 											disabled={blockLoading}
-											class="h-8 w-8 {isBlocked
-												? 'text-destructive'
-												: 'text-muted-foreground hover:text-destructive'}"
+											class="h-8 w-8 {isBlocked ? 'text-destructive' : 'text-muted-foreground hover:text-destructive'}"
 										>
 											<HugeiconsIcon icon={UnavailableIcon} class="h-4 w-4" />
 										</Button>
@@ -736,11 +701,7 @@
 					<div class="flex items-center justify-between">
 						<div class="text-muted-foreground text-sm font-medium">Net Profit</div>
 					</div>
-					<div
-						class="mt-1 text-2xl font-bold"
-						class:text-success={netProfit >= 0}
-						class:text-red-600={netProfit < 0}
-					>
+					<div class="mt-1 text-2xl font-bold" class:text-success={netProfit >= 0} class:text-red-600={netProfit < 0}>
 						{#if netProfit >= 0}
 							{formatValue(netProfit)}
 						{:else}
@@ -761,8 +722,7 @@
 					<div class="flex items-center justify-between">
 						<Card.Title class="flex items-center gap-2">
 							<HugeiconsIcon icon={Award05Icon} class="h-5 w-5 text-yellow-500" />
-							Achievements ({userAchievements.filter((a) => a.unlocked)
-								.length}/{userAchievements.length})
+							Achievements ({userAchievements.filter((a) => a.unlocked).length}/{userAchievements.length})
 						</Card.Title>
 						<Button variant="outline" size="sm" onclick={() => goto('/achievements')}>
 							View All
@@ -777,9 +737,7 @@
 									<img
 										src="/achievements/{achievement.icon}"
 										alt={achievement.name}
-										class="h-8 w-8 cursor-pointer transition-all {achievement.unlocked
-											? 'hover:scale-110'
-											: 'brightness-[0.3] grayscale'}"
+										class="h-8 w-8 cursor-pointer transition-all {achievement.unlocked ? 'hover:scale-110' : 'brightness-[0.3] grayscale'}"
 									/>
 								</Tooltip.Trigger>
 								<Tooltip.Content
@@ -798,6 +756,8 @@
 				</Card.Content>
 			</Card.Root>
 		{/if}
+
+		<AdLong />
 
 		<!-- Created Coins -->
 		{#if hasCreatedCoins}

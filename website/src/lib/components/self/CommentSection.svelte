@@ -178,11 +178,8 @@
 		return lines.slice(0, MAX_LINES_PREVIEW).join('\n');
 	}
 
-	function parseMentions(
-		text: string
-	): Array<{ type: 'text'; value: string } | { type: 'mention'; username: string }> {
-		const parts: Array<{ type: 'text'; value: string } | { type: 'mention'; username: string }> =
-			[];
+	function parseMentions(text: string): Array<{ type: 'text'; value: string } | { type: 'mention'; username: string }> {
+		const parts: Array<{ type: 'text'; value: string } | { type: 'mention'; username: string }> = [];
 		const regex = /@([a-zA-Z0-9_]{3,30})\b/g;
 		let lastIndex = 0;
 		let match;
@@ -221,13 +218,13 @@
 					<Textarea
 						bind:value={newComment}
 						placeholder="Share your thoughts about this coin..."
-						class="min-h-[80px] w-full pr-20 pb-8 break-words"
+						class="min-h-[80px] w-full break-words pb-8 pr-20"
 						style="word-break: break-word; overflow-wrap: break-word;"
 						maxlength={500}
 						onkeydown={handleKeydown}
 					/>
 					<kbd
-						class="bg-muted pointer-events-none absolute right-2 bottom-2 hidden h-5 items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-70 select-none sm:flex"
+						class="bg-muted pointer-events-none absolute bottom-2 right-2 hidden h-5 select-none items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-70 sm:flex"
 					>
 						<span class="text-xs">⌘</span>Enter
 					</kbd>
@@ -285,15 +282,10 @@
 								<div class="flex items-center gap-2">
 									<HoverCard.Root>
 										<HoverCard.Trigger
-											class="max-w-[120px] min-w-0 flex-shrink cursor-pointer text-sm font-medium underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-8 sm:max-w-[180px] sm:text-base"
+											class="min-w-0 max-w-[120px] flex-shrink cursor-pointer text-sm font-medium underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-8 sm:max-w-[180px] sm:text-base"
 											onclick={() => goto(`/user/${comment.userUsername}`)}
 										>
-											<span class="block truncate"
-												><UserName
-													name={comment.userName}
-													nameColor={comment.userNameColor}
-												/></span
-											>
+											<span class="block truncate"><UserName name={comment.userName} nameColor={comment.userNameColor} /></span>
 										</HoverCard.Trigger>
 										<HoverCard.Content class="w-80" side="top" sideOffset={3}>
 											<UserProfilePreview userId={comment.userId} />
@@ -307,21 +299,18 @@
 											<span class="truncate">@{comment.userUsername}</span>
 										</Badge>
 									</button>
-									<span class="text-muted-foreground flex-shrink-0 text-xs whitespace-nowrap">
+									<span class="text-muted-foreground flex-shrink-0 whitespace-nowrap text-xs">
 										{formatTimeAgo(comment.createdAt)}
 									</span>
 								</div>
 								<div class="space-y-1">
 									<p
-										class="text-sm leading-relaxed break-words whitespace-pre-wrap"
+										class="whitespace-pre-wrap break-words text-sm leading-relaxed"
 										style="word-break: break-word; overflow-wrap: break-word;"
 									>
 										{#each parseMentions(displayContent) as part}
 											{#if part.type === 'mention'}
-												<a
-													href="/user/{part.username}"
-													class="text-primary font-medium hover:underline">@{part.username}</a
-												>
+												<a href="/user/{part.username}" class="text-primary hover:underline font-medium">@{part.username}</a>
 											{:else}
 												{part.value}
 											{/if}
@@ -347,10 +336,7 @@
 										? 'text-red-500 hover:text-red-600'
 										: 'text-muted-foreground hover:text-foreground'}"
 								>
-									<HugeiconsIcon
-										icon={FavouriteIcon}
-										class="h-4 w-4 {comment.isLikedByUser ? 'fill-current' : ''}"
-									/>
+									<HugeiconsIcon icon={FavouriteIcon} class="h-4 w-4 {comment.isLikedByUser ? 'fill-current' : ''}" />
 									{#if comment.likesCount > 0}
 										<span class="text-xs">{comment.likesCount}</span>
 									{/if}

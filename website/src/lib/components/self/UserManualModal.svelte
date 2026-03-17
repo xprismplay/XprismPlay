@@ -43,7 +43,7 @@
 			description:
 				'Click "Create coin" in the sidebar to launch your own cryptocurrency. Choose a unique name, symbol, and upload an icon. Each coin starts at $0.000001',
 			icon: Coins01Icon,
-			image: '/tips/coin.avif'
+            image: '/tips/coin.avif'
 		},
 		{
 			id: 3,
@@ -67,7 +67,7 @@
 			description:
 				'Navigate to any coin page and click "Buy". Enter the amount you want to spend. The AMM (Automated Market Maker) will show you exactly how many coins you\'ll receive, including slippage.',
 			icon: TradeUpIcon,
-			image: '/tips/buying.avif'
+            image: '/tips/buying.avif'
 		},
 		{
 			id: 6,
@@ -75,7 +75,7 @@
 			description:
 				'On a coin page, click "Sell" and enter how many coins you want to sell. You can see your holdings in your Portfolio. Remember: selling large amounts can significantly impact the price!',
 			icon: TradeDownIcon,
-			image: '/tips/selling.avif'
+            image: '/tips/selling.avif'
 		},
 		{
 			id: 7,
@@ -83,7 +83,7 @@
 			description:
 				'A "rug pull" happens when large holders (including coin creators) sell their holdings all at once, crashing the price.',
 			icon: Target01Icon,
-			image: '/tips/rugpull.avif'
+            image: '/tips/rugpull.avif'
 		},
 		{
 			id: 8,
@@ -91,7 +91,7 @@
 			description:
 				'Check your Portfolio page to see all your holdings, their current values, and recent transactions. Track your performance and see which investments are doing well.',
 			icon: BarChartIcon,
-			image: '/tips/portfolio.avif'
+            image: '/tips/portfolio.avif',
 		},
 		{
 			id: 9,
@@ -99,15 +99,15 @@
 			description:
 				'The Market page shows all available coins sorted by market cap, volume, and price changes. Use this to discover trending coins and investment opportunities.',
 			icon: Award01Icon,
-			image: '/tips/market.avif'
+            image: '/tips/market.avif'
 		},
 		{
 			id: 10,
 			title: 'Hopium - Prediction Markets',
 			description:
-				'Hopium lets you predict on yes/no questions about the future. AI automatically resolves questions based on real-world data. Test your prediction skills and earn from correct forecasts. Hold $100,000 in cash to create your own Hopium question :)',
+'Hopium lets you predict on yes/no questions about the future. AI automatically resolves questions based on real-world data. Test your prediction skills and earn from correct forecasts. Hold $100,000 in cash to create your own Hopium question :)',
 			icon: Target01Icon,
-			image: '/tips/hopium.avif'
+            image: '/tips/hopium.avif'
 		},
 		{
 			id: 11,
@@ -115,7 +115,7 @@
 			description:
 				'Visit the Arcade section for high-risk, high-reward games. Remember: these are pure chance games. Only play with what you can afford to lose, even in this simulation!',
 			icon: DiceFaces01Icon,
-			image: '/tips/arcade.avif'
+            image: '/tips/arcade.avif'
 		},
 		{
 			id: 12,
@@ -123,7 +123,7 @@
 			description:
 				'Watch the Live Trades page to see real-time trading activity across all coins. This helps you spot trending coins and understand market sentiment. The sidebar shows $1,000+ trades, while the main feed displays every transaction.',
 			icon: BarChartIcon,
-			image: '/tips/live.avif'
+            image: '/tips/live.avif'
 		},
 		{
 			id: 13,
@@ -131,7 +131,7 @@
 			description:
 				'The Treemap page shows a visual representation of the entire market. Larger squares represent higher market caps, and colors show price performance.',
 			icon: BarChartIcon,
-			image: '/tips/treemap.avif'
+            image: '/tips/treemap.avif'
 		},
 		{
 			id: 14,
@@ -139,7 +139,7 @@
 			description:
 				'Compete with other users on the Leaderboard. Climb the ranks by making smart investment decisions!',
 			icon: Award01Icon,
-			image: '/tips/leaderboard.avif'
+            image: '/tips/leaderboard.avif'
 		},
 		{
 			id: 15,
@@ -147,7 +147,7 @@
 			description:
 				'Log in daily to claim free money! Your login streak increases your daily bonus. Consistent players get more virtual cash to invest.',
 			icon: Coins01Icon,
-			image: '/tips/daily.avif'
+            image: '/tips/daily.avif'
 		},
 		{
 			id: 16,
@@ -155,7 +155,7 @@
 			description:
 				"Start small, diversify your holdings, and don't invest everything in one coin. Watch for coins with diversified holders to avoid absolute rug pulls. People get smart!",
 			icon: TradeUpIcon,
-			image: '/tips/ender.avif'
+            image: '/tips/ender.avif'
 		}
 	];
 

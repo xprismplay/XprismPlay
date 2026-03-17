@@ -1,389 +1,371 @@
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { PUBLIC_B2_BUCKET, PUBLIC_B2_ENDPOINT } from "$env/static/public";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 import { volumeSettings } from '$lib/stores/volume-settings';
 import { get } from 'svelte/store';
 
 export function cn(...inputs: ClassValue[]) {
-	return twMerge(clsx(inputs));
+    return twMerge(clsx(inputs));
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type WithoutChild<T> = T extends { child?: any } ? Omit<T, 'child'> : T;
+export type WithoutChild<T> = T extends { child?: any } ? Omit<T, "child"> : T;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type WithoutChildren<T> = T extends { children?: any } ? Omit<T, 'children'> : T;
+export type WithoutChildren<T> = T extends { children?: any } ? Omit<T, "children"> : T;
 export type WithoutChildrenOrChild<T> = WithoutChildren<WithoutChild<T>>;
 export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & { ref?: U | null };
 
-export function getTimeBasedGreeting(): string {
-	const hour = new Date().getHours();
+export function getTimeBasedGreeting(name: string): string {
+    const hour = new Date().getHours();
 
-	if (hour < 12) {
-		return 'good_morning';
-	} else if (hour < 17) {
-		return 'good_afternoon';
-	} else if (hour < 22) {
-		return 'good_evening';
-	} else {
-		return 'good_night';
-	}
+    if (hour < 12) {
+        return `Good morning, ${name}`;
+    } else if (hour < 17) {
+        return `Good afternoon, ${name}`;
+    } else if (hour < 22) {
+        return `Good evening, ${name}`;
+    } else {
+        return `Good night, ${name}`;
+    }
 }
 
 export function getPublicUrl(key: string | null): string | null {
-	if (!key) return null;
-	return `/api/proxy/s3/${key}`;
+    if (!key) return null;
+    return `/api/proxy/s3/${key}`;
 }
 
 export function debounce(func: (...args: any[]) => void, wait: number) {
-	let timeout: ReturnType<typeof setTimeout> | undefined;
-	return function executedFunction(...args: any[]) {
-		const later = () => {
-			clearTimeout(timeout);
-			func(...args);
-		};
-		clearTimeout(timeout);
-		timeout = setTimeout(later, wait);
-	};
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    return function executedFunction(...args: any[]) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
 }
 
 export function formatPrice(price: number): string {
-	if (typeof price !== 'number' || isNaN(price)) return '0.00';
-	if (price >= 1e18) return `${(price / 1e18).toFixed(2)}Qi`;
-	if (price >= 1e15) return `${(price / 1e15).toFixed(2)}Qa`;
-	if (price >= 1e12) return `${(price / 1e12).toFixed(2)}T`;
-	if (price >= 1e9) return `${(price / 1e9).toFixed(2)}B`;
-	if (price >= 1e6) return `${(price / 1e6).toFixed(2)}M`;
-	if (price >= 1e3) return `${(price / 1e3).toFixed(2)}K`;
-	if (price < 0.01) {
-		return price.toFixed(6);
-	} else if (price < 1) {
-		return price.toFixed(4);
-	} else {
-		return price.toLocaleString(undefined, {
-			minimumFractionDigits: 2,
-			maximumFractionDigits: 2
-		});
-	}
+    if (typeof price !== 'number' || isNaN(price)) return '0.00';
+    if (price >= 1e18) return `${(price / 1e18).toFixed(2)}Qi`;
+    if (price >= 1e15) return `${(price / 1e15).toFixed(2)}Qa`;
+    if (price >= 1e12) return `${(price / 1e12).toFixed(2)}T`;
+    if (price >= 1e9) return `${(price / 1e9).toFixed(2)}B`;
+    if (price >= 1e6) return `${(price / 1e6).toFixed(2)}M`;
+    if (price >= 1e3) return `${(price / 1e3).toFixed(2)}K`;
+    if (price < 0.01) {
+        return price.toFixed(6);
+    } else if (price < 1) {
+        return price.toFixed(4);
+    } else {
+        return price.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
 }
 
 export function formatValue(value: number | string): string {
-	const numValue = typeof value === 'string' ? parseFloat(value) : value;
-	if (typeof numValue !== 'number' || isNaN(numValue)) return '$0.00';
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    if (typeof numValue !== 'number' || isNaN(numValue)) return '$0.00';
 
-	if (numValue >= 1e21) return `$${(numValue / 1e21).toFixed(2)}Sx`;
-	if (numValue >= 1e18) return `$${(numValue / 1e18).toFixed(2)}Qi`;
-	if (numValue >= 1e15) return `$${(numValue / 1e15).toFixed(2)}Qa`;
-	if (numValue >= 1e12) return `$${(numValue / 1e12).toFixed(2)}T`;
-	if (numValue >= 1e9) return `$${(numValue / 1e9).toFixed(2)}B`;
-	if (numValue >= 1e6) return `$${(numValue / 1e6).toFixed(2)}M`;
-	if (numValue >= 1e3) return `$${(numValue / 1e3).toFixed(2)}K`;
+    if (numValue >= 1e21) return `$${(numValue / 1e21).toFixed(2)}Sx`;
+    if (numValue >= 1e18) return `$${(numValue / 1e18).toFixed(2)}Qi`;
+    if (numValue >= 1e15) return `$${(numValue / 1e15).toFixed(2)}Qa`;
+    if (numValue >= 1e12) return `$${(numValue / 1e12).toFixed(2)}T`;
+    if (numValue >= 1e9) return `$${(numValue / 1e9).toFixed(2)}B`;
+    if (numValue >= 1e6) return `$${(numValue / 1e6).toFixed(2)}M`;
+    if (numValue >= 1e3) return `$${(numValue / 1e3).toFixed(2)}K`;
 
-	if (numValue < 0.01) {
-		const str = numValue.toString();
-		const match = str.match(/^0\.0*(\d{2})/);
-		if (match) {
-			const zerosAfterDecimal = str.indexOf(match[1]) - 2;
-			return `$${numValue.toFixed(zerosAfterDecimal + 2)}`;
-		}
-	}
+    if (numValue < 0.01) {
+        const str = numValue.toString();
+        const match = str.match(/^0\.0*(\d{2})/);
+        if (match) {
+            const zerosAfterDecimal = str.indexOf(match[1]) - 2;
+            return `$${numValue.toFixed(zerosAfterDecimal + 2)}`;
+        }
+    }
 
-	return `$${numValue.toFixed(2)}`;
+    return `$${numValue.toFixed(2)}`;
 }
 
 export function formatQuantity(value: number): string {
-	if (typeof value !== 'number' || isNaN(value)) return '0';
-	if (value >= 1e21) return `${(value / 1e21).toFixed(2)}Sx`;
-	if (value >= 1e18) return `${(value / 1e18).toFixed(2)}Qi`;
-	if (value >= 1e15) return `${(value / 1e15).toFixed(2)}Qa`;
-	if (value >= 1e12) return `${(value / 1e12).toFixed(2)}T`;
-	if (value >= 1e9) return `${(value / 1e9).toFixed(2)}B`;
-	if (value >= 1e6) return `${(value / 1e6).toFixed(2)}M`;
-	if (value >= 1e3) return `${(value / 1e3).toFixed(2)}K`;
-	return value.toLocaleString();
+    if (typeof value !== 'number' || isNaN(value)) return '0';
+    if (value >= 1e21) return `${(value / 1e21).toFixed(2)}Sx`;
+    if (value >= 1e18) return `${(value / 1e18).toFixed(2)}Qi`;
+    if (value >= 1e15) return `${(value / 1e15).toFixed(2)}Qa`;
+    if (value >= 1e12) return `${(value / 1e12).toFixed(2)}T`;
+    if (value >= 1e9) return `${(value / 1e9).toFixed(2)}B`;
+    if (value >= 1e6) return `${(value / 1e6).toFixed(2)}M`;
+    if (value >= 1e3) return `${(value / 1e3).toFixed(2)}K`;
+    return value.toLocaleString();
 }
 
 export function formatDate(timestamp: string): string {
-	const date = new Date(timestamp);
-	return date.toLocaleDateString('en-US', {
-		month: 'short',
-		day: 'numeric',
-		hour: '2-digit',
-		minute: '2-digit'
-	});
+    const date = new Date(timestamp);
+    return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 }
 
 export function formatDateWithYear(timestamp: string): string {
-	const date = new Date(timestamp);
-	return date.toLocaleDateString('en-US', {
-		month: 'short',
-		day: 'numeric',
-		year: 'numeric'
-	});
+    const date = new Date(timestamp);
+    return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+    });
 }
 
 export function formatRelativeTime(timestamp: string | Date): string {
-	const now = new Date();
-	const past = new Date(timestamp);
-	const ms = now.getTime() - past.getTime();
+    const now = new Date();
+    const past = new Date(timestamp);
+    const ms = now.getTime() - past.getTime();
 
-	const seconds = Math.floor(ms / 1000);
-	const minutes = Math.floor(seconds / 60);
-	const hours = Math.floor(minutes / 60);
-	const days = Math.floor(hours / 24);
+    const seconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
 
-	if (seconds < 60) return `${seconds}s`;
-	if (minutes < 60) return `${minutes}m`;
+    if (seconds < 60) return `${seconds}s`;
+    if (minutes < 60) return `${minutes}m`;
 
-	if (hours < 24) {
-		const extraMinutes = minutes % 60;
-		return extraMinutes === 0 ? `${hours}h` : `${hours}h ${extraMinutes}m`;
-	}
+    if (hours < 24) {
+        const extraMinutes = minutes % 60;
+        return extraMinutes === 0 ? `${hours}h` : `${hours}h ${extraMinutes}m`;
+    }
 
-	if (days < 7) return `${days}d`;
+    if (days < 7) return `${days}d`;
 
-	const yearsDiff = now.getFullYear() - past.getFullYear();
-	const monthsDiff = now.getMonth() - past.getMonth();
-	const totalMonths = yearsDiff * 12 + monthsDiff;
-	const adjustedMonths = totalMonths + (now.getDate() < past.getDate() ? -1 : 0);
-	const years = Math.floor(adjustedMonths / 12);
+    const yearsDiff = now.getFullYear() - past.getFullYear();
+    const monthsDiff = now.getMonth() - past.getMonth();
+    const totalMonths = yearsDiff * 12 + monthsDiff;
+    const adjustedMonths = totalMonths + (now.getDate() < past.getDate() ? -1 : 0);
+    const years = Math.floor(adjustedMonths / 12);
 
-	if (adjustedMonths < 1) {
-		const weeks = Math.floor(days / 7);
-		const extraDays = days % 7;
-		return extraDays === 0 ? `${weeks}w` : `${weeks}w ${extraDays}d`;
-	}
+    if (adjustedMonths < 1) {
+        const weeks = Math.floor(days / 7);
+        const extraDays = days % 7;
+        return extraDays === 0 ? `${weeks}w` : `${weeks}w ${extraDays}d`;
+    }
 
-	if (years < 1) {
-		const tempDate = new Date(past);
-		tempDate.setMonth(tempDate.getMonth() + adjustedMonths);
-		const remainingDays = Math.floor((now.getTime() - tempDate.getTime()) / (1000 * 60 * 60 * 24));
-		const weeks = Math.floor(remainingDays / 7);
-		return weeks === 0 ? `${adjustedMonths}mo` : `${adjustedMonths}mo ${weeks}w`;
-	}
+    if (years < 1) {
+        const tempDate = new Date(past);
+        tempDate.setMonth(tempDate.getMonth() + adjustedMonths);
+        const remainingDays = Math.floor((now.getTime() - tempDate.getTime()) / (1000 * 60 * 60 * 24));
+        const weeks = Math.floor(remainingDays / 7);
+        return weeks === 0 ? `${adjustedMonths}mo` : `${adjustedMonths}mo ${weeks}w`;
+    }
 
-	const remainingMonths = adjustedMonths % 12;
-	return remainingMonths === 0 ? `${years}y` : `${years}y ${remainingMonths}mo`;
+    const remainingMonths = adjustedMonths % 12;
+    return remainingMonths === 0 ? `${years}y` : `${years}y ${remainingMonths}mo`;
 }
 
 export function formatTimeAgo(date: string) {
-	const now = new Date();
-	const commentDate = new Date(date);
-	const diffMs = now.getTime() - commentDate.getTime();
-	const diffMins = Math.floor(diffMs / (1000 * 60));
-	const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-	const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const now = new Date();
+    const commentDate = new Date(date);
+    const diffMs = now.getTime() - commentDate.getTime();
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-	if (diffMins < 1) return 'Just now';
-	if (diffMins < 60) return `${diffMins}m ago`;
-	if (diffHours < 24) return `${diffHours}h ago`;
-	return `${diffDays}d ago`;
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return `${diffDays}d ago`;
 }
 
 export function formatTimeRemaining(timeMs: number): string {
-	const hours = Math.floor(timeMs / (60 * 60 * 1000));
-	const minutes = Math.floor((timeMs % (60 * 60 * 1000)) / (60 * 1000));
+    const hours = Math.floor(timeMs / (60 * 60 * 1000));
+    const minutes = Math.floor((timeMs % (60 * 60 * 1000)) / (60 * 1000));
 
-	if (hours > 0) {
-		return `${hours}h ${minutes}m`;
-	}
-	return `${minutes}m`;
+    if (hours > 0) {
+        return `${hours}h ${minutes}m`;
+    }
+    return `${minutes}m`;
 }
 
 export function formatTimeUntil(date: Date | string | number): string {
-	const now = Date.now();
-	const target =
-		typeof date === 'number' ? date * (date < 1e12 ? 1000 : 1) : new Date(date).getTime();
-	let diff = Math.max(0, target - now);
+    const now = Date.now();
+    const target = typeof date === 'number'
+        ? date * (date < 1e12 ? 1000 : 1)
+        : new Date(date).getTime();
+    let diff = Math.max(0, target - now);
 
-	const minutes = Math.floor(diff / 60000);
-	const hours = Math.floor(diff / 3600000);
-	const days = Math.floor(diff / 86400000);
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
 
-	if (diff < 60000) return 'less than 1m';
-	if (minutes < 60) return `${minutes}m`;
-	if (hours < 24) return `${hours}h`;
-	return `${days}d`;
+    if (diff < 60000) return 'less than 1m';
+    if (minutes < 60) return `${minutes}m`;
+    if (hours < 24) return `${hours}h`;
+    return `${days}d`;
 }
 
 export function getExpirationDate(option: string): string | null {
-	if (!option) return null;
+    if (!option) return null;
 
-	const now = new Date();
-	switch (option) {
-		case '1h':
-			return new Date(now.getTime() + 60 * 60 * 1000).toISOString();
-		case '1d':
-			return new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString();
-		case '3d':
-			return new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString();
-		case '7d':
-			return new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString();
-		case '30d':
-			return new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString();
-		default:
-			return null;
-	}
+    const now = new Date();
+    switch (option) {
+        case '1h':
+            return new Date(now.getTime() + 60 * 60 * 1000).toISOString();
+        case '1d':
+            return new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString();
+        case '3d':
+            return new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString();
+        case '7d':
+            return new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString();
+        case '30d':
+            return new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString();
+        default:
+            return null;
+    }
 }
 
 export function getTimeframeInSeconds(timeframe: string): number {
-	switch (timeframe) {
-		case '1m':
-			return 60;
-		case '5m':
-			return 300;
-		case '15m':
-			return 900;
-		case '1h':
-			return 3600;
-		case '4h':
-			return 14400;
-		case '1d':
-			return 86400;
-		default:
-			return 60;
-	}
+    switch (timeframe) {
+        case '1m':
+            return 60;
+        case '5m':
+            return 300;
+        case '15m':
+            return 900;
+        case '1h':
+            return 3600;
+        case '4h':
+            return 14400;
+        case '1d':
+            return 86400;
+        default:
+            return 60;
+    }
 }
 
 //
 let availableSounds = [1, 2, 3, 4, 5, 6, 7];
 
 export function playRandomFireworkSound() {
-	if (availableSounds.length === 0) {
-		availableSounds = [1, 2, 3, 4, 5, 6, 7];
-	}
+    if (availableSounds.length === 0) {
+        availableSounds = [1, 2, 3, 4, 5, 6, 7];
+    }
 
-	const randomIndex = Math.floor(Math.random() * availableSounds.length);
-	const soundNumber = availableSounds[randomIndex];
+    const randomIndex = Math.floor(Math.random() * availableSounds.length);
+    const soundNumber = availableSounds[randomIndex];
 
-	availableSounds = availableSounds.filter((_, index) => index !== randomIndex);
+    availableSounds = availableSounds.filter((_, index) => index !== randomIndex);
 
-	playSound(`firework${soundNumber}`);
+    playSound(`firework${soundNumber}`);
 }
 
 export function playSound(sound: string) {
-	try {
-		const settings = get(volumeSettings);
+    try {
+        const settings = get(volumeSettings);
 
-		if (settings.muted) {
-			return;
-		}
+        if (settings.muted) {
+            return;
+        }
 
-		const audio = new Audio(`/sound/${sound}.mp3`);
-		audio.volume = Math.max(0, Math.min(1, settings.master));
-		audio.play().catch(console.error);
-	} catch (error) {
-		console.error('Error playing sound:', error);
-	}
+        const audio = new Audio(`/sound/${sound}.mp3`);
+        audio.volume = Math.max(0, Math.min(1, settings.master));
+        audio.play().catch(console.error);
+    } catch (error) {
+        console.error('Error playing sound:', error);
+    }
 }
 
 export function showConfetti(confetti: any) {
-	const duration = 2 * 1000;
-	const animationEnd = Date.now() + duration;
-	const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+    const duration = 2 * 1000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
-	function randomInRange(min: number, max: number) {
-		return Math.random() * (max - min) + min;
-	}
+    function randomInRange(min: number, max: number) {
+        return Math.random() * (max - min) + min;
+    }
 
-	playRandomFireworkSound();
+    playRandomFireworkSound();
 
-	const interval = setInterval(function () {
-		const timeLeft = animationEnd - Date.now();
+    const interval = setInterval(function () {
+        const timeLeft = animationEnd - Date.now();
 
-		if (timeLeft <= 0) {
-			return clearInterval(interval);
-		}
+        if (timeLeft <= 0) {
+            return clearInterval(interval);
+        }
 
-		const particleCount = 50 * (timeLeft / duration);
-		confetti({
-			...defaults,
-			particleCount,
-			origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
-		});
-		confetti({
-			...defaults,
-			particleCount,
-			origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
-		});
+        const particleCount = 50 * (timeLeft / duration);
+        confetti({
+            ...defaults,
+            particleCount,
+            origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+        });
+        confetti({
+            ...defaults,
+            particleCount,
+            origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+        });
 
-		if (Math.floor(timeLeft / 500) !== Math.floor((timeLeft - 250) / 500)) {
-			playRandomFireworkSound();
-		}
-	}, 250);
+        if (Math.floor(timeLeft / 500) !== Math.floor((timeLeft - 250) / 500)) {
+            playRandomFireworkSound();
+        }
+    }, 250);
 }
 
 export function showSchoolPrideCannons(confetti: any) {
-	const end = Date.now() + 3 * 1000;
-	const colors = ['#bb0000', '#ffffff'];
-	playSound('cannon');
-	playSound('win');
+    const end = Date.now() + (3 * 1000);
+    const colors = ['#bb0000', '#ffffff'];
+    playSound('cannon');
+    playSound('win');
 
-	setTimeout(() => {
-		playSound('cannon');
-	}, 100);
+    setTimeout(() => {
+        playSound('cannon');
+    }, 100);
 
-	(function frame() {
-		confetti({
-			particleCount: 2,
-			angle: 60,
-			spread: 55,
-			origin: { x: 0 },
-			colors: colors
-		});
-		confetti({
-			particleCount: 2,
-			angle: 120,
-			spread: 55,
-			origin: { x: 1 },
-			colors: colors
-		});
+    (function frame() {
+        confetti({
+            particleCount: 2,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 },
+            colors: colors
+        });
+        confetti({
+            particleCount: 2,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 },
+            colors: colors
+        });
 
-		if (Date.now() < end) {
-			requestAnimationFrame(frame);
-		}
-	})();
-}
-export function calcPrestigePrice(prestigeLevel: number) {
-	if (prestigeLevel === 1) return 100_000;
-	return Math.round(100_000 * 2.1 ** (prestigeLevel - 1));
+        if (Date.now() < end) {
+            requestAnimationFrame(frame);
+        }
+    }());
 }
 
 export const formatMarketCap = formatValue;
 
 export function timeToLocal(originalTime: number): number {
-	const d = new Date(originalTime * 1000);
-	return Math.floor(
-		Date.UTC(
-			d.getFullYear(),
-			d.getMonth(),
-			d.getDate(),
-			d.getHours(),
-			d.getMinutes(),
-			d.getSeconds(),
-			d.getMilliseconds()
-		) / 1000
-	);
+    const d = new Date(originalTime * 1000);
+    return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds()) / 1000);
 }
 
-export const PRESTIGE_COSTS = Object.fromEntries(
-	Array.from({ length: getMaxPrestigeLevel() }, (_, i) => [i + 1, calcPrestigePrice(i + 1)])
-) as Record<number, number>;
+export const PRESTIGE_COSTS = {
+	1: 100_000,
+	2: 250_000,
+	3: 1_000_000,
+	4: 5_000_000,
+	5: 25_000_000
+} as const;
 
 export const PRESTIGE_NAMES = {
 	1: 'Prestige I',
 	2: 'Prestige II',
 	3: 'Prestige III',
 	4: 'Prestige IV',
-	5: 'Prestige V',
-	6: 'Prestige VI',
-	7: 'Prestige VII',
-	8: 'Prestige VIII',
-	9: 'Prestige IX',
-	10: 'Prestige X',
-	11: 'Prestige XI',
-	12: 'Prestige XII',
-	13: 'Prestige XIII',
-	14: 'Prestige XIV',
-	15: 'Prestige XV'
+	5: 'Prestige V'
 } as const;
 
 export const PRESTIGE_COLORS = {
@@ -391,128 +373,105 @@ export const PRESTIGE_COLORS = {
 	2: 'text-purple-500',
 	3: 'text-yellow-500',
 	4: 'text-orange-500',
-	5: 'text-red-500',
-	6: 'text-cyan-500',
-	7: 'text-emerald-500',
-	8: 'text-lime-500',
-	9: 'text-pink-500',
-	10: 'text-red-700',
-	11: 'text-sky-500',
-	12: 'text-fuchsia-500',
-	13: 'text-emerald-700',
-	14: 'text-rose-500',
-	15: 'text-purple-500'
+	5: 'text-red-500'
 } as const;
 
 export function getPrestigeName(level: number): string | null {
-	if (level <= 0) return null;
-	const clampedLevel = Math.min(level, getMaxPrestigeLevel()) as keyof typeof PRESTIGE_NAMES;
-	return PRESTIGE_NAMES[clampedLevel];
+    if (level <= 0) return null;
+    const clampedLevel = Math.min(level, 5) as keyof typeof PRESTIGE_NAMES;
+    return PRESTIGE_NAMES[clampedLevel];
 }
 
 export function getPrestigeCost(level: number): number | null {
-	if (level <= 0) return null;
-	const clampedLevel = Math.min(level, getMaxPrestigeLevel()) as keyof typeof PRESTIGE_COSTS;
-	return PRESTIGE_COSTS[clampedLevel];
+    if (level <= 0) return null;
+    const clampedLevel = Math.min(level, 5) as keyof typeof PRESTIGE_COSTS;
+    return PRESTIGE_COSTS[clampedLevel];
 }
 
 export function getPrestigeColor(level: number): string {
-	if (level <= 0) return 'text-gray-500';
-	const clampedLevel = Math.min(level, getMaxPrestigeLevel()) as keyof typeof PRESTIGE_COLORS;
-	return PRESTIGE_COLORS[clampedLevel];
+    if (level <= 0) return 'text-gray-500';
+    const clampedLevel = Math.min(level, 5) as keyof typeof PRESTIGE_COLORS;
+    return PRESTIGE_COLORS[clampedLevel];
 }
 
 export function getMaxPrestigeLevel(): number {
-	return 15;
+    return 5;
 }
 
-export function validateBetAmount(
-	amount: unknown,
-	minBet: number = 0.01,
-	maxBet: number = 1000000
-): number {
-	if (!amount || typeof amount !== 'number' || !Number.isFinite(amount)) {
-		throw new Error('Invalid bet amount');
-	}
+export function validateBetAmount(amount: unknown, minBet: number = 0.01, maxBet: number = 1000000): number {
+    if (!amount || typeof amount !== 'number' || !Number.isFinite(amount)) {
+        throw new Error('Invalid bet amount');
+    }
 
-	const roundedBet = Math.round(amount * 100000000) / 100000000;
+    const roundedBet = Math.round(amount * 100000000) / 100000000;
 
-	if (roundedBet < minBet) {
-		throw new Error(`Bet amount must be at least $${minBet.toFixed(2)}`);
-	}
+    if (roundedBet < minBet) {
+        throw new Error(`Bet amount must be at least $${minBet.toFixed(2)}`);
+    }
 
-	if (roundedBet > maxBet) {
-		throw new Error('Bet amount too large');
-	}
+    if (roundedBet > maxBet) {
+        throw new Error('Bet amount too large');
+    }
 
-	return roundedBet;
+    return roundedBet;
 }
 
 export function calculateMinesMultiplier(picks: number, mines: number, betAmount: number): number {
-	const TOTAL_TILES = 25;
-	const HOUSE_EDGE = 0.05;
+    const TOTAL_TILES = 25;
+    const HOUSE_EDGE = 0.05;
 
-	if (!betAmount || betAmount <= 0 || !isFinite(betAmount)) {
-		let probability = 1;
-		for (let i = 0; i < picks; i++) {
-			probability *= (TOTAL_TILES - mines - i) / (TOTAL_TILES - i);
-		}
-		return probability <= 0
-			? 1.0
-			: Math.max(1.0, Number(((1 / probability) * (1 - HOUSE_EDGE)).toFixed(2)));
-	}
+    if (!betAmount || betAmount <= 0 || !isFinite(betAmount)) {
+        let probability = 1;
+        for (let i = 0; i < picks; i++) {
+            probability *= (TOTAL_TILES - mines - i) / (TOTAL_TILES - i);
+        }
+        return probability <= 0 ? 1.0 : Math.max(1.0, Number(((1 / probability) * (1 - HOUSE_EDGE)).toFixed(2)));
+    }
 
-	let probability = 1;
-	for (let i = 0; i < picks; i++) {
-		probability *= (TOTAL_TILES - mines - i) / (TOTAL_TILES - i);
-	}
-	if (probability <= 0) return 1.0;
+    let probability = 1;
+    for (let i = 0; i < picks; i++) {
+        probability *= (TOTAL_TILES - mines - i) / (TOTAL_TILES - i);
+    }
+    if (probability <= 0) return 1.0;
 
-	const fairMultiplier = (1 / probability) * (1 - HOUSE_EDGE);
+    const fairMultiplier = (1 / probability) * (1 - HOUSE_EDGE);
 
-	// Backend payout cap logic
-	const MAX_PAYOUT = 2_000_000;
-	const HIGH_BET_THRESHOLD = 50_000;
-	const mineFactor = 1 + mines / 25;
-	const baseMultiplier = (1.4 + Math.pow(picks, 0.45)) * mineFactor;
-	let maxPayout: number;
-	if (betAmount > HIGH_BET_THRESHOLD) {
-		const betRatio = Math.pow(
-			Math.min(1, (betAmount - HIGH_BET_THRESHOLD) / (MAX_PAYOUT - HIGH_BET_THRESHOLD)),
-			1
-		);
-		const maxAllowedMultiplier = 1.05 + picks * 0.1;
-		const highBetMultiplier =
-			Math.min(baseMultiplier, maxAllowedMultiplier) * (1 - (betAmount / MAX_PAYOUT) * 0.9);
-		const betSizeFactor = Math.max(0.1, 1 - (betAmount / MAX_PAYOUT) * 0.9);
-		const minMultiplier = (1.1 + picks * 0.15 * betSizeFactor) * mineFactor;
-		const reducedMultiplier = highBetMultiplier - (highBetMultiplier - minMultiplier) * betRatio;
-		maxPayout = Math.min(betAmount * reducedMultiplier, MAX_PAYOUT);
-	} else {
-		maxPayout = Math.min(betAmount * baseMultiplier, MAX_PAYOUT);
-	}
-	const rawPayout = fairMultiplier * betAmount;
-	const cappedPayout = Math.min(rawPayout, maxPayout);
-	const effectiveMultiplier = cappedPayout / betAmount;
-	return Math.max(1.0, Number(effectiveMultiplier.toFixed(2)));
+    // Backend payout cap logic
+    const MAX_PAYOUT = 2_000_000;
+    const HIGH_BET_THRESHOLD = 50_000;
+    const mineFactor = 1 + (mines / 25);
+    const baseMultiplier = (1.4 + Math.pow(picks, 0.45)) * mineFactor;
+    let maxPayout: number;
+    if (betAmount > HIGH_BET_THRESHOLD) {
+        const betRatio = Math.pow(Math.min(1, (betAmount - HIGH_BET_THRESHOLD) / (MAX_PAYOUT - HIGH_BET_THRESHOLD)), 1);
+        const maxAllowedMultiplier = 1.05 + (picks * 0.1);
+        const highBetMultiplier = Math.min(baseMultiplier, maxAllowedMultiplier) * (1 - (betAmount / MAX_PAYOUT) * 0.9);
+        const betSizeFactor = Math.max(0.1, 1 - (betAmount / MAX_PAYOUT) * 0.9);
+        const minMultiplier = (1.1 + (picks * 0.15 * betSizeFactor)) * mineFactor;
+        const reducedMultiplier = highBetMultiplier - ((highBetMultiplier - minMultiplier) * betRatio);
+        maxPayout = Math.min(betAmount * reducedMultiplier, MAX_PAYOUT);
+    } else {
+        maxPayout = Math.min(betAmount * baseMultiplier, MAX_PAYOUT);
+    }
+    const rawPayout = fairMultiplier * betAmount;
+    const cappedPayout = Math.min(rawPayout, maxPayout);
+    const effectiveMultiplier = cappedPayout / betAmount;
+    return Math.max(1.0, Number(effectiveMultiplier.toFixed(2)));
 }
 
 export type TowerDifficulty = 'easy' | 'medium' | 'hard';
 
-export const twr_difficulty_config: Record<
-	TowerDifficulty,
-	{ tiles: number; bombs: number; label: string; max?: number; maxBet: number }
-> = {
-	easy: { tiles: 3, bombs: 1, label: 'Easy', maxBet: 1_000_000 },
-	medium: { tiles: 4, bombs: 2, label: 'Medium', maxBet: 100_000 },
-	hard: { tiles: 5, bombs: 3, label: 'Hard', maxBet: 10_000, max: 10_000 }
+export const twr_difficulty_config: Record<TowerDifficulty, { tiles: number; bombs: number; label: string; max?: number; maxBet: number }> = {
+    easy:   { tiles: 3, bombs: 1, label: 'Easy',   maxBet: 1_000_000 },
+    medium: { tiles: 4, bombs: 2, label: 'Medium', maxBet: 100_000 },
+    hard:   { tiles: 5, bombs: 3, label: 'Hard',   maxBet: 10_000, max: 10_000 },
 };
 
 export function calculateTowerMultiplier(floor: number, difficulty: TowerDifficulty): number {
-	const HOUSE_EDGE = 0.05;
-	const config = twr_difficulty_config[difficulty];
-	const safeTiles = config.tiles - config.bombs;
-	const probability = Math.pow(safeTiles / config.tiles, floor);
-	if (probability <= 0) return 1.0;
-	return Math.max(1.0, Number(((1 / probability) * (1 - HOUSE_EDGE)).toFixed(4)));
+    const HOUSE_EDGE = 0.05;
+    const config = twr_difficulty_config[difficulty];
+    const safeTiles = config.tiles - config.bombs;
+    const probability = Math.pow(safeTiles / config.tiles, floor);
+    if (probability <= 0) return 1.0;
+    return Math.max(1.0, Number(((1 / probability) * (1 - HOUSE_EDGE)).toFixed(4)));
 }

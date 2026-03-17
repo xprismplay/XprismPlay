@@ -8,7 +8,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 config({ path: join(__dirname, '../../.env') });
 
 if (!process.env.REDIS_URL) {
-	console.error('REDIS_URL is not defined in environment variables.');
+	console.error("REDIS_URL is not defined in environment variables.");
 	process.exit(1);
 }
 
@@ -19,31 +19,31 @@ const HEARTBEAT_INTERVAL = 30_000;
 type WebSocketData = {
 	coinSymbol?: string;
 	userId?: string;
+	pokerLobbyId?: string;
 	lastActivity: number;
 };
 
 const coinSockets = new Map<string, Set<ServerWebSocket<WebSocketData>>>();
 const userSockets = new Map<string, Set<ServerWebSocket<WebSocketData>>>();
+const pokerLobbySockets = new Map<string, Set<ServerWebSocket<WebSocketData>>>();
 const pingIntervals = new WeakMap<ServerWebSocket<WebSocketData>, NodeJS.Timeout>();
 
 redis.on('error', (err) => console.error('Redis Client Error', err));
 
 redis.on('connect', () => {
-	redis.psubscribe('comments:*', 'prices:*', 'notifications:*', (err, count) => {
-		if (err) console.error('Failed to psubscribe to patterns', err);
+	redis.psubscribe('comments:*', 'prices:*', 'notifications:*', 'poker:lobby:*', 'poker:chat:*', (err, count) => {
+		if (err) console.error("Failed to psubscribe to patterns", err);
 		else console.log(`Successfully psubscribed to patterns. Active psubscriptions: ${count}`);
 	});
 
 	redis.subscribe('trades:all', 'trades:large', 'arcade:activity', (err, count) => {
-		if (err) console.error('Failed to subscribe to channels', err);
+		if (err) console.error("Failed to subscribe to channels", err);
 		else console.log(`Successfully subscribed to channels. Active subscriptions: ${count}`);
 	});
 });
 
 redis.on('pmessage', (pattern, channel, msg) => {
-	console.log(
-		`[Redis pmessage RECEIVED] Pattern: "${pattern}", Channel: "${channel}", Message: "${msg}"`
-	);
+	console.log(`[Redis pmessage RECEIVED] Pattern: "${pattern}", Channel: "${channel}", Message: "${msg}"`);
 	try {
 		if (channel.startsWith('comments:')) {
 			const coinSymbol = channel.substring('comments:'.length);
@@ -84,13 +84,34 @@ redis.on('pmessage', (pattern, channel, msg) => {
 					}
 				}
 			}
+		} else if (channel.startsWith('poker:lobby:')) {
+			const lobbyId = channel.substring('poker:lobby:'.length);
+			const sockets = pokerLobbySockets.get(lobbyId);
+			if (sockets) {
+				const pokerMessage = JSON.stringify({
+					type: 'poker_state',
+					lobbyId
+				});
+
+				for (const ws of sockets) {
+					if (ws.readyState === WebSocket.OPEN) {
+						ws.send(pokerMessage);
+					}
+				}
+			}
+		} else if (channel.startsWith('poker:chat:')) {
+			const lobbyId = channel.substring('poker:chat:'.length);
+			const sockets = pokerLobbySockets.get(lobbyId);
+			if (sockets) {
+				for (const ws of sockets) {
+					if (ws.readyState === WebSocket.OPEN) {
+						ws.send(msg);
+					}
+				}
+			}
 		}
 	} catch (error) {
-		console.error(
-			'Error processing Redis pmessage:',
-			error,
-			`Pattern: ${pattern}, Channel: ${channel}, Raw message: ${msg}`
-		);
+		console.error('Error processing Redis pmessage:', error, `Pattern: ${pattern}, Channel: ${channel}, Raw message: ${msg}`);
 	}
 });
 
@@ -136,11 +157,7 @@ redis.on('message', (channel, msg) => {
 			}
 		}
 	} catch (error) {
-		console.error(
-			'Error processing Redis message:',
-			error,
-			`Channel: ${channel}, Raw message: ${msg}`
-		);
+		console.error('Error processing Redis message:', error, `Channel: ${channel}, Raw message: ${msg}`);
 	}
 });
 
@@ -184,12 +201,30 @@ function handleSetUser(ws: ServerWebSocket<WebSocketData>, userId: string) {
 	}
 }
 
+function handleSetPokerLobby(ws: ServerWebSocket<WebSocketData>, lobbyId: string) {
+	if (ws.data.pokerLobbyId) {
+		const prev = pokerLobbySockets.get(ws.data.pokerLobbyId);
+		if (prev) {
+			prev.delete(ws);
+			if (prev.size === 0) {
+				pokerLobbySockets.delete(ws.data.pokerLobbyId);
+			}
+		}
+	}
+
+	ws.data.pokerLobbyId = lobbyId;
+
+	if (!pokerLobbySockets.has(lobbyId)) {
+		pokerLobbySockets.set(lobbyId, new Set([ws]));
+	} else {
+		pokerLobbySockets.get(lobbyId)!.add(ws);
+	}
+}
+
 function checkConnections() {
 	const now = Date.now();
 	for (const [coinSymbol, sockets] of coinSockets.entries()) {
-		const staleSockets = Array.from(sockets).filter(
-			(ws) => now - ws.data.lastActivity > HEARTBEAT_INTERVAL * 2
-		);
+		const staleSockets = Array.from(sockets).filter(ws => now - ws.data.lastActivity > HEARTBEAT_INTERVAL * 2);
 		for (const socket of staleSockets) {
 			socket.terminate();
 		}
@@ -205,19 +240,13 @@ const server = Bun.serve<WebSocketData, undefined>({
 		const url = new URL(request.url);
 
 		if (url.pathname === '/health') {
-			return new Response(
-				JSON.stringify({
-					status: 'ok',
-					timestamp: new Date().toISOString(),
-					activeConnections: Array.from(coinSockets.values()).reduce(
-						(total, set) => total + set.size,
-						0
-					)
-				}),
-				{
-					headers: { 'Content-Type': 'application/json' }
-				}
-			);
+			return new Response(JSON.stringify({
+				status: 'ok',
+				timestamp: new Date().toISOString(),
+				activeConnections: Array.from(coinSockets.values()).reduce((total, set) => total + set.size, 0)
+			}), {
+				headers: { 'Content-Type': 'application/json' }
+			});
 		}
 
 		const upgraded = server.upgrade(request, {
@@ -241,12 +270,15 @@ const server = Bun.serve<WebSocketData, undefined>({
 					type: string;
 					coinSymbol?: string;
 					userId?: string;
+					lobbyId?: string;
 				};
 
 				if (data.type === 'set_coin' && data.coinSymbol) {
 					handleSetCoin(ws, data.coinSymbol);
 				} else if (data.type === 'set_user' && data.userId) {
 					handleSetUser(ws, data.userId);
+				} else if (data.type === 'poker_join' && data.lobbyId) {
+					handleSetPokerLobby(ws, data.lobbyId);
 				} else if (data.type === 'pong') {
 					ws.data.lastActivity = Date.now();
 				}
@@ -265,8 +297,7 @@ const server = Bun.serve<WebSocketData, undefined>({
 			}, HEARTBEAT_INTERVAL);
 
 			pingIntervals.set(ws, interval);
-		},
-		close(ws) {
+		}, close(ws) {
 			const interval = pingIntervals.get(ws);
 			if (interval) {
 				clearInterval(interval);
@@ -289,6 +320,16 @@ const server = Bun.serve<WebSocketData, undefined>({
 					sockets.delete(ws);
 					if (sockets.size === 0) {
 						userSockets.delete(ws.data.userId);
+					}
+				}
+			}
+
+			if (ws.data.pokerLobbyId) {
+				const sockets = pokerLobbySockets.get(ws.data.pokerLobbyId);
+				if (sockets) {
+					sockets.delete(ws);
+					if (sockets.size === 0) {
+						pokerLobbySockets.delete(ws.data.pokerLobbyId);
 					}
 				}
 			}

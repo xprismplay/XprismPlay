@@ -30,6 +30,7 @@
 	import { formatDateWithYear, formatTimeUntil, formatValue, getPublicUrl } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import type { PredictionQuestion } from '$lib/types/prediction';
+	import AdLong from '$lib/components/self/ads/AdLong.svelte';
 	import { haptic } from '$lib/stores/haptics';
 
 	let questions = $state<PredictionQuestion[]>([]);
@@ -133,7 +134,7 @@
 </script>
 
 <SEO
-	title="Hopium - XprismPlay"
+	title="Hopium - Rugplay"
 	description="AI-powered prediction markets in the Rugplay simulation game. Create yes/no questions, predict outcomes with virtual currency, and test your forecasting skills."
 	keywords="AI prediction markets game, virtual prediction simulation, cryptocurrency prediction game, forecasting game, virtual currency predictions"
 />
@@ -196,17 +197,12 @@
 	<div class="w-full">
 		<div class="mb-6 flex items-center justify-center gap-2">
 			<!-- Custom Tabs List -->
-			<div
-				class="bg-muted text-muted-foreground inline-flex h-9 w-fit items-center justify-center rounded-lg p-[3px]"
-			>
+			<div class="bg-muted text-muted-foreground inline-flex h-9 w-fit items-center justify-center rounded-lg p-[3px]">
 				<div class="grid w-full max-w-md grid-cols-3">
 					{#each tabs as tab}
 						<button
-							onclick={() => {
-								haptic.trigger('selection');
-								activeTab = tab.value;
-							}}
-							class="data-[state=active]:bg-background data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring text-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm"
+							onclick={() => { haptic.trigger('selection'); activeTab = tab.value; }}
+							class="data-[state=active]:bg-background data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring text-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-md border border-transparent px-2 py-1 text-sm font-medium transition-[color,box-shadow] focus-visible:outline-1 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm"
 							data-state={activeTab === tab.value ? 'active' : 'inactive'}
 						>
 							{tab.label}
@@ -241,7 +237,7 @@
 							<Card.Header class="pb-4">
 								<div class="flex items-start justify-between gap-3">
 									<div class="min-w-0 flex-1">
-										<h3 class="text-lg font-medium break-all">
+										<h3 class="break-all text-lg font-medium">
 											{question.question}
 										</h3>
 									</div>
@@ -263,10 +259,7 @@
 												{/if}
 											</Badge>
 										{:else if question.status === 'CANCELLED'}
-											<Badge
-												variant="outline"
-												class="text-muted-foreground border-muted-foreground flex flex-shrink-0 items-center gap-1"
-											>
+											<Badge variant="outline" class="flex flex-shrink-0 items-center gap-1 text-muted-foreground border-muted-foreground">
 												<HugeiconsIcon icon={Cancel01Icon} class="h-3 w-3" />
 												SKIP
 											</Badge>
@@ -308,9 +301,7 @@
 									<div class="flex items-center gap-1">
 										<HugeiconsIcon icon={Clock01Icon} class="h-3 w-3" />
 										{#if question.status === 'ACTIVE'}
-											{formatTimeUntil(question.resolutionDate).startsWith('Ended')
-												? 'Resolving'
-												: `${formatTimeUntil(question.resolutionDate)} remaining`}
+											{formatTimeUntil(question.resolutionDate).startsWith('Ended') ? 'Resolving' : `${formatTimeUntil(question.resolutionDate)} remaining`}
 										{:else}
 											Resolved {formatDateWithYear(question.resolvedAt || '')}
 										{/if}
@@ -325,7 +316,7 @@
 									{/if}
 								</div>
 
-								<div class="mt-2 mb-2 flex items-center gap-2 text-sm">
+								<div class="mb-2 mt-2 flex items-center gap-2 text-sm">
 									<HoverCard.Root>
 										<HoverCard.Trigger>
 											<button
@@ -340,12 +331,7 @@
 														>{question.creator.name.charAt(0)}</Avatar.Fallback
 													>
 												</Avatar.Root>
-												<span class="text-muted-foreground"
-													><UserName
-														name={question.creator.name}
-														nameColor={question.creator.nameColor}
-													/></span
-												>
+											<span class="text-muted-foreground"><UserName name={question.creator.name} nameColor={question.creator.nameColor} /></span>
 											</button>
 										</HoverCard.Trigger>
 										<HoverCard.Content class="w-80">
@@ -380,6 +366,8 @@
 						</Card.Root>
 					{/each}
 				</div>
+
+				<AdLong />
 			{/if}
 		</div>
 	</div>

@@ -2,7 +2,6 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
-	import { Switch } from '$lib/components/ui/switch';
 	import * as Select from '$lib/components/ui/select';
 	import {
 		Card,
@@ -22,28 +21,20 @@
 		Calendar01Icon,
 		CancelCircleIcon,
 		Loading03Icon,
-		Tick01Icon,
-		Cancel01Icon,
-
-		People
-
+		Tick01Icon
 	} from '@hugeicons/core-free-icons';
 	import { USER_DATA } from '$lib/stores/user-data';
 	import { formatDate, getExpirationDate } from '$lib/utils';
-	import type { PromoCode, PromoCodeUse } from '$lib/types/promo-code';
-	import { hasFlag } from '$lib/data/flags';
+	import type { PromoCode } from '$lib/types/promo-code';
 
 	let code = $state('');
 	let rewardAmount = $state('');
 	let maxUses = $state('');
 	let expirationOption = $state('');
-	let rewardType = $state('BASE_CURRENCY');
-
 	let isCreating = $state(false);
 	let createSuccess = $state(false);
 	let createMessage = $state('');
 	let hasCreateResult = $state(false);
-	let isSecret = $state(false);
 
 	const expirationOptions = [
 		{ value: '1h', label: '1 Hour' },
@@ -58,18 +49,8 @@
 			'Select expiration'
 	);
 
-	const rewardTypeOptions = [
-		{ value: 'BASE_CURRENCY', label: 'Base Currency ($)' },
-		{ value: 'GEMS', label: 'Gems 💎' }
-	];
-
-	let currentRewardTypeLabel = $derived(
-		rewardTypeOptions.find((option) => option.value === rewardType)?.label || 'Base Currency ($)'
-	);
-
 	let promoCodes = $state<PromoCode[]>([]);
 	let isLoading = $state(true);
-
 	async function loadPromoCodes() {
 		try {
 			const response = await fetch('/api/admin/promo');
@@ -84,20 +65,6 @@
 			console.error('Failed to load promo codes:', error);
 		} finally {
 			isLoading = false;
-		}
-	}
-
-	async function getPromocodeUses(promocode: string) : Promise<PromoCodeUse[] | undefined>{
-		try {
-			const response = await fetch(`http://localhost:5173/api/admin/promo/uses?code=${encodeURIComponent(promocode)}`);
-			if (response.ok) {
-				const json = await response.json();
-				return json.uses
-			} else {
-				console.error('Failed to load promo codes:', response.status, response.statusText);
-			}
-		} catch (error) {
-		} finally {
 		}
 	}
 
@@ -118,10 +85,8 @@
 				body: JSON.stringify({
 					code: code.trim().toUpperCase(),
 					rewardAmount: parseFloat(rewardAmount),
-					rewardType: rewardType,
 					maxUses: maxUses ? parseInt(maxUses) : null,
-					expiresAt: expirationOption ? getExpirationDate(expirationOption) : null,
-					isSecret: isSecret
+					expiresAt: expirationOption ? getExpirationDate(expirationOption) : null
 				})
 			});
 
@@ -138,40 +103,15 @@
 				rewardAmount = '';
 				maxUses = '';
 				expirationOption = '';
-				rewardType = 'BASE_CURRENCY';
-				isSecret = false;
 				await loadPromoCodes();
 			}
 		} catch (error) {
-			console.log(error);
+			console.log(error)
 			createSuccess = false;
 			createMessage = 'Failed to create promo code. Please try again.';
 			hasCreateResult = true;
 		} finally {
 			isCreating = false;
-		}
-	}
-
-	let isDeleting = $state<number | null>(null);
-
-	async function deletePromoCode(id: number) {
-		isDeleting = id;
-		try {
-			const response = await fetch('/api/admin/promo', {
-				method: 'DELETE',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ id })
-			});
-			if (response.ok) {
-				promoCodes = promoCodes.filter((p) => p.id !== id);
-			} else {
-				const result = await response.json();
-				console.error('Failed to delete promo code:', result.error);
-			}
-		} catch (e) {
-			console.error('Failed to delete promo code:', e);
-		} finally {
-			isDeleting = null;
 		}
 	}
 
@@ -181,18 +121,18 @@
 	}
 
 	$effect(() => {
-		if (hasFlag($USER_DATA?.flags, 'IS_ADMIN', 'IS_HEAD_ADMIN')) {
+		if ($USER_DATA?.isAdmin) {
 			loadPromoCodes();
 		}
 	});
 </script>
 
 <svelte:head>
-	<title>Promo Codes - Admin | XprismPlay</title>
+	<title>Promo Codes - Admin | Rugplay</title>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-{#if !$USER_DATA || !hasFlag($USER_DATA?.flags, 'IS_ADMIN', 'IS_HEAD_ADMIN')}
+{#if !$USER_DATA || !$USER_DATA.isAdmin}
 	<div class="flex h-screen items-center justify-center">
 		<div class="text-center">
 			<h1 class="text-2xl font-bold">Access Denied</h1>
@@ -207,6 +147,7 @@
 		</div>
 
 		<div class="grid gap-4 lg:grid-cols-2">
+			<!-- Create Promo Code Form -->
 			<Card>
 				<CardHeader class="pb-3">
 					<CardTitle class="flex items-center gap-2 text-lg">
@@ -219,7 +160,7 @@
 				</CardHeader>
 				<CardContent>
 					<form onsubmit={handleSubmit} class="space-y-3">
-						<div class="grid gap-3 sm:grid-cols-3">
+						<div class="grid gap-3 sm:grid-cols-2">
 							<div class="space-y-1">
 								<Label for="code" class="text-sm">Code *</Label>
 								<Input
@@ -232,27 +173,8 @@
 									required
 								/>
 							</div>
-
 							<div class="space-y-1">
-								<Label for="rewardType" class="text-sm">Reward Type *</Label>
-								<Select.Root type="single" bind:value={rewardType} disabled={isCreating}>
-									<Select.Trigger class="h-8 w-full">
-										{currentRewardTypeLabel}
-									</Select.Trigger>
-									<Select.Content>
-										<Select.Group>
-											{#each rewardTypeOptions as option}
-												<Select.Item value={option.value} label={option.label}>
-													{option.label}
-												</Select.Item>
-											{/each}
-										</Select.Group>
-									</Select.Content>
-								</Select.Root>
-							</div>
-
-							<div class="space-y-1">
-								<Label for="reward" class="text-sm">Amount *</Label>
+								<Label for="reward" class="text-sm">Reward Amount *</Label>
 								<Input
 									id="reward"
 									type="number"
@@ -299,16 +221,6 @@
 							</div>
 						</div>
 
-						<div class="flex items-center justify-between rounded-lg border p-3">
-							<div class="space-y-0.5">
-								<Label for="secret">Secret Promo Code</Label>
-								<p class="text-muted-foreground text-xs">
-									Hide this code from the list. It will still be redeemable.
-								</p>
-							</div>
-							<Switch id="secret" bind:checked={isSecret} disabled={isCreating} />
-						</div>
-
 						{#if hasCreateResult}
 							<Alert
 								variant={createSuccess ? 'default' : 'destructive'}
@@ -322,9 +234,7 @@
 								<AlertDescription class={createSuccess ? 'text-green-800 dark:text-green-200' : ''}>
 									{createMessage}
 									{#if createSuccess && rewardAmount}
-										<span class="font-semibold">
-											(+{rewardType === 'GEMS' ? `${rewardAmount} Gems` : `$${rewardAmount}`} reward)</span
-										>
+										<span class="font-semibold"> (+${rewardAmount} reward)</span>
 									{/if}
 								</AlertDescription>
 							</Alert>
@@ -348,6 +258,7 @@
 				</CardContent>
 			</Card>
 
+			<!-- Existing Promo Codes -->
 			<Card>
 				<CardHeader class="pb-3">
 					<CardTitle class="text-lg">Active</CardTitle>
@@ -380,44 +291,13 @@
 										<code class="bg-muted rounded px-2 py-1 font-mono text-sm font-semibold">
 											{promo.code}
 										</code>
-										<div class="flex items-center gap-2">
-											<Badge variant={promo.isActive ? 'default' : 'secondary'} class="text-xs">
-												{promo.isActive ? 'Active' : 'Inactive'}
-											</Badge>
-											{#if hasFlag($USER_DATA.flags, 'IS_HEAD_ADMIN') && promo.isSecret}
-												<Badge variant={promo.isActive ? 'default' : 'secondary'} class="text-xs">
-													Secret
-												</Badge>
-											{/if}
-											<button
-												onclick={() => getPromocodeUses(promo.code).then(v=>alert(`Promo code uses:\n${v?.map(e=>e.username).join('\n')}`))}
-												disabled={isDeleting === promo.id}
-												class="text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
-												title="Delete promo code"
-											>
-											<HugeiconsIcon icon={People} class="h-4 w-4"/>
-											</button>
-											<button
-												onclick={() => deletePromoCode(promo.id)}
-												disabled={isDeleting === promo.id}
-												class="text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
-												title="Delete promo code"
-											>
-												{#if isDeleting === promo.id}
-													<HugeiconsIcon icon={Loading03Icon} class="h-4 w-4 animate-spin" />
-												{:else}
-													<HugeiconsIcon icon={Cancel01Icon} class="h-4 w-4" />
-												{/if}
-											</button>
-										</div>
+										<Badge variant={promo.isActive ? 'default' : 'secondary'} class="text-xs">
+											{promo.isActive ? 'Active' : 'Inactive'}
+										</Badge>
 									</div>
 
 									<div class="grid grid-cols-2 gap-3 text-xs">
-										<span class="font-bold">
-											{promo.rewardType === 'GEMS'
-												? `${promo.rewardAmount} Gems`
-												: `$${promo.rewardAmount}`}
-										</span>
+										<span>${promo.rewardAmount}</span>
 										<div class="flex items-center gap-1">
 											<HugeiconsIcon icon={UserGroupIcon} class="h-3 w-3" />
 											<span>{promo.usedCount || 0}{promo.maxUses ? `/${promo.maxUses}` : ''}</span>

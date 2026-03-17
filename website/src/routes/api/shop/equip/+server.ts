@@ -22,8 +22,8 @@ export const POST: RequestHandler = async ({ request }) => {
 			where: and(
 				eq(userInventory.userId, userId),
 				eq(userInventory.itemType, 'namecolor'),
-				eq(userInventory.itemKey, itemKey)
-			)
+				eq(userInventory.itemKey, itemKey),
+			),
 		});
 		if (!owned) {
 			return json({ error: 'You do not own this item' }, { status: 400 });

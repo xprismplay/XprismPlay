@@ -26,7 +26,7 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 	import ProfileBadges from '$lib/components/self/ProfileBadges.svelte';
 	import UserName from '$lib/components/self/UserName.svelte';
-	import { _ } from 'svelte-i18n';
+	import AdSquare from '$lib/components/self/ads/AdSquare.svelte';
 
 	let searchOffset = $state(0);
 	let searchQuery = $state('');
@@ -111,7 +111,8 @@
 				image: row.image,
 				name: row.name,
 				username: row.username,
-				nameColor: row.nameColor
+				nameColor: row.nameColor,
+				founderBadge: row.founderBadge
 			})
 		}
 	];
@@ -138,7 +139,8 @@
 				image: row.image,
 				name: row.name,
 				username: row.username,
-				nameColor: row.nameColor
+				nameColor: row.nameColor,
+				founderBadge: row.founderBadge
 			})
 		},
 		{
@@ -171,7 +173,8 @@
 				image: row.image,
 				name: row.name,
 				username: row.username,
-				nameColor: row.nameColor
+				nameColor: row.nameColor,
+				founderBadge: row.founderBadge
 			})
 		},
 		{
@@ -204,7 +207,8 @@
 				image: row.image,
 				name: row.name,
 				username: row.username,
-				nameColor: row.nameColor
+				nameColor: row.nameColor,
+				founderBadge: row.founderBadge
 			})
 		},
 		{
@@ -237,7 +241,8 @@
 				image: row.image,
 				name: row.name,
 				username: row.username,
-				nameColor: row.nameColor
+				nameColor: row.nameColor,
+				founderBadge: row.founderBadge
 			})
 		},
 		{
@@ -263,7 +268,7 @@
 </script>
 
 <SEO
-	title="Leaderboard - XprismPlay"
+	title="Leaderboard - Rugplay"
 	description="View top performers in the Rugplay cryptocurrency simulation game. See rankings for biggest profits, losses, cash holders, and portfolio values in our virtual trading game."
 	keywords="crypto game leaderboard, trading simulation rankings, virtual portfolio rankings, crypto game winners"
 />
@@ -272,13 +277,12 @@
 	<header class="mb-6 md:mb-8">
 		<div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 			<div>
-				<h1 class="text-2xl font-bold md:text-3xl">{$_('leaderboard.title')}</h1>
-				<p class="text-muted-foreground text-sm md:text-base">{$_('leaderboard.description')}</p>
+				<h1 class="text-2xl font-bold md:text-3xl">Leaderboard</h1>
+				<p class="text-muted-foreground text-sm md:text-base">Top performers and market activity</p>
 			</div>
 			<div class="flex items-center gap-4">
 				<div class="relative flex flex-grow items-center">
-					<HugeiconsIcon icon={Search01Icon} size={16} class="pointer-events-none absolute left-3"
-					></HugeiconsIcon>
+					<HugeiconsIcon icon={Search01Icon} size={16} class="pointer-events-none absolute left-3"></HugeiconsIcon>
 					<Input
 						type="text"
 						placeholder="Search by username..."
@@ -321,10 +325,8 @@
 	{:else if !leaderboardData}
 		<div class="flex h-96 items-center justify-center">
 			<div class="text-center">
-				<div class="text-muted-foreground mb-4 text-lg md:text-xl">
-					{$_('leaderboard.failed.title')}
-				</div>
-				<Button onclick={() => fetchLeaderboardData()}>{$_('leaderboard.failed.try_again')}</Button>
+				<div class="text-muted-foreground mb-4 text-lg md:text-xl">Failed to load leaderboard</div>
+				<Button onclick={() => fetchLeaderboardData()}>Try Again</Button>
 			</div>
 		</div>
 	{:else}
@@ -349,7 +351,7 @@
 											<div class="flex flex-grow flex-col">
 												<div class="flex items-center gap-2">
 													<h4 class="max-w-[150px] truncate text-sm font-semibold sm:max-w-[200px]">
-														<UserName name={user.name} nameColor={user.nameColor} />
+															<UserName name={user.name} nameColor={user.nameColor} />
 													</h4>
 													<ProfileBadges {user} showId={true} size="sm" />
 												</div>
@@ -376,10 +378,7 @@
 													</div>
 												</div>
 												<div class="mt-2 flex items-center gap-2">
-													<HugeiconsIcon
-														icon={Calendar01Icon}
-														class="text-muted-foreground h-4 w-4"
-													/>
+													<HugeiconsIcon icon={Calendar01Icon} class="text-muted-foreground h-4 w-4" />
 													<p class="text-muted-foreground text-xs">
 														Joined {new Date(user.createdAt).toLocaleDateString('en-US', {
 															year: 'numeric',
@@ -442,10 +441,10 @@
 					<Card.Header class="pb-3 md:pb-4">
 						<Card.Title class="flex items-center gap-2 text-lg text-red-600 md:text-xl">
 							<HugeiconsIcon icon={SkullIcon} class="h-5 w-5 md:h-6 md:w-6" />
-							<span class="truncate">{$_('leaderboard.rugpullers.title')}</span>
+							<span class="truncate">Top Rugpullers (24h)</span>
 						</Card.Title>
 						<Card.Description class="text-xs md:text-sm">
-							{$_('leaderboard.rugpullers.description')}
+							Users who made the most profit from selling coins today
 						</Card.Description>
 					</Card.Header>
 					<Card.Content class="p-3 pt-0 md:p-6 md:pt-0">
@@ -453,7 +452,7 @@
 							columns={rugpullersColumns}
 							data={leaderboardData.topRugpullers}
 							onRowClick={(user) => goto(`/user/${user.userUsername || user.username}`)}
-							emptyMessage={$_('leaderboard.rugpullers.no_data')}
+							emptyMessage="No major profits recorded today"
 							enableUserPreview={true}
 						/>
 					</Card.Content>
@@ -464,10 +463,10 @@
 					<Card.Header class="pb-3 md:pb-4">
 						<Card.Title class="flex items-center gap-2 text-lg text-orange-600 md:text-xl">
 							<HugeiconsIcon icon={TradeDownIcon} class="h-5 w-5 md:h-6 md:w-6" />
-							<span class="truncate">{$_('leaderboard.losers.title')}</span>
+							<span class="truncate">Biggest Losses (24h)</span>
 						</Card.Title>
 						<Card.Description class="text-xs md:text-sm"
-							>{$_('leaderboard.losers.description')}</Card.Description
+							>Users who experienced the largest losses today</Card.Description
 						>
 					</Card.Header>
 					<Card.Content class="p-3 pt-0 md:p-6 md:pt-0">
@@ -475,23 +474,25 @@
 							columns={losersColumns}
 							data={leaderboardData.biggestLosers}
 							onRowClick={(user) => goto(`/user/${user.userUsername || user.username}`)}
-							emptyMessage={$_('leaderboard.losers.no_data')}
+							emptyMessage="No major losses recorded today"
 							enableUserPreview={true}
 						/>
 					</Card.Content>
 				</Card.Root>
 
-				<div class="xl:col-span-2"></div>
+				<div class="xl:col-span-2">
+					<AdSquare />
+				</div>
 
 				<!-- Top Cash Holders -->
 				<Card.Root class="overflow-hidden">
 					<Card.Header class="pb-3 md:pb-4">
 						<Card.Title class="flex items-center gap-2 text-lg text-green-600 md:text-xl">
 							<HugeiconsIcon icon={CrownIcon} class="h-5 w-5 md:h-6 md:w-6" />
-							<span class="truncate">{$_('leaderboard.top_cash.title')}</span>
+							<span class="truncate">Top Cash Holders</span>
 						</Card.Title>
 						<Card.Description class="text-xs md:text-sm"
-							>{$_('leaderboard.top_cash.description')}</Card.Description
+							>Users with the highest liquid cash balances</Card.Description
 						>
 					</Card.Header>
 					<Card.Content class="p-3 pt-0 md:p-6 md:pt-0">
@@ -499,7 +500,7 @@
 							columns={cashKingsColumns}
 							data={leaderboardData.cashKings}
 							onRowClick={(user) => goto(`/user/${user.userUsername || user.username}`)}
-							emptyMessage={$_('leaderboard.top_cash.no_data')}
+							emptyMessage="Everyone's invested! 💸"
 							enableUserPreview={true}
 						/>
 					</Card.Content>
@@ -510,10 +511,10 @@
 					<Card.Header class="pb-3 md:pb-4">
 						<Card.Title class="flex items-center gap-2 text-lg text-cyan-600 md:text-xl">
 							<HugeiconsIcon icon={Award01Icon} class="h-5 w-5 md:h-6 md:w-6" />
-							<span class="truncate">{$_('leaderboard.portfolio.title')}</span>
+							<span class="truncate">Highest Portfolio Values</span>
 						</Card.Title>
 						<Card.Description class="text-xs md:text-sm"
-							>{$_('leaderboard.portfolio.description')}</Card.Description
+							>Users with the largest total portfolio valuations (including illiquid)</Card.Description
 						>
 					</Card.Header>
 					<Card.Content class="p-3 pt-0 md:p-6 md:pt-0">
@@ -521,7 +522,7 @@
 							columns={millionairesColumns}
 							data={leaderboardData.paperMillionaires}
 							onRowClick={(user) => goto(`/user/${user.userUsername || user.username}`)}
-							emptyMessage={$_('leaderboard.portfolio.no_data')}
+							emptyMessage="No large portfolios yet! 📉"
 							enableUserPreview={true}
 						/>
 					</Card.Content>

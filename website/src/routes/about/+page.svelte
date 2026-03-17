@@ -5,12 +5,15 @@
 	import {
 		BookOpen01Icon,
 		GithubIcon,
+		YoutubeIcon,
+		TwitterIcon,
 		UserIcon,
 		Coins01Icon,
 		TradeUpIcon,
 		DiscordIcon
 	} from '@hugeicons/core-free-icons';
 	import UserManualModal from '$lib/components/self/UserManualModal.svelte';
+	import AdLong from '$lib/components/self/ads/AdLong.svelte';
 
 	let showUserManual = $state(false);
 	function handleManual() {
@@ -21,7 +24,7 @@
 <UserManualModal bind:open={showUserManual} />
 
 <svelte:head>
-	<title>About - XprismPlay</title>
+	<title>About - Rugplay</title>
 	<meta
 		name="description"
 		content="Learn about Rugplay - a realistic cryptocurrency trading simulation focusing on DeFi risks and mechanics."
@@ -32,7 +35,7 @@
 	<div class="space-y-4 text-center">
 		<div class="mb-4 flex items-center justify-center gap-2">
 			<img src="/rugplay.svg" class="h-12 w-12" alt="Rugplay" />
-			<h1 class="text-4xl font-bold">XprismPlay</h1>
+			<h1 class="text-4xl font-bold">Rugplay</h1>
 		</div>
 		<p class="text-muted-foreground mx-auto max-w-2xl text-lg">
 			A crypto trading simulator where you can practice trading without losing real money. Create
@@ -127,7 +130,27 @@
 						<Button
 							variant="outline"
 							size="sm"
-							href="https://github.com/xprismplay/XprismPlay"
+							href="https://youtube.com/@FaceDevStuff"
+							target="_blank"
+							rel="noopener"
+						>
+							<HugeiconsIcon icon={YoutubeIcon} class="h-4 w-4" />
+							YouTube
+						</Button>
+						<Button
+							variant="outline"
+							size="sm"
+							href="https://x.com/facedevstuff"
+							target="_blank"
+							rel="noopener"
+						>
+							<HugeiconsIcon icon={TwitterIcon} class="h-4 w-4" />
+							Twitter
+						</Button>
+						<Button
+							variant="outline"
+							size="sm"
+							href="https://github.com/outpoot/rugplay"
 							target="_blank"
 							rel="noopener"
 						>
@@ -137,7 +160,7 @@
 						<Button
 							variant="outline"
 							size="sm"
-							href="https://discord.gg/HKZ7EQEgaZ"
+							href="https://discord.gg/facedev"
 							target="_blank"
 							rel="noopener"
 						>
@@ -145,24 +168,13 @@
 							Discord
 						</Button>
 					</div>
-					<p class="text-muted-foreground text-sm">
-						Achievement icons by <a
-							href="https://twitter.com/gvesster"
-							target="_blank"
-							rel="noopener"
-							class="text-primary underline">gvstr</a
-						>
-					</p>
-					<p class="text-muted-foreground text-sm">
-						Chest animations by <a
-							href="https://admurin.itch.io/"
-							target="_blank"
-							rel="noopener"
-							class="text-primary underline">admurin</a
-						>
-					</p>
+					<p class="text-muted-foreground text-sm">Achievement icons by <a href="https://twitter.com/gvesster" target="_blank" rel="noopener" class="text-primary underline">gvstr</a></p>
+					<p class="text-muted-foreground text-sm">Chest animations by <a href="https://admurin.itch.io/" target="_blank" rel="noopener" class="text-primary underline">admurin</a></p>
+					<p class="text-muted-foreground text-sm">Halloween badge by <a href="https://www.flaticon.com/authors/smalllikeart" target="_blank" rel="noopener" class="text-primary underline">smalllikeart</a></p>
 				</div>
 			</CardContent>
 		</Card>
 	</div>
+
+	<AdLong />
 </div>

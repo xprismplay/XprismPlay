@@ -1,13 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import {
-		Card,
-		CardContent,
-		CardDescription,
-		CardHeader,
-		CardTitle
-	} from '$lib/components/ui/card';
+	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card';
 	import confetti from 'canvas-confetti';
 	import { toast } from 'svelte-sonner';
 	import {
@@ -49,9 +43,7 @@
 
 	const floorList = Array.from({ length: twr_floors }, (_, i) => twr_floors - 1 - i);
 
-	let canBet = $derived(
-		bet > 0 && bet <= balance && bet <= twr_difficulty_config[difficulty].maxBet && !playing
-	);
+	let canBet = $derived(bet > 0 && bet <= balance && bet <= twr_difficulty_config[difficulty].maxBet && !playing);
 
 	function floorStatus(f: number): 'locked' | 'active' | 'cleared' | 'bomb-hit' | 'revealed' {
 		if (playing) {
@@ -67,11 +59,7 @@
 		return 'locked';
 	}
 
-	function tileStatus(
-		f: number,
-		t: number,
-		fs: ReturnType<typeof floorStatus>
-	): 'hidden' | 'safe' | 'bomb' {
+	function tileStatus(f: number, t: number, fs: ReturnType<typeof floorStatus>): 'hidden' | 'safe' | 'bomb' {
 		if (fs === 'bomb-hit' || fs === 'cleared' || fs === 'revealed') {
 			if (allBombs && allBombs[f].includes(t)) return 'bomb';
 			if (safePicks[f] === t) return 'safe';
@@ -81,10 +69,7 @@
 
 	function setBet(amount: number) {
 		const v = Math.min(amount, Math.min(balance, twr_difficulty_config[difficulty].maxBet));
-		if (v >= 0) {
-			bet = v;
-			betDisplay = v.toLocaleString();
-		}
+		if (v >= 0) { bet = v; betDisplay = v.toLocaleString(); }
 	}
 
 	function onBetInput(e: Event) {
@@ -160,9 +145,7 @@
 			token = null;
 			if (!data.isAbort) gameResult = 'won';
 		} catch (err) {
-			toast.error('Failed to cash out', {
-				description: err instanceof Error ? err.message : 'Unknown error'
-			});
+			toast.error('Failed to cash out', { description: err instanceof Error ? err.message : 'Unknown error' });
 		} finally {
 			busy = false;
 		}
@@ -193,9 +176,7 @@
 			bombFloor = null;
 			token = data.sessionToken;
 		} catch (err) {
-			toast.error('Failed to start', {
-				description: err instanceof Error ? err.message : 'Unknown error'
-			});
+			toast.error('Failed to start', { description: err instanceof Error ? err.message : 'Unknown error' });
 		}
 	}
 
@@ -203,10 +184,7 @@
 		volumeSettings.load();
 		try {
 			const data = await fetchPortfolioSummary();
-			if (data) {
-				balance = data.baseCurrencyBalance;
-				onBalanceUpdate?.(data.baseCurrencyBalance);
-			}
+			if (data) { balance = data.baseCurrencyBalance; onBalanceUpdate?.(data.baseCurrencyBalance); }
 		} catch {}
 	});
 </script>
@@ -214,9 +192,7 @@
 <Card>
 	<CardHeader>
 		<CardTitle>Tower</CardTitle>
-		<CardDescription
-			>Climb the tower by picking safe tiles. Cash out before hitting a bomb!</CardDescription
-		>
+		<CardDescription>Climb the tower by picking safe tiles. Cash out before hitting a bomb!</CardDescription>
 	</CardHeader>
 	<CardContent>
 		<div class="grid grid-cols-1 gap-8 md:grid-cols-2">
@@ -234,30 +210,21 @@
 						class:floor-locked={fs === 'locked'}
 					>
 						<span class="arrow-indicator">{isActive ? '▶' : ''}</span>
-						<span
-							class="floor-label"
-							class:label-active={isActive}
-							class:label-cleared={fs === 'cleared'}>{f + 1}</span
-						>
+						<span class="floor-label" class:label-active={isActive} class:label-cleared={fs === 'cleared'}>{f + 1}</span>
 						<span
 							class="floor-mult"
 							class:mult-active={isActive}
 							class:mult-cleared={fs === 'cleared'}
-							>{calculateTowerMultiplier(f + 1, difficulty).toFixed(2)}x</span
-						>
+						>{calculateTowerMultiplier(f + 1, difficulty).toFixed(2)}x</span>
 						<div class="flex flex-1 justify-center gap-2">
 							{#each Array(cfg.tiles) as _, t}
 								{@const ts = tileStatus(f, t, fs)}
 								{@const key = `${f}-${t}`}
 								<Button
-									class="border-border bg-card h-9 w-13 rounded-sm border p-0 transition-[background,border-color,transform] duration-120
-									{isActive
-										? 'border-primary/60! hover:bg-accent! hover:border-primary! animate-[tile-pulse_2s_ease-in-out_infinite] cursor-pointer'
-										: 'cursor-not-allowed'}
-									{ts === 'safe' ? 'cursor-default border-2! border-green-500! bg-green-500/20!' : ''}
-									{ts === 'bomb'
-										? 'animate-[shake_0.4s_ease] cursor-default border-2! border-red-500! bg-red-500/30!'
-										: ''}
+								class="h-9 w-13 rounded-sm border border-border bg-card p-0 transition-[background,border-color,transform] duration-120
+									{isActive ? 'animate-[tile-pulse_2s_ease-in-out_infinite] cursor-pointer border-primary/60! hover:bg-accent! hover:border-primary!' : 'cursor-not-allowed'}
+									{ts === 'safe' ? 'border-2! border-green-500! bg-green-500/20! cursor-default' : ''}
+									{ts === 'bomb' ? 'animate-[shake_0.4s_ease] border-2! border-red-500! bg-red-500/30! cursor-default' : ''}
 									{justRevealed === key ? 'animate-[pop_0.35s_ease_forwards]' : ''}"
 									variant="ghost"
 									onclick={() => step(f, t)}
@@ -265,17 +232,9 @@
 									aria-label="Tile {t + 1} floor {f + 1}"
 								>
 									{#if ts === 'safe'}
-										<img
-											src="/facedev/avif/twoblade.avif"
-											alt="Safe"
-											class="h-5 w-5 object-contain"
-										/>
+										<img src="/facedev/avif/twoblade.avif" alt="Safe" class="h-5 w-5 object-contain" />
 									{:else if ts === 'bomb'}
-										<img
-											src="/facedev/avif/bussin.avif"
-											alt="Bomb"
-											class="h-5 w-5 object-contain"
-										/>
+										<img src="/facedev/avif/bussin.avif" alt="Bomb" class="h-5 w-5 object-contain" />
 									{/if}
 								</Button>
 							{/each}
@@ -293,7 +252,7 @@
 				<div>
 					<label class="mb-2 block text-sm font-medium">Difficulty</label>
 					<div class="grid grid-cols-3 gap-2">
-						{#each ['easy', 'medium', 'hard'] as TowerDifficulty[] as d}
+						{#each (['easy', 'medium', 'hard'] as TowerDifficulty[]) as d}
 							<Button
 								variant={difficulty === d ? 'default' : 'outline'}
 								size="sm"
@@ -321,9 +280,7 @@
 						disabled={playing}
 						placeholder="Enter bet amount"
 					/>
-					<p class="text-muted-foreground mt-1 text-xs">
-						Max bet: {twr_difficulty_config[difficulty].maxBet.toLocaleString()}
-					</p>
+					<p class="text-muted-foreground mt-1 text-xs">Max bet: {twr_difficulty_config[difficulty].maxBet.toLocaleString()}</p>
 				</div>
 
 				<div class="grid grid-cols-4 gap-2">
@@ -331,10 +288,7 @@
 						<Button
 							size="sm"
 							variant="outline"
-							onclick={() =>
-								setBet(
-									Math.floor(Math.min(balance, twr_difficulty_config[difficulty].maxBet) * pct)
-								)}
+							onclick={() => setBet(Math.floor(Math.min(balance, twr_difficulty_config[difficulty].maxBet) * pct))}
 							disabled={playing}
 						>
 							{pct === 1 ? 'Max' : `${pct * 100}%`}
@@ -357,15 +311,11 @@
 						<div class="bg-muted/50 space-y-2 rounded-lg p-3">
 							<div class="flex justify-between">
 								<span class="text-sm">Profit:</span>
-								<span class="text-success text-sm font-medium"
-									>+{formatValue(bet * (multiplier - 1))}</span
-								>
+								<span class="text-success text-sm font-medium">+{formatValue(bet * (multiplier - 1))}</span>
 							</div>
 							<div class="flex justify-between">
 								<span class="text-sm">Next floor:</span>
-								<span class="text-sm"
-									>+{formatValue(bet * (calculateTowerMultiplier(floor + 1, difficulty) - 1))}</span
-								>
+								<span class="text-sm">+{formatValue(bet * (calculateTowerMultiplier(floor + 1, difficulty) - 1))}</span>
 							</div>
 							<div class="flex justify-between">
 								<span class="text-sm">Multiplier:</span>
@@ -411,10 +361,7 @@
 		padding: 3px 6px;
 		border-radius: calc(var(--radius) - 2px);
 		border: 1px solid transparent;
-		transition:
-			background 0.15s ease,
-			border-color 0.15s ease,
-			opacity 0.15s ease;
+		transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
 	}
 
 	.floor-active {
@@ -423,19 +370,10 @@
 		box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 25%, transparent);
 	}
 
-	.floor-cleared {
-		background: rgba(34, 197, 94, 0.07);
-	}
-	.floor-bomb {
-		background: rgba(239, 68, 68, 0.14);
-		border-color: rgba(239, 68, 68, 0.5);
-	}
-	.floor-revealed {
-		opacity: 0.35;
-	}
-	.floor-locked {
-		opacity: 0.25;
-	}
+	.floor-cleared { background: rgba(34, 197, 94, 0.07); }
+	.floor-bomb { background: rgba(239, 68, 68, 0.14); border-color: rgba(239, 68, 68, 0.5); }
+	.floor-revealed { opacity: 0.35; }
+	.floor-locked { opacity: 0.25; }
 
 	.arrow-indicator {
 		width: 10px;
@@ -454,13 +392,8 @@
 		transition: color 0.15s ease;
 	}
 
-	.label-active {
-		color: var(--primary);
-		font-weight: 600;
-	}
-	.label-cleared {
-		color: rgb(34, 197, 94);
-	}
+	.label-active { color: var(--primary); font-weight: 600; }
+	.label-cleared { color: rgb(34, 197, 94); }
 
 	.floor-mult {
 		font-size: 11px;
@@ -469,69 +402,33 @@
 		text-align: right;
 		flex-shrink: 0;
 		font-variant-numeric: tabular-nums;
-		transition:
-			color 0.15s ease,
-			font-weight 0.15s ease;
+		transition: color 0.15s ease, font-weight 0.15s ease;
 	}
 
-	.mult-active {
-		color: var(--primary);
-		font-weight: 700;
-	}
-	.mult-cleared {
-		color: rgb(34, 197, 94);
-		font-weight: 600;
-	}
+	.mult-active { color: var(--primary); font-weight: 700; }
+	.mult-cleared { color: rgb(34, 197, 94); font-weight: 600; }
 
 	@keyframes tile-pulse {
-		0%,
-		100% {
-			box-shadow: none;
-		}
-		50% {
-			box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent);
-		}
+		0%, 100% { box-shadow: none; }
+		50% { box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent); }
 	}
 
 	@keyframes pop {
-		0% {
-			transform: scale(1);
-		}
-		40% {
-			transform: scale(1.25);
-		}
-		100% {
-			transform: scale(1);
-		}
+		0% { transform: scale(1); }
+		40% { transform: scale(1.25); }
+		100% { transform: scale(1); }
 	}
 
 	@keyframes shake {
-		0%,
-		100% {
-			transform: translateX(0);
-		}
-		20% {
-			transform: translateX(-4px);
-		}
-		40% {
-			transform: translateX(4px);
-		}
-		60% {
-			transform: translateX(-3px);
-		}
-		80% {
-			transform: translateX(3px);
-		}
+		0%, 100% { transform: translateX(0); }
+		20% { transform: translateX(-4px); }
+		40% { transform: translateX(4px); }
+		60% { transform: translateX(-3px); }
+		80% { transform: translateX(3px); }
 	}
 
 	@keyframes fade-in {
-		from {
-			opacity: 0;
-			transform: translateY(-4px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
+		from { opacity: 0; transform: translateY(-4px); }
+		to { opacity: 1; transform: translateY(0); }
 	}
 </style>

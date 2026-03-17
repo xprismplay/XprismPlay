@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 
 	let {
-		title = 'XprismPlay',
+		title = 'Rugplay',
 		description = 'Experience realistic cryptocurrency trading simulation game with AI-powered markets, rug pull mechanics, and virtual currencies. Learn crypto trading without financial risk in this educational game.',
 		type = 'website',
 		image = '/apple-touch-icon.png',

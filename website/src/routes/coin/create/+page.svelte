@@ -33,14 +33,14 @@
 	});
 
 	let nameError = $derived(
-		name.length > 0 && (name.length < 2 || name.length > 45)
-			? 'Name must be between 2 and 45 characters'
+		name.length > 0 && (name.length < 2 || name.length > 255)
+			? 'Name must be between 2 and 255 characters'
 			: ''
 	);
 
 	let symbolError = $derived(
-		symbol.length > 0 && (symbol.length < 2 || symbol.length > 16)
-			? 'Symbol must be between 2 and 16 characters'
+		symbol.length > 0 && (symbol.length < 2 || symbol.length > 10)
+			? 'Symbol must be between 2 and 10 characters'
 			: ''
 	);
 
@@ -127,7 +127,7 @@
 </script>
 
 <SEO
-	title="Create Coin - XprismPlay"
+	title="Create Coin - Rugplay"
 	description="Launch your own virtual cryptocurrency in the Rugplay simulation game. Create coins with custom names, symbols, and icons."
 	keywords="create virtual cryptocurrency, coin creation game, launch crypto simulation, virtual token creation, cryptocurrency game creator"
 />
@@ -140,7 +140,9 @@
 			<div class="text-center">
 				<div class="text-muted-foreground mb-4 text-xl">Sign in to create your own coin</div>
 				<p class="text-muted-foreground mb-4 text-sm">You need an account to create coins.</p>
-				<Button onclick={() => (shouldSignIn = true)} class="w-fit">Sign in to continue</Button>
+				<Button onclick={() => (shouldSignIn = true)} class="w-fit">
+					Sign in to continue
+				</Button>
 			</div>
 		</div>
 	{:else}
@@ -172,10 +174,7 @@
 												<img src={iconPreview} alt="Preview" class="h-full w-full object-cover" />
 											{:else}
 												<div class="flex h-full items-center justify-center">
-													<HugeiconsIcon
-														icon={ImageAdd01Icon}
-														class="text-muted-foreground h-8 w-8"
-													/>
+													<HugeiconsIcon icon={ImageAdd01Icon} class="text-muted-foreground h-8 w-8" />
 												</div>
 											{/if}
 										</div>
@@ -200,7 +199,6 @@
 									type="text"
 									bind:value={name}
 									placeholder="e.g., Bitcoin"
-									maxlength={46}
 									required
 								/>
 								{#if nameError}
@@ -217,7 +215,7 @@
 								<Label for="symbol">Symbol</Label>
 								<div class="relative">
 									<span
-										class="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2 text-sm"
+										class="text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 text-sm"
 										>*</span
 									>
 									<Input
@@ -226,7 +224,6 @@
 										bind:value={symbol}
 										placeholder="BTC"
 										class="pl-8 uppercase"
-										maxlength={17}
 										required
 									/>
 								</div>
@@ -234,7 +231,7 @@
 									<p class="text-destructive text-xs">{symbolError}</p>
 								{:else}
 									<p class="text-muted-foreground text-sm">
-										Short identifier for your coin (e.g., BTC for Bitcoin). Will be displayed as *{symbol?.toUpperCase() ||
+										Short identifier for your coin (e.g., BTC for Bitcoin). Will be displayed as *{symbol ||
 											'SYMBOL'}
 									</p>
 								{/if}
@@ -250,12 +247,9 @@
 										<p>• Starting Price: <span class="font-medium">$0.000001 per token</span></p>
 										<p>• You receive <span class="font-medium">100%</span> of the supply</p>
 										<p>• Initial Market Cap: <span class="font-medium">$1,000</span></p>
-										<p>
-											• Trading Lock: <span class="font-medium">1 minute creator-only period</span>
-										</p>
+										<p>• Trading Lock: <span class="font-medium">1 minute creator-only period</span></p>
 										<p class="mt-2 text-sm">
-											After creation, you'll have 1 minute of exclusive trading time before others
-											can trade. This allows you to purchase your initial supply.
+											After creation, you'll have 1 minute of exclusive trading time before others can trade. This allows you to purchase your initial supply.
 										</p>
 									</div>
 								</AlertDescription>

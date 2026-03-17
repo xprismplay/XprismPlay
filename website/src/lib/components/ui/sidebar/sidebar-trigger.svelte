@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { HugeiconsIcon } from '@hugeicons/svelte';
 	import { PanelLeftIcon } from '@hugeicons/core-free-icons';
-	import { Button } from '$lib/components/ui/button/index.js';
-	import { cn } from '$lib/utils.js';
-	import type { ComponentProps } from 'svelte';
-	import { useSidebar } from './context.svelte.js';
+	import { Button } from "$lib/components/ui/button/index.js";
+	import { cn } from "$lib/utils.js";
+		import type { ComponentProps } from "svelte";
+	import { useSidebar } from "./context.svelte.js";
 
 	let {
 		ref = $bindable(null),
@@ -23,7 +23,7 @@
 	data-slot="sidebar-trigger"
 	variant="ghost"
 	size="icon"
-	class={cn('size-7', className)}
+	class={cn("size-7", className)}
 	type="button"
 	onclick={(e) => {
 		onclick?.(e);

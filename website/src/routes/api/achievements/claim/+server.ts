@@ -19,7 +19,7 @@ export async function POST({ request }) {
 		return json({
 			claimed: result.count,
 			cashReward: result.cashReward,
-			gemReward: result.gemReward
+			gemReward: result.gemReward,
 		});
 	}
 
@@ -36,6 +36,6 @@ export async function POST({ request }) {
 	return json({
 		claimed: 1,
 		cashReward: result.cashReward,
-		gemReward: result.gemReward
+		gemReward: result.gemReward,
 	});
 }

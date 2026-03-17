@@ -9,15 +9,7 @@ import { getAchievementProgress, checkAndAwardAchievements } from '$lib/server/a
 export async function GET({ request }) {
 	const session = await auth.api.getSession({ headers: request.headers });
 	if (!session?.user) {
-		return json({
-			achievements: ACHIEVEMENTS.map((a) => ({
-				...a,
-				unlocked: false,
-				unlockedAt: null,
-				claimed: false,
-				progress: null
-			}))
-		});
+		return json({ achievements: ACHIEVEMENTS.map((a) => ({ ...a, unlocked: false, unlockedAt: null, claimed: false, progress: null })) });
 	}
 
 	const userId = Number(session.user.id);
@@ -26,14 +18,10 @@ export async function GET({ request }) {
 
 	const [unlocked, progress] = await Promise.all([
 		db
-			.select({
-				achievementId: userAchievement.achievementId,
-				unlockedAt: userAchievement.unlockedAt,
-				claimed: userAchievement.claimed
-			})
+			.select({ achievementId: userAchievement.achievementId, unlockedAt: userAchievement.unlockedAt, claimed: userAchievement.claimed })
 			.from(userAchievement)
 			.where(eq(userAchievement.userId, userId)),
-		getAchievementProgress(userId)
+		getAchievementProgress(userId),
 	]);
 
 	const unlockedMap = new Map(unlocked.map((u) => [u.achievementId, u]));
@@ -45,7 +33,7 @@ export async function GET({ request }) {
 			unlocked: !!entry,
 			unlockedAt: entry?.unlockedAt ?? null,
 			claimed: entry?.claimed ?? false,
-			progress: a.targetValue && !entry ? Math.min(progress[a.id] ?? 0, a.targetValue) : null
+			progress: a.targetValue && !entry ? Math.min(progress[a.id] ?? 0, a.targetValue) : null,
 		};
 	});
 

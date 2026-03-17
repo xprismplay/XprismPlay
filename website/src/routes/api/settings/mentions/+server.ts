@@ -5,24 +5,23 @@ import { user } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 
 export async function POST({ request }) {
-	const session = await auth.api.getSession({
-		headers: request.headers
-	});
+    const session = await auth.api.getSession({
+        headers: request.headers
+    });
 
-	if (!session?.user) {
-		throw error(401, 'Not authenticated');
-	}
+    if (!session?.user) {
+        throw error(401, 'Not authenticated');
+    }
 
-	const { disableMentions } = await request.json();
+    const { disableMentions } = await request.json();
 
-	if (typeof disableMentions !== 'boolean') {
-		throw error(400, 'Invalid value for disableMentions');
-	}
+    if (typeof disableMentions !== 'boolean') {
+        throw error(400, 'Invalid value for disableMentions');
+    }
 
-	await db
-		.update(user)
-		.set({ disableMentions, updatedAt: new Date() })
-		.where(eq(user.id, Number(session.user.id)));
+    await db.update(user)
+        .set({ disableMentions, updatedAt: new Date() })
+        .where(eq(user.id, Number(session.user.id)));
 
-	return json({ success: true });
+    return json({ success: true });
 }

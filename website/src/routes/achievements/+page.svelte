@@ -43,11 +43,7 @@
 	);
 
 	let groupedAchievements = $derived.by(() => {
-		const groups: {
-			category: AchievementCategory;
-			label: string;
-			items: AchievementWithStatus[];
-		}[] = [];
+		const groups: { category: AchievementCategory; label: string; items: AchievementWithStatus[] }[] = [];
 		const cats = selectedCategory === 'all' ? ACHIEVEMENT_CATEGORIES : [selectedCategory];
 		for (const cat of cats) {
 			const items = achievements.filter((a) => a.category === cat);
@@ -81,7 +77,7 @@
 			const res = await fetch('/api/achievements/claim', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ achievementId })
+				body: JSON.stringify({ achievementId }),
 			});
 			if (res.ok) {
 				const data = await res.json();
@@ -90,7 +86,7 @@
 				);
 				NEW_ACHIEVEMENTS_COUNT.set(unclaimedCount);
 				toast.success(`Reward claimed!`, {
-					description: `+${formatValue(data.cashReward)} cash, +${data.gemReward} gems`
+					description: `+${formatValue(data.cashReward)} cash, +${data.gemReward} gems`,
 				});
 				fetchPortfolioSummary();
 				fetchGemsBalance();
@@ -110,14 +106,16 @@
 			const res = await fetch('/api/achievements/claim', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ claimAll: true })
+				body: JSON.stringify({ claimAll: true }),
 			});
 			if (res.ok) {
 				const data = await res.json();
-				achievements = achievements.map((a) => (a.unlocked ? { ...a, claimed: true } : a));
+				achievements = achievements.map((a) =>
+					a.unlocked ? { ...a, claimed: true } : a
+				);
 				NEW_ACHIEVEMENTS_COUNT.set(0);
 				toast.success(`Claimed ${data.claimed} achievements!`, {
-					description: `+${formatValue(data.cashReward)} cash, +${data.gemReward} gems`
+					description: `+${formatValue(data.cashReward)} cash, +${data.gemReward} gems`,
 				});
 				fetchPortfolioSummary();
 				fetchGemsBalance();
@@ -138,8 +136,8 @@
 </script>
 
 <SEO
-	title="Achievements - XprismPlay"
-	description="Track your progress and unlock achievements in the XprismPlay crypto trading simulator. Complete challenges to earn rewards."
+	title="Achievements - Rugplay"
+	description="Track your progress and unlock achievements in the Rugplay crypto trading simulator. Complete challenges to earn rewards."
 	keywords="crypto game achievements, trading simulator challenges, virtual trading rewards"
 />
 
@@ -160,7 +158,11 @@
 				</p>
 			</div>
 			{#if !loading && unclaimedCount > 0}
-				<Button size="sm" onclick={claimAll} disabled={claimingAll}>
+				<Button
+					size="sm"
+					onclick={claimAll}
+					disabled={claimingAll}
+				>
 					{claimingAll ? 'Claiming...' : `Claim All (${unclaimedCount})`}
 				</Button>
 			{/if}
@@ -209,75 +211,63 @@
 				<h2 class="mb-4 text-lg font-semibold">{group.label}</h2>
 				<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 					{#each group.items as achievement}
-						<Card.Root
-							class="relative h-full overflow-hidden transition-all duration-200 {achievement.unlocked &&
-							!achievement.claimed
-								? 'border-yellow-500/50 bg-yellow-500/10 shadow-md shadow-yellow-500/10'
-								: achievement.claimed
-									? 'border-yellow-500/30 bg-yellow-500/5 shadow-sm'
-									: 'opacity-60'}"
-						>
-							<Card.Content class="flex h-full flex-col px-4 py-0">
-								<div class="flex items-start gap-3">
-									<img
-										src="/achievements/{achievement.icon}"
-										alt={achievement.name}
-										class="h-14 w-14 shrink-0 {achievement.unlocked ? '' : 'brightness-50'}"
-									/>
-									<div class="min-w-0 flex-1">
-										<h3 class="truncate text-sm font-semibold">{achievement.name}</h3>
-										<p class="text-muted-foreground mt-0.5 line-clamp-2 text-xs">
-											{achievement.description}
-										</p>
-									</div>
-									{#if achievement.unlocked && achievement.claimed}
-										<div class="text-muted-foreground absolute top-2 right-2 text-lg">✓</div>
-									{/if}
-								</div>
-								<div class="mt-auto ml-2 flex flex-col gap-1.5 pt-2">
-									<div class="flex items-center gap-2">
-										<Badge
-											variant="outline"
-											class="text-[10px] {DIFFICULTY_CLASS[achievement.difficulty]}"
-										>
-											{DIFFICULTY_LABEL[achievement.difficulty]}
-										</Badge>
-										<span class="text-muted-foreground text-[10px]">
-											{formatValue(achievement.cashReward)} + {achievement.gemReward} gems
-										</span>
-									</div>
-									{#if achievement.unlocked && !achievement.claimed}
-										<Button
-											size="sm"
-											class="h-7 w-full text-xs"
-											onclick={() => claimAchievement(achievement.id)}
-											disabled={claimingId === achievement.id}
-										>
-											{claimingId === achievement.id ? 'Claiming...' : 'Claim'}
-										</Button>
-									{:else if achievement.progress !== null && achievement.targetValue}
-										<div>
-											<div
-												class="text-muted-foreground mb-1 flex items-center justify-between text-[10px]"
-											>
-												<span>{formatProgress(achievement.progress, achievement.targetValue)}</span>
-												<span
-													>{Math.floor(
-														(achievement.progress / achievement.targetValue) * 100
-													)}%</span
-												>
+									<Card.Root
+									class="relative h-full overflow-hidden transition-all duration-200 {achievement.unlocked && !achievement.claimed
+										? 'border-yellow-500/50 bg-yellow-500/10 shadow-md shadow-yellow-500/10'
+										: achievement.claimed
+											? 'border-yellow-500/30 bg-yellow-500/5 shadow-sm'
+											: 'opacity-60'}"
+								>
+									<Card.Content class="flex h-full flex-col px-4 py-0">
+										<div class="flex items-start gap-3">
+											<img
+												src="/achievements/{achievement.icon}"
+												alt={achievement.name}
+												class="h-14 w-14 shrink-0 {achievement.unlocked ? '' : 'brightness-50'}"
+											/>
+											<div class="min-w-0 flex-1">
+												<h3 class="truncate text-sm font-semibold">{achievement.name}</h3>
+												<p class="text-muted-foreground mt-0.5 line-clamp-2 text-xs">{achievement.description}</p>
 											</div>
-											<div class="bg-muted h-1.5 w-full overflow-hidden rounded-full">
-												<div
-													class="h-full rounded-full bg-yellow-500/60 transition-all duration-500"
-													style="width: {(achievement.progress / achievement.targetValue) * 100}%"
-												></div>
-											</div>
+											{#if achievement.unlocked && achievement.claimed}
+												<div class="text-muted-foreground absolute right-2 top-2 text-lg">✓</div>
+											{/if}
 										</div>
-									{/if}
-								</div>
-							</Card.Content>
-						</Card.Root>
+										<div class="mt-auto flex flex-col gap-1.5 pt-2 ml-2">
+											<div class="flex items-center gap-2">
+												<Badge variant="outline" class="text-[10px] {DIFFICULTY_CLASS[achievement.difficulty]}">
+													{DIFFICULTY_LABEL[achievement.difficulty]}
+												</Badge>
+												<span class="text-muted-foreground text-[10px]">
+													{formatValue(achievement.cashReward)} + {achievement.gemReward} gems
+												</span>
+											</div>
+											{#if achievement.unlocked && !achievement.claimed}
+												<Button
+													size="sm"
+													class="h-7 w-full text-xs"
+													onclick={() => claimAchievement(achievement.id)}
+													disabled={claimingId === achievement.id}
+												>
+													{claimingId === achievement.id ? 'Claiming...' : 'Claim'}
+												</Button>
+											{:else if achievement.progress !== null && achievement.targetValue}
+												<div>
+													<div class="text-muted-foreground mb-1 flex items-center justify-between text-[10px]">
+														<span>{formatProgress(achievement.progress, achievement.targetValue)}</span>
+														<span>{Math.floor((achievement.progress / achievement.targetValue) * 100)}%</span>
+													</div>
+													<div class="bg-muted h-1.5 w-full overflow-hidden rounded-full">
+														<div
+															class="h-full rounded-full bg-yellow-500/60 transition-all duration-500"
+															style="width: {(achievement.progress / achievement.targetValue) * 100}%"
+														></div>
+													</div>
+												</div>
+											{/if}
+										</div>
+									</Card.Content>
+								</Card.Root>
 					{/each}
 				</div>
 			</div>

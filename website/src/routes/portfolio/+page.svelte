@@ -21,7 +21,8 @@
 	import { PORTFOLIO_DATA, fetchPortfolioData } from '$lib/stores/portfolio-data';
 	import SendMoneyModal from '$lib/components/self/SendMoneyModal.svelte';
 	import SignInConfirmDialog from '$lib/components/self/SignInConfirmDialog.svelte';
-	import { _ } from 'svelte-i18n';
+	import AdLong from '$lib/components/self/ads/AdLong.svelte';
+
 	// TODO: add type definitions
 	let transactions = $state<any[]>([]);
 	let loading = $state(true);
@@ -80,7 +81,7 @@
 	let holdingsColumns = $derived([
 		{
 			key: 'coin',
-			label: $_('global.coin'),
+			label: 'Coin',
 			class: 'w-[25%] min-w-[120px] md:w-[12%]',
 			render: (value: any, row: any) => ({
 				component: 'coin',
@@ -92,14 +93,14 @@
 		},
 		{
 			key: 'quantity',
-			label: $_('global.quantity'),
+			label: 'Quantity',
 			class: 'w-[15%] min-w-[80px] md:w-[10%] font-mono',
 			sortable: true,
 			render: (value: any) => formatQuantity(value)
 		},
 		{
 			key: 'currentPrice',
-			label: $_('global.price'),
+			label: 'Price',
 			class: 'w-[12%] min-w-[70px] md:w-[10%] font-mono',
 			sortable: true,
 			render: (value: any) => `$${formatPrice(value)}`
@@ -117,7 +118,7 @@
 		},
 		{
 			key: 'change24h',
-			label: $_('coin.24hchange'),
+			label: '24h Change',
 			class: 'w-[15%] min-w-[80px] md:w-[12%]',
 			sortable: true,
 			render: (value: any) => ({
@@ -128,7 +129,7 @@
 		},
 		{
 			key: 'value',
-			label: $_('global.value'),
+			label: 'Value',
 			class: 'w-[12%] min-w-[70px] md:w-[10%] font-mono font-medium',
 			sortable: true,
 			defaultSort: true,
@@ -150,7 +151,7 @@
 	let transactionsColumns = $derived([
 		{
 			key: 'type',
-			label: $_('global.type'),
+			label: 'Type',
 			class: 'w-[12%] min-w-[60px] md:w-[8%]',
 			render: (value: any, row: any) => {
 				if (row.isTransfer) {
@@ -171,7 +172,7 @@
 		},
 		{
 			key: 'coin',
-			label: $_('global.coin'),
+			label: 'Coin',
 			class: 'w-[20%] min-w-[100px] md:w-[12%]',
 			render: (value: any, row: any) => {
 				if (row.isTransfer) {
@@ -197,7 +198,7 @@
 		},
 		{
 			key: 'sender',
-			label: $_('global.sender'),
+			label: 'Sender',
 			class: 'w-[12%] min-w-[70px] md:w-[10%]',
 			render: (value: any, row: any) => ({
 				component: 'text',
@@ -210,7 +211,7 @@
 		},
 		{
 			key: 'recipient',
-			label: $_('global.receiver'),
+			label: 'Receiver',
 			class: 'w-[12%] min-w-[70px] md:w-[10%]',
 			render: (value: any, row: any) => ({
 				component: 'text',
@@ -223,35 +224,22 @@
 		},
 		{
 			key: 'quantity',
-			label: $_('global.quantity'),
+			label: 'Quantity',
 			class: 'w-[12%] min-w-[70px] md:w-[10%] font-mono text-sm',
 			render: (value: any, row: any) =>
 				row.isTransfer && value === 0 ? '-' : formatQuantity(value)
 		},
 		{
 			key: 'totalBaseCurrencyAmount',
-			label: $_('global.amount'),
+			label: 'Amount',
 			class: 'w-[12%] min-w-[70px] md:w-[10%] font-mono text-sm font-medium',
 			render: (value: any) => formatValue(value)
 		},
 		{
 			key: 'timestamp',
-			label: $_('global.date'),
+			label: 'Date',
 			class: 'hidden md:table-cell md:w-[18%] text-muted-foreground text-sm',
 			render: (value: any) => formatDate(value)
-		},
-		{
-			key: 'note',
-			label: $_('global.note'),
-			class: 'hidden lg:table-cell w-[20%] text-muted-foreground text-sm',
-			render: (value: any, row: any) => {
-				const isTransfer =
-					row.isTransfer || row.type === 'TRANSFER_IN' || row.type === 'TRANSFER_OUT';
-				if (!isTransfer || !value) {
-					return { component: 'text', text: '-', class: 'text-muted-foreground' };
-				}
-				return { component: 'text', text: value, class: 'text-sm italic truncate max-w-[180px]' };
-			}
 		}
 	]);
 
@@ -261,7 +249,7 @@
 </script>
 
 <SEO
-	title="Portfolio - XprismPlay"
+	title="Portfolio - Rugplay"
 	description="View your virtual cryptocurrency portfolio, simulated holdings, and trading performance in the Rugplay simulation game platform."
 	noindex={true}
 	keywords="virtual portfolio management, crypto holdings game, trading performance simulator, investment tracking game"
@@ -273,14 +261,14 @@
 <div class="container mx-auto max-w-7xl p-6">
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<div>
-			<h1 class="text-3xl font-bold">{$_('portfolio.title')}</h1>
-			<p class="text-muted-foreground">{$_('portfolio.description')}</p>
+			<h1 class="text-3xl font-bold">Portfolio</h1>
+			<p class="text-muted-foreground">Manage your investments and transactions</p>
 		</div>
 		{#if $USER_DATA}
 			<div class="flex gap-2">
 				<Button onclick={() => (sendMoneyModalOpen = true)}>
 					<HugeiconsIcon icon={SentIcon} class="h-4 w-4" />
-					{$_('portfolio.send_money.title')}
+					Send Money
 				</Button>
 			</div>
 		{/if}
@@ -292,18 +280,16 @@
 		<div class="flex h-96 items-center justify-center">
 			<div class="text-center">
 				<div class="text-muted-foreground mb-4 text-xl">
-					{$_('sign_in.portfolio.0')}
+					You need to be logged in to view your portfolio
 				</div>
-				<Button onclick={() => (shouldSignIn = true)}>
-					{$_('sign_in.portfolio.1')}</Button
-				>
+				<Button onclick={() => (shouldSignIn = true)}>Sign In</Button>
 			</div>
 		</div>
 	{:else if error}
 		<div class="flex h-96 items-center justify-center">
 			<div class="text-center">
 				<div class="text-muted-foreground mb-4 text-xl">{error}</div>
-				<Button onclick={retryFetch}>{$_('globals.try_again')}</Button>
+				<Button onclick={retryFetch}>Try Again</Button>
 			</div>
 		</div>
 	{:else}
@@ -316,7 +302,7 @@
 					<Card.Header>
 						<Card.Title class="flex items-center gap-2 text-sm font-medium">
 							<HugeiconsIcon icon={Wallet01Icon} class="h-4 w-4" />
-							{$_('portfolio.total')}
+							Total
 						</Card.Title>
 					</Card.Header>
 					<Card.Content>
@@ -329,7 +315,7 @@
 					<Card.Header>
 						<Card.Title class="flex items-center gap-2 text-sm font-medium">
 							<HugeiconsIcon icon={DollarCircleIcon} class="h-4 w-4" />
-							{$_('portfolio.cash_balance.0')}
+							Cash Balance
 						</Card.Title>
 					</Card.Header>
 					<Card.Content>
@@ -337,15 +323,9 @@
 							{formatValue(portfolioData?.baseCurrencyBalance || 0)}
 						</p>
 						<p class="text-muted-foreground text-xs">
-							{$_('portfolio.cash_balance.1').replace(
-								'{{percent}}',
-								totalPortfolioValue > 0
-									? (
-											((portfolioData?.baseCurrencyBalance || 0) / totalPortfolioValue) *
-											100
-										).toFixed(1)
-									: '100.0'
-							)}
+							{totalPortfolioValue > 0
+								? `${(((portfolioData?.baseCurrencyBalance || 0) / totalPortfolioValue) * 100).toFixed(1)}% of portfolio`
+								: '100% of portfolio'}
 						</p>
 					</Card.Content>
 				</Card.Root>
@@ -355,16 +335,13 @@
 					<Card.Header>
 						<Card.Title class="flex items-center gap-2 text-sm font-medium">
 							<HugeiconsIcon icon={TradeUpIcon} class="h-4 w-4" />
-							{$_('portfolio.coin_holdings.0')}
+							Coin Holdings
 						</Card.Title>
 					</Card.Header>
 					<Card.Content>
 						<p class="text-3xl font-bold">{formatValue(portfolioData?.totalCoinValue || 0)}</p>
 						<p class="text-muted-foreground text-xs">
-							{$_('portfolio.coin_holdings.1').replace(
-								'{{quantity}}',
-								(portfolioData?.coinHoldings.length || 0).toString()
-							)}
+							{portfolioData?.coinHoldings.length || 0} positions
 						</p>
 					</Card.Content>
 				</Card.Root>
@@ -379,14 +356,12 @@
 						>
 							<HugeiconsIcon icon={Wallet01Icon} class="text-muted-foreground h-8 w-8" />
 						</div>
-						<h3 class="mb-2 text-lg font-semibold">{$_('portfolio.no_coins.0')}</h3>
+						<h3 class="mb-2 text-lg font-semibold">No coin holdings</h3>
 						<p class="text-muted-foreground mb-6">
-							{$_('portfolio.no_coins.1')}
+							You haven't invested in any coins yet. Start by buying existing coins.
 						</p>
 						<div class="flex justify-center">
-							<Button variant="outline" onclick={() => goto('/')}
-								>{$_('portfolio.no_coins.2')}</Button
-							>
+							<Button variant="outline" onclick={() => goto('/')}>Browse Coins</Button>
 						</div>
 					</Card.Content>
 				</Card.Root>
@@ -394,8 +369,8 @@
 				<!-- Holdings Table -->
 				<Card.Root>
 					<Card.Header>
-						<Card.Title>{$_('portfolio.your_holdings.0')}</Card.Title>
-						<Card.Description>{$_('portfolio.your_holdings.1')}</Card.Description>
+						<Card.Title>Your Holdings</Card.Title>
+						<Card.Description>Current positions in your portfolio</Card.Description>
 					</Card.Header>
 					<Card.Content>
 						<DataTable
@@ -407,6 +382,8 @@
 				</Card.Root>
 			{/if}
 
+			<AdLong />
+
 			<!-- Recent Transactions -->
 			<Card.Root class="mt-8">
 				<Card.Header>
@@ -414,15 +391,13 @@
 						<div>
 							<Card.Title class="flex items-center gap-2">
 								<HugeiconsIcon icon={ReceiptDollarIcon} class="h-5 w-5" />
-								{$_('portfolio.recent_transactions.0')}
+								Recent Transactions
 							</Card.Title>
-							<Card.Description>
-								{$_('portfolio.recent_transactions.1')}</Card.Description
-							>
+							<Card.Description>Your latest trading activity</Card.Description>
 						</div>
 						{#if hasTransactions}
 							<Button variant="outline" size="sm" onclick={() => goto('/transactions')}>
-								{$_('portfolio.recent_transactions.2')}
+								View All
 							</Button>
 						{/if}
 					</div>
@@ -433,8 +408,8 @@
 						data={transactions}
 						onRowClick={(tx) => !tx.isTransfer && goto(`/coin/${tx.coin.symbol}`)}
 						emptyIcon={Invoice03Icon}
-						emptyTitle={$_('portfolio.no_transactions.0')}
-						emptyDescription={$_('portfolio.no_transactions.1')}
+						emptyTitle="No transactions yet"
+						emptyDescription="You haven't made any trades yet. Start by buying or selling coins."
 					/>
 				</Card.Content>
 			</Card.Root>

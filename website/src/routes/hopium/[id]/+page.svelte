@@ -28,6 +28,7 @@
 	import { formatDateWithYear, getPublicUrl, formatTimeUntil } from '$lib/utils';
 	import { createChart, ColorType, type IChartApi, LineSeries } from 'lightweight-charts';
 	import HopiumQuestionSkeleton from '$lib/components/self/skeletons/HopiumQuestionSkeleton.svelte';
+	import AdSquare from '$lib/components/self/ads/AdSquare.svelte';
 	import { haptic } from '$lib/stores/haptics';
 
 	const { data } = $props();
@@ -207,8 +208,8 @@
 
 <SEO
 	title={question
-		? `${question.question} - Hopium - XprismPlay`
-		: 'Loading Question - Hopium - XprismPlay'}
+		? `${question.question} - Hopium - Rugplay`
+		: 'Loading Question - Hopium - Rugplay'}
 	description={question
 		? `Predict "${question.question}" in Rugplay's AI-powered prediction market. Current odds: ${question.yesPercentage.toFixed(1)}% YES, ${question.noPercentage.toFixed(1)}% NO. Total volume: $${question.totalAmount.toFixed(2)}.`
 		: 'AI-powered prediction market question in the Rugplay simulation game.'}
@@ -261,7 +262,7 @@
 			</div>
 		</div>
 
-		<div class="text-muted-foreground mt-3 mb-4 flex flex-wrap items-center gap-1.5 text-xs">
+		<div class="text-muted-foreground mb-4 mt-3 flex flex-wrap items-center gap-1.5 text-xs">
 			<span>Created by</span>
 
 			<HoverCard.Root>
@@ -276,10 +277,7 @@
 						/>
 						<Avatar.Fallback>{question.creator.username.charAt(0)}</Avatar.Fallback>
 					</Avatar.Root>
-					<span
-						><UserName name={question.creator.name} nameColor={question.creator.nameColor} /> (@{question
-							.creator.username})</span
-					>
+					<span><UserName name={question.creator.name} nameColor={question.creator.nameColor} /> (@{question.creator.username})</span>
 				</HoverCard.Trigger>
 				<HoverCard.Content class="w-80" side="bottom" sideOffset={3}>
 					<UserProfilePreview userId={question.creator.id} />
@@ -314,13 +312,8 @@
 									class="border-muted flex h-[400px] items-center justify-center rounded-lg border-2 border-dashed"
 								>
 									<div class="text-center">
-										<HugeiconsIcon
-											icon={ChartColumnIcon}
-											class="text-muted-foreground mx-auto mb-3 h-12 w-12"
-										/>
-										<p class="text-muted-foreground text-sm">
-											Chart will appear after first prediction
-										</p>
+										<HugeiconsIcon icon={ChartColumnIcon} class="text-muted-foreground mx-auto mb-3 h-12 w-12" />
+										<p class="text-muted-foreground text-sm">Chart will appear after first prediction</p>
 									</div>
 								</div>
 							{:else}
@@ -345,26 +338,20 @@
 										? 'bg-success/80 hover:bg-success/90 w-full'
 										: 'bg-muted hover:bg-muted/90 w-full'}
 									size="lg"
-									onclick={() => {
-										haptic.trigger('selection');
-										betSide = true;
-									}}
-									disabled={question.aiResolution !== null}
-								>
-									<div class="flex w-full min-w-0 items-baseline gap-2">
-										<span class="truncate text-xl font-bold">YES</span>
-										<span class="truncate text-sm">{question.yesPercentage.toFixed(1)}¢</span>
-									</div>
-								</Button>
-								<Button
-									class={!betSide
-										? 'bg-destructive hover:bg-destructive/90 w-full'
-										: 'bg-muted hover:bg-muted/90 w-full'}
-									size="lg"
-									onclick={() => {
-										haptic.trigger('selection');
-										betSide = false;
-									}}
+								onclick={() => { haptic.trigger('selection'); betSide = true; }}
+								disabled={question.aiResolution !== null}
+							>
+								<div class="flex w-full min-w-0 items-baseline gap-2">
+									<span class="truncate text-xl font-bold">YES</span>
+									<span class="truncate text-sm">{question.yesPercentage.toFixed(1)}¢</span>
+								</div>
+							</Button>
+							<Button
+								class={!betSide
+									? 'bg-destructive hover:bg-destructive/90 w-full'
+									: 'bg-muted hover:bg-muted/90 w-full'}
+								size="lg"
+								onclick={() => { haptic.trigger('selection'); betSide = false; }}
 									disabled={question.aiResolution !== null}
 								>
 									<div class="flex w-full min-w-0 items-baseline gap-2">
@@ -538,9 +525,7 @@
 						</Card.Header>
 						<Card.Content>
 							{#if question.status === 'ACTIVE'}
-								<p class="text-muted-foreground mb-6 text-sm">
-									You haven't made any predictions yet
-								</p>
+								<p class="text-muted-foreground mb-6 text-sm">You haven't made any predictions yet</p>
 							{:else}
 								<div class="py-6 text-center">
 									<p class="text-muted-foreground text-sm">This question has been resolved</p>
@@ -591,6 +576,8 @@
 				</Card.Root>
 			</div>
 
+			<AdSquare />
+
 			<!-- Recent Activity Section -->
 			{#if question.recentBets && question.recentBets.length > 0}
 				<Card.Root class="shadow-sm">
@@ -627,10 +614,7 @@
 														</Avatar.Root>
 														<div>
 															<div class="font-semibold hover:underline">
-																<UserName
-																	name={bet.user?.name || 'Deleted User'}
-																	nameColor={bet.user?.nameColor}
-																/>
+																<UserName name={bet.user?.name || 'Deleted User'} nameColor={bet.user?.nameColor} />
 															</div>
 															<div class="text-muted-foreground text-sm">
 																@{bet.user?.username || 'deleted_user'}

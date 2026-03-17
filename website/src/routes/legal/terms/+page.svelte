@@ -13,8 +13,8 @@
 	const MINIMUM_AGE = 13;
 </script>
 
-<SEO
-	title="Terms of Service - XprismPlay"
+<SEO 
+	title="Terms of Service - Rugplay"
 	description="Terms of Service for Rugplay - cryptocurrency trading simulation game. Learn about virtual currency, rug pull mechanics, arcade features, and platform rules."
 	keywords="terms of service, legal terms, simulation game rules, virtual currency terms, rug pull simulation"
 />
@@ -93,8 +93,8 @@
 							You must be at least {MINIMUM_AGE} years old to use Rugplay.
 						</p>
 						<p class="text-muted-foreground text-sm">
-							Our platform uses virtual currency with no real-world value. All features are designed
-							for educational and entertainment purposes.
+							Our platform uses virtual currency with no real-world value. All features are
+							designed for educational and entertainment purposes.
 						</p>
 					</div>
 
@@ -259,7 +259,8 @@
 						</ul>
 						<p class="mt-3" style="color: oklch(0.828 0.189 84.429 / 0.8)">
 							<strong>No Compensation:</strong> We will not provide alternative compensation or restore
-							virtual balances lost due to investments in prohibited content. You invest at your own risk.
+							virtual balances lost due to investments in prohibited content. You invest at your own
+							risk.
 						</p>
 					</div>
 				</div>
@@ -370,73 +371,42 @@
 					<div>
 						<h3 class="mb-2 text-lg font-medium">8.1 Gem Currency</h3>
 						<p class="mb-3">
-							Gems are an in-platform currency that can be purchased with real money and used
-							exclusively to acquire cosmetic items (such as name colors) through the Shop. Gems:
+							Gems are an in-platform currency that can be purchased with real money and used exclusively to acquire cosmetic items (such as name colors) through the Shop. Gems:
 						</p>
 						<ul class="ml-6 list-disc space-y-2">
 							<li>Have no real-world monetary value outside the Platform</li>
 							<li>Cannot be exchanged, transferred, or cashed out for real money</li>
 							<li>Are non-refundable once purchased</li>
 							<li>May only be used for cosmetic items within the Platform</li>
-							<li>
-								Do not affect gameplay, virtual trading balances, or provide competitive advantages
-							</li>
+							<li>Do not affect gameplay, virtual trading balances, or provide competitive advantages</li>
 						</ul>
 					</div>
 
 					<div>
 						<h3 class="mb-2 text-lg font-medium">8.2 Payment Processing via Polar.sh</h3>
 						<p class="mb-3">
-							All Gem purchases are processed by our third-party payment provider, <a
-								href="https://polar.sh"
-								target="_blank"
-								rel="noopener noreferrer"
-								class="text-primary underline">Polar.sh</a
-							>. By making a purchase, you agree to:
+							All Gem purchases are processed by our third-party payment provider, <a href="https://polar.sh" target="_blank" rel="noopener noreferrer" class="text-primary underline">Polar.sh</a>. By making a purchase, you agree to:
 						</p>
 						<ul class="ml-6 list-disc space-y-2">
-							<li>
-								Polar.sh's <a
-									href="https://polar.sh/legal/terms"
-									target="_blank"
-									rel="noopener noreferrer"
-									class="text-primary underline">Terms of Service</a
-								>
-								and
-								<a
-									href="https://polar.sh/legal/privacy"
-									target="_blank"
-									rel="noopener noreferrer"
-									class="text-primary underline">Privacy Policy</a
-								>
-							</li>
+							<li>Polar.sh's <a href="https://polar.sh/legal/terms" target="_blank" rel="noopener noreferrer" class="text-primary underline">Terms of Service</a> and <a href="https://polar.sh/legal/privacy" target="_blank" rel="noopener noreferrer" class="text-primary underline">Privacy Policy</a></li>
 							<li>Providing accurate billing and payment information to Polar.sh</li>
 							<li>Being charged the displayed amount at the time of purchase</li>
 						</ul>
 						<p class="text-muted-foreground mt-2 text-sm">
-							We do not store your payment card details. All payment information is handled directly
-							by Polar.sh.
+							We do not store your payment card details. All payment information is handled directly by Polar.sh.
 						</p>
 					</div>
 
 					<div>
 						<h3 class="mb-2 text-lg font-medium">8.3 Refund Policy</h3>
 						<p class="mb-3">
-							All Gem purchases are final and non-refundable. Since Gems are digital goods delivered
-							immediately upon purchase:
+							All Gem purchases are final and non-refundable. Since Gems are digital goods delivered immediately upon purchase:
 						</p>
 						<ul class="ml-6 list-disc space-y-2">
 							<li>No refunds will be issued for purchased Gems</li>
 							<li>No refunds will be issued for cosmetic items obtained using Gems</li>
-							<li>
-								If your account is terminated for Terms violations, purchased Gems are forfeited
-							</li>
-							<li>
-								For billing issues or unauthorized charges, contact us at <a
-									href="mailto:{CONTACT_EMAIL}"
-									class="text-primary underline">{CONTACT_EMAIL}</a
-								>
-							</li>
+							<li>If your account is terminated for Terms violations, purchased Gems are forfeited</li>
+							<li>For billing issues or unauthorized charges, contact us at <a href="mailto:{CONTACT_EMAIL}" class="text-primary underline">{CONTACT_EMAIL}</a></li>
 						</ul>
 					</div>
 				</div>
@@ -662,7 +632,7 @@
 					<strong>Contact:</strong>
 					<a href="mailto:{CONTACT_EMAIL}" class="text-primary underline">{CONTACT_EMAIL}</a>
 				</p>
-				<p class="mb-2"><strong>Platform:</strong> XprismPlay</p>
+				<p class="mb-2"><strong>Platform:</strong> Rugplay</p>
 			</div>
 		</div>
 

@@ -1,10 +1,10 @@
-<img style="width: 128px; height: 128px" src="website/static/favicon.svg" /><h1 style="font-size: 48px"><a href="https://xprismplay.dpdns.org">xprismplay.dpdns.org</a> - the fake crypto simulator.</h1>
+<img style="width: 128px; height: 128px" src="website/static/favicon.svg" /><h1 style="font-size: 48px"><a href="https://rugplay.com">Rugplay.com</a> - the fake crypto simulator.</h1>
 
-[Privacy Policy](https://xprismplay.dpdns.org/legal/privacy) | [Terms of Service](https://xprismplay.dpdns.org/legal/terms) | [License](LICENSE) | [YouTube video](https://www.youtube.com/watch?v=nRUkvPMphRc)
+[Privacy Policy](https://rugplay.com/legal/privacy) | [Terms of Service](https://rugplay.com/legal/terms) | [License](LICENSE) | [YouTube video](https://www.youtube.com/watch?v=nRUkvPMphRc)
 
 ## About
 
-XprismPlay is a realistic cryptocurrency trading simulator that lets you experience the risks and mechanics of decentralized exchanges without real financial consequences. Create coins, trade with liquidity pools, and learn about "rug pulls" in a... relatively safe environment :)
+Rugplay is a realistic cryptocurrency trading simulator that lets you experience the risks and mechanics of decentralized exchanges without real financial consequences. Create coins, trade with liquidity pools, and learn about "rug pulls" in a... relatively safe environment :)
 
 ## Features
 - 🪙 Create coins
@@ -33,15 +33,15 @@ Before you begin, make sure you have the following installed:
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/outpoot/XprismPlay.git
-   cd XprismPlay
+   git clone https://github.com/outpoot/rugplay.git
+   cd rugplay
    ```
 
 2. **Set up Redis**
 
    Create a Redis Docker container:
    ```bash
-   docker run -d --name XprismPlay-redis -p 6379:6379 -v XprismPlay_redisdata:/data --restart unless-stopped redis:8-alpine redis-server --save 60 1
+   docker run -d --name rugplay-redis -p 6379:6379 -v rugplay_redisdata:/data --restart unless-stopped redis:8-alpine redis-server --save 60 1
    ```
 
    **Alternative:** You can also [download and install Redis directly](https://redis.io/downloads/) for your operating system, or use a managed Redis service such as Redis Cloud.
@@ -52,7 +52,7 @@ Before you begin, make sure you have the following installed:
 
    - **Run Postgres locally with Docker:**
      ```bash
-     docker run -d --name XprismPlay-postgres -e POSTGRES_USER=pguser -e POSTGRES_PASSWORD=pgpass -e POSTGRES_DB=XprismPlay -p 5432:5432 -v XprismPlay_pgdata:/var/lib/postgresql/data --restart unless-stopped pgvector/pgvector:pg16
+     docker run -d --name rugplay-postgres -e POSTGRES_USER=pguser -e POSTGRES_PASSWORD=pgpass -e POSTGRES_DB=rugplay -p 5432:5432 -v rugplay_pgdata:/var/lib/postgresql/data --restart unless-stopped pgvector/pgvector:pg16
      ```
 
    - **Use a managed cloud Postgres provider:**
@@ -62,7 +62,7 @@ Before you begin, make sure you have the following installed:
 
    If you are running Postgres locally, you can seed the database with:
    ```bash
-   docker exec -it XprismPlay-postgres psql -d XprismPlay -U pguser
+   docker exec -it rugplay-postgres psql -d rugplay -U pguser
    ```
    Then, copy and paste the SQL from the migration files (e.g. `website/drizzle/0000_crazy_bloodstrike.sql`).
 
@@ -89,10 +89,10 @@ Before you begin, make sure you have the following installed:
 
    ```ini
    # --- Database ---
-   DATABASE_URL=postgres://pguser:pgpass@localhost:5432/XprismPlay   # PostgreSQL connection string
+   DATABASE_URL=postgres://pguser:pgpass@localhost:5432/rugplay   # PostgreSQL connection string
    POSTGRES_USER=pguser      # PostgreSQL username (should match Docker config)
    POSTGRES_PASSWORD=pgpass  # PostgreSQL password (should match Docker config)
-   POSTGRES_DB=XprismPlay       # PostgreSQL database name (should match Docker config)
+   POSTGRES_DB=rugplay       # PostgreSQL database name (should match Docker config)
 
    # --- Redis ---
    REDIS_URL=redis://localhost:6379  # Redis connection string

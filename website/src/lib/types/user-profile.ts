@@ -5,13 +5,14 @@ export interface UserProfile {
 	bio: string | null;
 	image: string | null;
 	createdAt: Date;
-	flags: bigint;
 	baseCurrencyBalance: number;
+	isAdmin: boolean;
 	totalPortfolioValue: number;
 	loginStreak: number;
-	timezone: number;
 
 	prestigeLevel: number | null;
+	halloweenBadge2025: boolean;
+	founderBadge: boolean;
 
 	arcadeWins: number;
 	arcadeLosses: number;
