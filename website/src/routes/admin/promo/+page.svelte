@@ -89,7 +89,7 @@
 
 	async function getPromocodeUses(promocode: string) : Promise<PromoCodeUse[] | undefined>{
 		try {
-			const response = await fetch(`http://localhost:5173/api/admin/promo/uses?code=${encodeURIComponent(promocode)}`);
+			const response = await fetch(`/api/admin/promo/uses?code=${encodeURIComponent(promocode)}`);
 			if (response.ok) {
 				const json = await response.json();
 				return json.uses
