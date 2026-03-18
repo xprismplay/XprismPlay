@@ -155,6 +155,7 @@
 	let isDeleting = $state<number | null>(null);
 
 	async function deletePromoCode(id: number) {
+        if(!confirm("Do you want to delete this promocode?")) return;
 		isDeleting = id;
 		try {
 			const response = await fetch('/api/admin/promo', {
