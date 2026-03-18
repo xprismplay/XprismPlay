@@ -567,3 +567,82 @@ export const adminLog = pgTable(
 		createdAtIdx: index('admin_log_created_at_idx').on(table.createdAt)
 	})
 );
+
+export const groups = pgTable(
+	'groups',
+	{
+		id: serial('id').primaryKey(),
+		name: varchar('name', { length: 50 }).notNull().unique(),
+		description: varchar('description', { length: 500 }),
+		icon: text('icon'),
+		ownerId: integer('owner_id').references(() => user.id, { onDelete: 'set null' }),
+		isPublic: boolean('is_public').notNull().default(true),
+		treasuryBalance: decimal('treasury_balance', { precision: 30, scale: 8 }).notNull().default('0.00000000'),
+		memberCount: integer('member_count').notNull().default(1),
+		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+	},
+	(table) => ({
+		ownerIdIdx: index('groups_owner_id_idx').on(table.ownerId),
+		nameIdx: index('groups_name_idx').on(table.name)
+	})
+);
+
+export const groupMember = pgTable(
+	'group_member',
+	{
+		groupId: integer('group_id').notNull().references(() => groups.id, { onDelete: 'cascade' }),
+		userId: integer('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+		role: varchar('role', { length: 20 }).notNull().default('member'),
+		joinedAt: timestamp('joined_at', { withTimezone: true }).notNull().defaultNow()
+	},
+	(table) => ({
+		pk: primaryKey({ columns: [table.groupId, table.userId] }),
+		groupIdIdx: index('group_member_group_id_idx').on(table.groupId),
+		userIdIdx: index('group_member_user_id_idx').on(table.userId)
+	})
+);
+
+export const groupJoinRequest = pgTable(
+	'group_join_request',
+	{
+		id: serial('id').primaryKey(),
+		groupId: integer('group_id').notNull().references(() => groups.id, { onDelete: 'cascade' }),
+		userId: integer('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+	},
+	(table) => ({
+		uniqueReq: unique('group_join_request_unique').on(table.groupId, table.userId),
+		groupIdIdx: index('group_join_request_group_id_idx').on(table.groupId)
+	})
+);
+
+export const groupWallPost = pgTable(
+	'group_wall_post',
+	{
+		id: serial('id').primaryKey(),
+		groupId: integer('group_id').notNull().references(() => groups.id, { onDelete: 'cascade' }),
+		userId: integer('user_id').references(() => user.id, { onDelete: 'set null' }),
+		content: varchar('content', { length: 500 }).notNull(),
+		isDeleted: boolean('is_deleted').notNull().default(false),
+		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+	},
+	(table) => ({
+		groupIdIdx: index('group_wall_post_group_id_idx').on(table.groupId)
+	})
+);
+
+export const groupTreasuryTx = pgTable(
+	'group_treasury_tx',
+	{
+		id: serial('id').primaryKey(),
+		groupId: integer('group_id').notNull().references(() => groups.id, { onDelete: 'cascade' }),
+		userId: integer('user_id').references(() => user.id, { onDelete: 'set null' }),
+		type: varchar('type', { length: 20 }).notNull(),
+		amount: decimal('amount', { precision: 30, scale: 8 }).notNull(),
+		note: varchar('note', { length: 200 }),
+		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+	},
+	(table) => ({
+		groupIdIdx: index('group_treasury_tx_group_id_idx').on(table.groupId)
+	})
+);
