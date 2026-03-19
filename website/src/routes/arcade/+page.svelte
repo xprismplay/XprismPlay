@@ -10,7 +10,6 @@
 	import Dice from '$lib/components/self/games/Dice.svelte';
 	import Tower from '$lib/components/self/games/Tower.svelte';
 	import Blackjack from '$lib/components/self/games/Blackjack.svelte';
-	import Poker from '$lib/components/self/games/Poker.svelte';
 	import HigherLower from '$lib/components/self/games/HigherLower.svelte';
 	import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '$lib/components/ui/card';
 	import { arcadeActivityStore } from '$lib/stores/websocket';
@@ -27,13 +26,10 @@
 		DiceIcon,
 		ElectricTower01Icon,
 		SpadesIcon,
-		CurvyUpDownDirectionIcon,
-		Cards01FreeIcons
+		CurvyUpDownDirectionIcon
 	} from '@hugeicons/core-free-icons';
 	import { formatValue, formatRelativeTime, getPublicUrl } from '$lib/utils';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
-	import { onMount } from 'svelte';
 
 	const games = [
 		{ id: 'coinflip', label: 'Coinflip', icon: CoinsDollarIcon },
@@ -42,27 +38,12 @@
 		{ id: 'dice', label: 'Dice', icon: DiceIcon },
 		{ id: 'tower', label: 'Tower', icon: ElectricTower01Icon },
 		{ id: 'blackjack', label: 'Blackjack', icon: SpadesIcon },
-		{ id: 'higherlower', label: 'Higher/Lower', icon: CurvyUpDownDirectionIcon },
-		{ id: 'poker', label: 'Poker', icon: Cards01FreeIcons }
+		{ id: 'higherlower', label: 'Higher/Lower', icon: CurvyUpDownDirectionIcon }
 	];
 
 	let shouldSignIn = $state(false);
 	let balance = $state(0);
 	let activeGame = $state('coinflip');
-	let joincode = $state('');
-
-	onMount(() => {
-		const params = page.url.searchParams;
-		const game = params.get('game'); // future proofing maybe? idk tbh
-		const code = params.get('code') ?? '';
-		if (game && games.some((g) => g.id === game)) {
-			activeGame = game;
-		}
-		if (code && /^\d{4}$/.test(code)) {
-			joincode = code;
-			activeGame = 'poker';
-		}
-	});
 
 	// Filter activities to only show bets >= $1000
 	const filteredActivities = $derived(
@@ -142,8 +123,6 @@
 				<Blackjack bind:balance onBalanceUpdate={handleBalanceUpdate} />
 			{:else if activeGame === 'higherlower'}
 				<HigherLower bind:balance onBalanceUpdate={handleBalanceUpdate} />
-			{:else if activeGame === 'poker'}
-				<Poker bind:balance onBalanceUpdate={handleBalanceUpdate} code={joincode} />
 			{/if}
 
 			<!-- Live Arcade Activity Feed -->
