@@ -24,9 +24,7 @@
 		Loading03Icon,
 		Tick01Icon,
 		Cancel01Icon,
-
 		People
-
 	} from '@hugeicons/core-free-icons';
 	import { USER_DATA } from '$lib/stores/user-data';
 	import { formatDate, getExpirationDate } from '$lib/utils';
@@ -87,12 +85,12 @@
 		}
 	}
 
-	async function getPromocodeUses(promocode: string) : Promise<PromoCodeUse[] | undefined>{
+	async function getPromocodeUses(promocode: string): Promise<PromoCodeUse[] | undefined> {
 		try {
 			const response = await fetch(`/api/admin/promo/uses?code=${encodeURIComponent(promocode)}`);
 			if (response.ok) {
 				const json = await response.json();
-				return json.uses
+				return json.uses;
 			} else {
 				console.error('Failed to load promo codes:', response.status, response.statusText);
 			}
@@ -155,7 +153,7 @@
 	let isDeleting = $state<number | null>(null);
 
 	async function deletePromoCode(id: number) {
-        if(!confirm("Do you want to delete this promocode?")) return;
+		if (!confirm('Do you want to delete this promocode?')) return;
 		isDeleting = id;
 		try {
 			const response = await fetch('/api/admin/promo', {
@@ -391,12 +389,15 @@
 												</Badge>
 											{/if}
 											<button
-												onclick={() => getPromocodeUses(promo.code).then(v=>alert(`Promo code uses:\n${v?.map(e=>e.username).join('\n')}`))}
+												onclick={() =>
+													getPromocodeUses(promo.code).then((v) =>
+														alert(`Promo code uses:\n${v?.map((e) => e.username).join('\n')}`)
+													)}
 												disabled={isDeleting === promo.id}
 												class="text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
 												title="Delete promo code"
 											>
-											<HugeiconsIcon icon={People} class="h-4 w-4"/>
+												<HugeiconsIcon icon={People} class="h-4 w-4" />
 											</button>
 											<button
 												onclick={() => deletePromoCode(promo.id)}

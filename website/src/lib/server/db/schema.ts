@@ -577,7 +577,9 @@ export const groups = pgTable(
 		icon: text('icon'),
 		ownerId: integer('owner_id').references(() => user.id, { onDelete: 'set null' }),
 		isPublic: boolean('is_public').notNull().default(true),
-		treasuryBalance: decimal('treasury_balance', { precision: 30, scale: 8 }).notNull().default('0.00000000'),
+		treasuryBalance: decimal('treasury_balance', { precision: 30, scale: 8 })
+			.notNull()
+			.default('0.00000000'),
 		memberCount: integer('member_count').notNull().default(1),
 		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 	},
@@ -590,8 +592,12 @@ export const groups = pgTable(
 export const groupMember = pgTable(
 	'group_member',
 	{
-		groupId: integer('group_id').notNull().references(() => groups.id, { onDelete: 'cascade' }),
-		userId: integer('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+		groupId: integer('group_id')
+			.notNull()
+			.references(() => groups.id, { onDelete: 'cascade' }),
+		userId: integer('user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
 		role: varchar('role', { length: 20 }).notNull().default('member'),
 		joinedAt: timestamp('joined_at', { withTimezone: true }).notNull().defaultNow()
 	},
@@ -606,8 +612,12 @@ export const groupJoinRequest = pgTable(
 	'group_join_request',
 	{
 		id: serial('id').primaryKey(),
-		groupId: integer('group_id').notNull().references(() => groups.id, { onDelete: 'cascade' }),
-		userId: integer('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+		groupId: integer('group_id')
+			.notNull()
+			.references(() => groups.id, { onDelete: 'cascade' }),
+		userId: integer('user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
 		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 	},
 	(table) => ({
@@ -620,7 +630,9 @@ export const groupWallPost = pgTable(
 	'group_wall_post',
 	{
 		id: serial('id').primaryKey(),
-		groupId: integer('group_id').notNull().references(() => groups.id, { onDelete: 'cascade' }),
+		groupId: integer('group_id')
+			.notNull()
+			.references(() => groups.id, { onDelete: 'cascade' }),
 		userId: integer('user_id').references(() => user.id, { onDelete: 'set null' }),
 		content: varchar('content', { length: 500 }).notNull(),
 		isDeleted: boolean('is_deleted').notNull().default(false),
@@ -635,7 +647,9 @@ export const groupTreasuryTx = pgTable(
 	'group_treasury_tx',
 	{
 		id: serial('id').primaryKey(),
-		groupId: integer('group_id').notNull().references(() => groups.id, { onDelete: 'cascade' }),
+		groupId: integer('group_id')
+			.notNull()
+			.references(() => groups.id, { onDelete: 'cascade' }),
 		userId: integer('user_id').references(() => user.id, { onDelete: 'set null' }),
 		type: varchar('type', { length: 20 }).notNull(),
 		amount: decimal('amount', { precision: 30, scale: 8 }).notNull(),

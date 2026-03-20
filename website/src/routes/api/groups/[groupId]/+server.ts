@@ -72,11 +72,7 @@ export async function PATCH({ params, request }) {
 
 	if (Object.keys(updates).length === 0) throw error(400, 'No valid fields provided');
 
-	const [updated] = await db
-		.update(groups)
-		.set(updates)
-		.where(eq(groups.id, groupId))
-		.returning();
+	const [updated] = await db.update(groups).set(updates).where(eq(groups.id, groupId)).returning();
 
 	return json({ group: updated });
 }

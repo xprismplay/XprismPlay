@@ -132,19 +132,55 @@
 	}
 
 	function handleAccountClick() {
-		if ($USER_DATA) { goto(`/user/${$USER_DATA.id}`); setOpenMobile(false); }
+		if ($USER_DATA) {
+			goto(`/user/${$USER_DATA.id}`);
+			setOpenMobile(false);
+		}
 	}
-	function handleSettingsClick() { goto('/settings'); setOpenMobile(false); }
-	function handleAdminClick() { goto('/admin'); setOpenMobile(false); }
-	function handleHeadAdminClick() { goto('/admin/head'); setOpenMobile(false); }
-	function handleUserManagementClick() { goto('/admin/users'); setOpenMobile(false); }
-	function handlePromoCodesClick() { goto('/admin/promo'); setOpenMobile(false); }
-	function handleAdminLogsClick() { goto('/admin/logs'); setOpenMobile(false); }
-	function handleTermsClick() { goto('/legal/terms'); setOpenMobile(false); }
-	function handlePrivacyClick() { goto('/legal/privacy'); setOpenMobile(false); }
-	function handleUserManualClick() { showUserManual = true; setOpenMobile(false); }
-	function handlePrestigeClick() { goto('/prestige'); setOpenMobile(false); }
-	function handleAPIClick() { goto('/api'); setOpenMobile(false); }
+	function handleSettingsClick() {
+		goto('/settings');
+		setOpenMobile(false);
+	}
+	function handleAdminClick() {
+		goto('/admin');
+		setOpenMobile(false);
+	}
+	function handleHeadAdminClick() {
+		goto('/admin/head');
+		setOpenMobile(false);
+	}
+	function handleUserManagementClick() {
+		goto('/admin/users');
+		setOpenMobile(false);
+	}
+	function handlePromoCodesClick() {
+		goto('/admin/promo');
+		setOpenMobile(false);
+	}
+	function handleAdminLogsClick() {
+		goto('/admin/logs');
+		setOpenMobile(false);
+	}
+	function handleTermsClick() {
+		goto('/legal/terms');
+		setOpenMobile(false);
+	}
+	function handlePrivacyClick() {
+		goto('/legal/privacy');
+		setOpenMobile(false);
+	}
+	function handleUserManualClick() {
+		showUserManual = true;
+		setOpenMobile(false);
+	}
+	function handlePrestigeClick() {
+		goto('/prestige');
+		setOpenMobile(false);
+	}
+	function handleAPIClick() {
+		goto('/api');
+		setOpenMobile(false);
+	}
 </script>
 
 <SignInConfirmDialog bind:open={shouldSignIn} />
@@ -254,23 +290,36 @@
 								<div class="flex items-center gap-1">
 									{#if trade.type === 'TRANSFER_IN' || trade.type === 'TRANSFER_OUT'}
 										<HugeiconsIcon icon={Activity01Icon} class="h-3 w-3 text-blue-500" />
-										<Badge variant="outline" class="h-4 border-blue-500 px-1 py-0 text-[10px] text-blue-500">
+										<Badge
+											variant="outline"
+											class="h-4 border-blue-500 px-1 py-0 text-[10px] text-blue-500"
+										>
 											{trade.type === 'TRANSFER_IN' ? 'REC' : 'SENT'}
 										</Badge>
 									{:else if trade.type === 'BUY'}
 										<HugeiconsIcon icon={TradeUpIcon} class="h-3 w-3 text-green-500" />
-										<Badge variant="outline" class="h-4 border-green-500 px-1 py-0 text-[10px] text-green-500">BUY</Badge>
+										<Badge
+											variant="outline"
+											class="h-4 border-green-500 px-1 py-0 text-[10px] text-green-500">BUY</Badge
+										>
 									{:else}
 										<HugeiconsIcon icon={TradeDownIcon} class="h-3 w-3 text-red-500" />
-										<Badge variant="outline" class="h-4 border-red-500 px-1 py-0 text-[10px] text-red-500">SELL</Badge>
+										<Badge
+											variant="outline"
+											class="h-4 border-red-500 px-1 py-0 text-[10px] text-red-500">SELL</Badge
+										>
 									{/if}
 								</div>
 								<div class="flex-1 truncate">
 									<div class="flex items-center gap-1">
 										<span class="text-foreground font-medium">{formatValue(trade.totalValue)}</span>
 										{#if trade.type === 'TRANSFER_IN' || trade.type === 'TRANSFER_OUT'}
-											{#if trade.amount > 0}<span class="text-muted-foreground">*{trade.coinSymbol}</span>{/if}
-											<span class="text-muted-foreground">{trade.type === 'TRANSFER_IN' ? 'to' : 'from'}</span>
+											{#if trade.amount > 0}<span class="text-muted-foreground"
+													>*{trade.coinSymbol}</span
+												>{/if}
+											<span class="text-muted-foreground"
+												>{trade.type === 'TRANSFER_IN' ? 'to' : 'from'}</span
+											>
 										{:else}
 											<span class="text-muted-foreground">*{trade.coinSymbol}</span>
 											<span class="text-muted-foreground">by</span>
@@ -321,17 +370,26 @@
 							<div class="text-muted-foreground space-y-1 text-xs">
 								<div class="flex justify-between">
 									<span>Cash:</span>
-									<span class="font-mono" style="color: #00ff0d">${formatCurrency($PORTFOLIO_SUMMARY.baseCurrencyBalance)}</span>
+									<span class="font-mono" style="color: #00ff0d"
+										>${formatCurrency($PORTFOLIO_SUMMARY.baseCurrencyBalance)}</span
+									>
 								</div>
 								<div class="flex justify-between">
 									<span>Coins:</span>
-									<span class="font-mono" style="color: #00ff0d">${formatCurrency($PORTFOLIO_SUMMARY.totalCoinValue)}</span>
+									<span class="font-mono" style="color: #00ff0d"
+										>${formatCurrency($PORTFOLIO_SUMMARY.totalCoinValue)}</span
+									>
 								</div>
 								{#if $GEMS_BALANCE !== null}
 									<div class="flex justify-between">
 										<span>Gems:</span>
 										<span class="font-mono" style="color: #ca00ff">
-											<HugeiconsIcon icon={GemIcon} size={14} strokeWidth={2} style="display: inline; vertical-align: middle; color: #ca00ff" />
+											<HugeiconsIcon
+												icon={GemIcon}
+												size={14}
+												strokeWidth={2}
+												style="display: inline; vertical-align: middle; color: #ca00ff"
+											/>
 											{$GEMS_BALANCE.toLocaleString()}
 										</span>
 									</div>
@@ -407,7 +465,12 @@
 									<HugeiconsIcon icon={Key01Icon} />
 									API
 								</DropdownMenu.Item>
-								<DropdownMenu.Item onclick={() => { showPromoCode = true; setOpenMobile(false); }}>
+								<DropdownMenu.Item
+									onclick={() => {
+										showPromoCode = true;
+										setOpenMobile(false);
+									}}
+								>
 									<HugeiconsIcon icon={GiftIcon} />
 									Promo code
 								</DropdownMenu.Item>
@@ -429,25 +492,40 @@
 								<DropdownMenu.Separator />
 								<DropdownMenu.Group>
 									{#if hasFlag($USER_DATA?.flags, 'IS_HEAD_ADMIN')}
-										<DropdownMenu.Item onclick={handleHeadAdminClick} class="text-orange-500 focus:bg-orange-500/10 focus:text-orange-500!">
+										<DropdownMenu.Item
+											onclick={handleHeadAdminClick}
+											class="text-orange-500 focus:bg-orange-500/10 focus:text-orange-500!"
+										>
 											<HugeiconsIcon icon={Shield01Icon} class="text-orange-500" />
 											Head Admin Panel
 										</DropdownMenu.Item>
 									{/if}
 									{#if hasFlag($USER_DATA.flags, 'IS_ADMIN', 'IS_HEAD_ADMIN')}
-										<DropdownMenu.Item onclick={handleAdminClick} class="text-primary hover:text-primary!">
+										<DropdownMenu.Item
+											onclick={handleAdminClick}
+											class="text-primary hover:text-primary!"
+										>
 											<HugeiconsIcon icon={Shield01Icon} class="text-primary" />
 											Admin Panel
 										</DropdownMenu.Item>
-										<DropdownMenu.Item onclick={handleUserManagementClick} class="text-primary hover:text-primary!">
+										<DropdownMenu.Item
+											onclick={handleUserManagementClick}
+											class="text-primary hover:text-primary!"
+										>
 											<HugeiconsIcon icon={LegalHammerIcon} class="text-primary" />
 											User Management
 										</DropdownMenu.Item>
-										<DropdownMenu.Item onclick={handlePromoCodesClick} class="text-primary hover:text-primary!">
+										<DropdownMenu.Item
+											onclick={handlePromoCodesClick}
+											class="text-primary hover:text-primary!"
+										>
 											<HugeiconsIcon icon={Ticket01Icon} class="text-primary" />
 											Manage codes
 										</DropdownMenu.Item>
-										<DropdownMenu.Item onclick={handleAdminLogsClick} class="text-primary hover:text-primary!">
+										<DropdownMenu.Item
+											onclick={handleAdminLogsClick}
+											class="text-primary hover:text-primary!"
+										>
 											<HugeiconsIcon icon={Shield01Icon} class="text-primary" />
 											Admin Logs
 										</DropdownMenu.Item>
@@ -466,7 +544,14 @@
 								</DropdownMenu.Item>
 							</DropdownMenu.Group>
 							<DropdownMenu.Separator />
-							<DropdownMenu.Item onclick={() => { signOut().then(() => { USER_DATA.set(null); window.location.reload(); }); }}>
+							<DropdownMenu.Item
+								onclick={() => {
+									signOut().then(() => {
+										USER_DATA.set(null);
+										window.location.reload();
+									});
+								}}
+							>
 								<HugeiconsIcon icon={Logout01Icon} />
 								Log out
 							</DropdownMenu.Item>

@@ -62,7 +62,10 @@
 	}
 
 	async function fetchMyGroups() {
-		if (!$USER_DATA) { myLoading = false; return; }
+		if (!$USER_DATA) {
+			myLoading = false;
+			return;
+		}
 		myLoading = true;
 		try {
 			const r = await fetch('/api/groups?mine=true');
@@ -74,7 +77,10 @@
 	}
 
 	async function handleCreate() {
-		if (!newName.trim()) { toast.error('Name required'); return; }
+		if (!newName.trim()) {
+			toast.error('Name required');
+			return;
+		}
 		creating = true;
 		try {
 			const r = await fetch('/api/groups', {
@@ -83,10 +89,15 @@
 				body: JSON.stringify({ name: newName, description: newDesc, isPublic: newPublic })
 			});
 			const d = await r.json();
-			if (!r.ok) { toast.error(d.message || 'Failed to create group'); return; }
+			if (!r.ok) {
+				toast.error(d.message || 'Failed to create group');
+				return;
+			}
 			toast.success('Group created!');
 			createOpen = false;
-			newName = ''; newDesc = ''; newPublic = true;
+			newName = '';
+			newDesc = '';
+			newPublic = true;
 			goto(`/groups/${d.group.id}`);
 		} catch {
 			toast.error('Failed to create group');
@@ -98,7 +109,10 @@
 	let searchTimeout: any;
 	function onSearchInput() {
 		clearTimeout(searchTimeout);
-		searchTimeout = setTimeout(() => { page = 1; fetchGroups(); }, 400);
+		searchTimeout = setTimeout(() => {
+			page = 1;
+			fetchGroups();
+		}, 400);
 	}
 </script>
 
@@ -106,7 +120,9 @@
 	<Dialog.Content class="sm:max-w-md">
 		<Dialog.Header>
 			<Dialog.Title>Create a Group</Dialog.Title>
-			<Dialog.Description>Costs ${CREATION_COST} to create a group. You can create up to 2 groups.</Dialog.Description>
+			<Dialog.Description
+				>Costs ${CREATION_COST} to create a group. You can create up to 2 groups.</Dialog.Description
+			>
 		</Dialog.Header>
 		<div class="space-y-4">
 			<div class="space-y-1">
@@ -116,7 +132,12 @@
 			</div>
 			<div class="space-y-1">
 				<Label>Description</Label>
-				<Textarea bind:value={newDesc} placeholder="What is this group about?" maxlength={500} rows={3} />
+				<Textarea
+					bind:value={newDesc}
+					placeholder="What is this group about?"
+					maxlength={500}
+					rows={3}
+				/>
 			</div>
 			<div class="flex items-center justify-between rounded-lg border p-3">
 				<div>
@@ -171,11 +192,23 @@
 							<div class="flex items-center justify-between">
 								<span class="font-semibold">{g.name}</span>
 								<div class="flex gap-1">
-									<Badge variant={g.role === 'owner' ? 'default' : g.role === 'admin' ? 'secondary' : 'outline'} class="text-xs capitalize">{g.role}</Badge>
-									{#if !g.isPublic}<HugeiconsIcon icon={Lock01Icon} class="h-3 w-3 text-muted-foreground" />{/if}
+									<Badge
+										variant={g.role === 'owner'
+											? 'default'
+											: g.role === 'admin'
+												? 'secondary'
+												: 'outline'}
+										class="text-xs capitalize">{g.role}</Badge
+									>
+									{#if !g.isPublic}<HugeiconsIcon
+											icon={Lock01Icon}
+											class="text-muted-foreground h-3 w-3"
+										/>{/if}
 								</div>
 							</div>
-							{#if g.description}<p class="text-muted-foreground line-clamp-2 text-sm">{g.description}</p>{/if}
+							{#if g.description}<p class="text-muted-foreground line-clamp-2 text-sm">
+									{g.description}
+								</p>{/if}
 							<p class="text-muted-foreground text-xs">{g.memberCount} members</p>
 						</button>
 					{/each}
@@ -187,10 +220,25 @@
 	<section>
 		<div class="mb-4 flex items-center gap-2">
 			<div class="relative flex-1">
-				<HugeiconsIcon icon={Search01Icon} class="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-				<Input bind:value={search} oninput={onSearchInput} placeholder="Search groups..." class="pl-10" />
+				<HugeiconsIcon
+					icon={Search01Icon}
+					class="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2"
+				/>
+				<Input
+					bind:value={search}
+					oninput={onSearchInput}
+					placeholder="Search groups..."
+					class="pl-10"
+				/>
 			</div>
-			<Button variant="outline" onclick={() => { page = 1; fetchGroups(); }} disabled={loading}>
+			<Button
+				variant="outline"
+				onclick={() => {
+					page = 1;
+					fetchGroups();
+				}}
+				disabled={loading}
+			>
 				<HugeiconsIcon icon={Refresh01Icon} class="h-4 w-4" />
 			</Button>
 		</div>
@@ -214,7 +262,10 @@
 						<Card.Header class="pb-2">
 							<div class="flex items-center justify-between">
 								<Card.Title class="text-base">{g.name}</Card.Title>
-								<HugeiconsIcon icon={g.isPublic ? Globe02Icon : Locker01Icon} class="text-muted-foreground h-4 w-4" />
+								<HugeiconsIcon
+									icon={g.isPublic ? Globe02Icon : Locker01Icon}
+									class="text-muted-foreground h-4 w-4"
+								/>
 							</div>
 							{#if g.ownerName}
 								<Card.Description class="text-xs">by {g.ownerName}</Card.Description>
@@ -235,9 +286,25 @@
 
 			{#if totalPages > 1}
 				<div class="mt-6 flex justify-center gap-2">
-					<Button variant="outline" size="sm" disabled={page <= 1} onclick={() => { page--; fetchGroups(); }}>Previous</Button>
+					<Button
+						variant="outline"
+						size="sm"
+						disabled={page <= 1}
+						onclick={() => {
+							page--;
+							fetchGroups();
+						}}>Previous</Button
+					>
 					<span class="flex items-center text-sm">{page} / {totalPages}</span>
-					<Button variant="outline" size="sm" disabled={page >= totalPages} onclick={() => { page++; fetchGroups(); }}>Next</Button>
+					<Button
+						variant="outline"
+						size="sm"
+						disabled={page >= totalPages}
+						onclick={() => {
+							page++;
+							fetchGroups();
+						}}>Next</Button
+					>
 				</div>
 			{/if}
 		{/if}

@@ -7,6 +7,7 @@ import { validateQuestion } from '$lib/server/ai';
 import { isNameAppropriate } from '$lib/server/moderation';
 import type { RequestHandler } from './$types';
 import { checkAndAwardAchievements } from '$lib/server/achievements';
+import { hasFlag } from '$lib/data/flags';
 
 const MIN_BALANCE_REQUIRED = 100000; // $100k
 const MAX_QUESTIONS_PER_HOUR = 2;
@@ -16,6 +17,17 @@ const MAX_RESOLUTION_DAYS = 30;
 export const POST: RequestHandler = async ({ request }) => {
 	const session = await auth.api.getSession({ headers: request.headers });
 	if (!session?.user) throw error(401, 'Not authenticated');
+
+
+	const userId = Number(session.user.id);
+
+	const [currentUser] = await db
+		.select({ flags: user.flags })
+		.from(user)
+		.where(eq(user.id, userId))
+		.limit(1);
+	if (hasFlag(currentUser.flags, 'NO_HOPIUM'))
+		return json({ error: "You aren't authorized to use Hopium." }, { status: 403 });
 
 	const { question } = await request.json();
 
@@ -27,8 +39,6 @@ export const POST: RequestHandler = async ({ request }) => {
 	if (!(await isNameAppropriate(cleaned))) {
 		return json({ error: 'Question contains inappropriate content' }, { status: 400 });
 	}
-
-	const userId = Number(session.user.id);
 	const now = new Date();
 
 	try {

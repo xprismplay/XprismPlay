@@ -69,10 +69,7 @@ export async function POST({ params, request }) {
 		throw error(400, 'Post must be 1-500 characters');
 	}
 
-	const [post] = await db
-		.insert(groupWallPost)
-		.values({ groupId, userId, content })
-		.returning();
+	const [post] = await db.insert(groupWallPost).values({ groupId, userId, content }).returning();
 
 	const [postWithUser] = await db
 		.select({
@@ -122,10 +119,7 @@ export async function DELETE({ params, request, url }) {
 		throw error(403, 'You cannot delete this post');
 	}
 
-	await db
-		.update(groupWallPost)
-		.set({ isDeleted: true })
-		.where(eq(groupWallPost.id, postId));
+	await db.update(groupWallPost).set({ isDeleted: true }).where(eq(groupWallPost.id, postId));
 
 	return json({ success: true });
 }

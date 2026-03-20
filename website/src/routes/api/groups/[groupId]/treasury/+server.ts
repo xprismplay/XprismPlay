@@ -3,6 +3,7 @@ import { error, json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { groups, groupMember, groupTreasuryTx, user } from '$lib/server/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
+import { hasFlag } from '$lib/data/flags';
 
 async function getRole(groupId: number, userId: number): Promise<string | null> {
 	const [m] = await db
@@ -62,6 +63,13 @@ export async function POST({ params, request }) {
 
 	const role = await getRole(groupId, userId);
 	if (!role) throw error(403, 'Members only');
+	const [currentUser] = await db
+		.select({ flags: user.flags })
+		.from(user)
+		.where(eq(user.id, userId))
+		.limit(1);
+	if (hasFlag(currentUser.flags, 'NO_GROUP_TRANSFER'))
+		return json({ error: "You aren't authorized to use this feature." }, { status: 403 });
 
 	const body = await request.json();
 	const type = body.type;
@@ -75,7 +83,6 @@ export async function POST({ params, request }) {
 	if (type === 'withdraw' && role !== 'owner' && role !== 'admin') {
 		throw error(403, 'Only admins and owners can withdraw');
 	}
-
 	return await db.transaction(async (tx) => {
 		const [userData] = await tx
 			.select({ baseCurrencyBalance: user.baseCurrencyBalance })
@@ -120,7 +127,10 @@ export async function POST({ params, request }) {
 				note
 			});
 
-			return json({ newTreasuryBalance: (treasury + rounded).toFixed(8), newUserBalance: (userBal - rounded).toFixed(8) });
+			return json({
+				newTreasuryBalance: (treasury + rounded).toFixed(8),
+				newUserBalance: (userBal - rounded).toFixed(8)
+			});
 		} else {
 			const rounded = Math.round(amount * 100000000) / 100000000;
 			if (treasury < rounded) throw error(400, 'Insufficient treasury balance');
@@ -143,7 +153,10 @@ export async function POST({ params, request }) {
 				note
 			});
 
-			return json({ newTreasuryBalance: (treasury - rounded).toFixed(8), newUserBalance: (userBal + rounded).toFixed(8) });
+			return json({
+				newTreasuryBalance: (treasury - rounded).toFixed(8),
+				newUserBalance: (userBal + rounded).toFixed(8)
+			});
 		}
 	});
 }

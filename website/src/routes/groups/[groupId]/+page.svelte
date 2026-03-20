@@ -75,28 +75,39 @@
 	async function loadMembers() {
 		if (membersLoaded) return;
 		const r = await fetch(`/api/groups/${group.id}/members`);
-		if (r.ok) { const d = await r.json(); members = d.members; }
+		if (r.ok) {
+			const d = await r.json();
+			members = d.members;
+		}
 		membersLoaded = true;
 	}
 
 	async function loadWall() {
 		if (wallLoaded) return;
 		const r = await fetch(`/api/groups/${group.id}/wall`);
-		if (r.ok) { const d = await r.json(); wallPosts = d.posts; }
+		if (r.ok) {
+			const d = await r.json();
+			wallPosts = d.posts;
+		}
 		wallLoaded = true;
 	}
 
 	async function loadTreasury() {
 		if (treasuryLoaded) return;
 		const r = await fetch(`/api/groups/${group.id}/treasury`);
-		if (r.ok) { treasury = await r.json(); }
+		if (r.ok) {
+			treasury = await r.json();
+		}
 		treasuryLoaded = true;
 	}
 
 	async function loadRequests() {
 		if (requestsLoaded) return;
 		const r = await fetch(`/api/groups/${group.id}/requests`);
-		if (r.ok) { const d = await r.json(); requests = d.requests; }
+		if (r.ok) {
+			const d = await r.json();
+			requests = d.requests;
+		}
 		requestsLoaded = true;
 	}
 
@@ -111,15 +122,27 @@
 	async function joinOrRequest() {
 		const r = await fetch(`/api/groups/${group.id}/members`, { method: 'POST' });
 		const d = await r.json();
-		if (!r.ok) { toast.error(d.message || 'Failed'); return; }
-		if (d.joined) { toast.success('Joined group!'); await reload(); membersLoaded = false; loadMembers(); }
-		else if (d.requested) { toast.success('Join request sent!'); }
+		if (!r.ok) {
+			toast.error(d.message || 'Failed');
+			return;
+		}
+		if (d.joined) {
+			toast.success('Joined group!');
+			await reload();
+			membersLoaded = false;
+			loadMembers();
+		} else if (d.requested) {
+			toast.success('Join request sent!');
+		}
 	}
 
 	async function leaveGroup() {
 		const r = await fetch(`/api/groups/${group.id}/members`, { method: 'DELETE' });
 		const d = await r.json();
-		if (!r.ok) { toast.error(d.message || 'Failed'); return; }
+		if (!r.ok) {
+			toast.error(d.message || 'Failed');
+			return;
+		}
 		toast.success('Left group');
 		goto('/groups');
 	}
@@ -134,7 +157,10 @@
 				body: JSON.stringify({ content: wallContent })
 			});
 			const d = await r.json();
-			if (!r.ok) { toast.error(d.message || 'Failed'); return; }
+			if (!r.ok) {
+				toast.error(d.message || 'Failed');
+				return;
+			}
 			wallPosts = [d.post, ...wallPosts];
 			wallContent = '';
 		} finally {
@@ -144,15 +170,21 @@
 
 	async function deletePost(postId: number) {
 		const r = await fetch(`/api/groups/${group.id}/wall?postId=${postId}`, { method: 'DELETE' });
-		if (!r.ok) { toast.error('Failed to delete'); return; }
-		wallPosts = wallPosts.filter(p => p.id !== postId);
+		if (!r.ok) {
+			toast.error('Failed to delete');
+			return;
+		}
+		wallPosts = wallPosts.filter((p) => p.id !== postId);
 	}
 
 	async function kickMember(userId: number) {
 		const r = await fetch(`/api/groups/${group.id}/members/${userId}`, { method: 'DELETE' });
 		const d = await r.json();
-		if (!r.ok) { toast.error(d.message || 'Failed'); return; }
-		members = members.filter(m => m.userId !== userId);
+		if (!r.ok) {
+			toast.error(d.message || 'Failed');
+			return;
+		}
+		members = members.filter((m) => m.userId !== userId);
 		toast.success('Member kicked');
 	}
 
@@ -163,8 +195,11 @@
 			body: JSON.stringify({ role: newRole })
 		});
 		const d = await r.json();
-		if (!r.ok) { toast.error(d.message || 'Failed'); return; }
-		members = members.map(m => m.userId === userId ? { ...m, role: newRole } : m);
+		if (!r.ok) {
+			toast.error(d.message || 'Failed');
+			return;
+		}
+		members = members.map((m) => (m.userId === userId ? { ...m, role: newRole } : m));
 		toast.success('Role updated');
 	}
 
@@ -175,15 +210,25 @@
 			body: JSON.stringify({ requestId, action })
 		});
 		const d = await r.json();
-		if (!r.ok) { toast.error(d.message || 'Failed'); return; }
-		requests = requests.filter(req => req.id !== requestId);
-		if (action === 'accept') { toast.success('Request accepted'); membersLoaded = false; loadMembers(); await reload(); }
-		else toast.success('Request denied');
+		if (!r.ok) {
+			toast.error(d.message || 'Failed');
+			return;
+		}
+		requests = requests.filter((req) => req.id !== requestId);
+		if (action === 'accept') {
+			toast.success('Request accepted');
+			membersLoaded = false;
+			loadMembers();
+			await reload();
+		} else toast.success('Request denied');
 	}
 
 	async function doDeposit() {
 		const amount = Number(depositAmount);
-		if (!amount || amount <= 0) { toast.error('Invalid amount'); return; }
+		if (!amount || amount <= 0) {
+			toast.error('Invalid amount');
+			return;
+		}
 		treasuryLoading = true;
 		try {
 			const r = await fetch(`/api/groups/${group.id}/treasury`, {
@@ -192,11 +237,18 @@
 				body: JSON.stringify({ type: 'deposit', amount, note: depositNote || null })
 			});
 			const d = await r.json();
-			if (!r.ok) { toast.error(d.message || 'Failed'); return; }
+			if (!r.ok) {
+				toast.error(d.message || 'Failed');
+				return;
+			}
 			toast.success(`Deposited ${formatValue(amount)}`);
-			depositAmount = ''; depositNote = '';
-			treasury = null; treasuryLoaded = false; loadTreasury();
-			await reload(); fetchPortfolioSummary();
+			depositAmount = '';
+			depositNote = '';
+			treasury = null;
+			treasuryLoaded = false;
+			loadTreasury();
+			await reload();
+			fetchPortfolioSummary();
 		} finally {
 			treasuryLoading = false;
 		}
@@ -204,7 +256,10 @@
 
 	async function doWithdraw() {
 		const amount = Number(withdrawAmount);
-		if (!amount || amount <= 0) { toast.error('Invalid amount'); return; }
+		if (!amount || amount <= 0) {
+			toast.error('Invalid amount');
+			return;
+		}
 		treasuryLoading = true;
 		try {
 			const r = await fetch(`/api/groups/${group.id}/treasury`, {
@@ -213,11 +268,18 @@
 				body: JSON.stringify({ type: 'withdraw', amount, note: withdrawNote || null })
 			});
 			const d = await r.json();
-			if (!r.ok) { toast.error(d.message || 'Failed'); return; }
+			if (!r.ok) {
+				toast.error(d.message || 'Failed');
+				return;
+			}
 			toast.success(`Withdrew ${formatValue(amount)}`);
-			withdrawAmount = ''; withdrawNote = '';
-			treasury = null; treasuryLoaded = false; loadTreasury();
-			await reload(); fetchPortfolioSummary();
+			withdrawAmount = '';
+			withdrawNote = '';
+			treasury = null;
+			treasuryLoaded = false;
+			loadTreasury();
+			await reload();
+			fetchPortfolioSummary();
 		} finally {
 			treasuryLoading = false;
 		}
@@ -232,7 +294,10 @@
 				body: JSON.stringify({ description: settingsDesc, isPublic: settingsPublic })
 			});
 			const d = await r.json();
-			if (!r.ok) { toast.error(d.message || 'Failed'); return; }
+			if (!r.ok) {
+				toast.error(d.message || 'Failed');
+				return;
+			}
 			toast.success('Settings saved');
 			settingsOpen = false;
 			await reload();
@@ -246,7 +311,10 @@
 		try {
 			const r = await fetch(`/api/groups/${group.id}`, { method: 'DELETE' });
 			const d = await r.json();
-			if (!r.ok) { toast.error(d.message || 'Failed'); return; }
+			if (!r.ok) {
+				toast.error(d.message || 'Failed');
+				return;
+			}
 			toast.success('Group deleted');
 			goto('/groups');
 		} finally {
@@ -282,7 +350,9 @@
 		</div>
 		<Dialog.Footer>
 			<Button variant="outline" onclick={() => (settingsOpen = false)}>Cancel</Button>
-			<Button onclick={saveSettings} disabled={savingSettings}>{savingSettings ? 'Saving...' : 'Save'}</Button>
+			<Button onclick={saveSettings} disabled={savingSettings}
+				>{savingSettings ? 'Saving...' : 'Save'}</Button
+			>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>
@@ -291,7 +361,9 @@
 	<Dialog.Content>
 		<Dialog.Header>
 			<Dialog.Title class="text-destructive">Delete Group</Dialog.Title>
-			<Dialog.Description>This is permanent. Treasury funds will be refunded to you.</Dialog.Description>
+			<Dialog.Description
+				>This is permanent. Treasury funds will be refunded to you.</Dialog.Description
+			>
 		</Dialog.Header>
 		<Dialog.Footer>
 			<Button variant="outline" onclick={() => (deleteOpen = false)}>Cancel</Button>
@@ -312,18 +384,25 @@
 		<Card.Content class="p-6">
 			<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 				<div class="flex items-center gap-4">
-					<div class="bg-primary/10 flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-3xl">
+					<div
+						class="bg-primary/10 flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-3xl"
+					>
 						{group.name.charAt(0).toUpperCase()}
 					</div>
 					<div>
 						<div class="flex flex-wrap items-center gap-2">
 							<h1 class="text-2xl font-bold">{group.name}</h1>
 							<Badge variant={group.isPublic ? 'outline' : 'secondary'} class="text-xs">
-								<HugeiconsIcon icon={group.isPublic ? Globe02Icon : Locker01Icon} class="mr-1 h-3 w-3" />
+								<HugeiconsIcon
+									icon={group.isPublic ? Globe02Icon : Locker01Icon}
+									class="mr-1 h-3 w-3"
+								/>
 								{group.isPublic ? 'Public' : 'Private'}
 							</Badge>
 						</div>
-						{#if group.description}<p class="text-muted-foreground mt-1">{group.description}</p>{/if}
+						{#if group.description}<p class="text-muted-foreground mt-1">
+								{group.description}
+							</p>{/if}
 						<div class="text-muted-foreground mt-2 flex flex-wrap gap-4 text-sm">
 							<span>{group.memberCount} members</span>
 							{#if isMember}<span>Treasury: {formatValue(Number(group.treasuryBalance))}</span>{/if}
@@ -336,7 +415,15 @@
 					{#if $USER_DATA}
 						{#if isMember}
 							{#if isOwner}
-								<Button variant="outline" size="sm" onclick={() => { settingsDesc = group.description || ''; settingsPublic = group.isPublic; settingsOpen = true; }}>
+								<Button
+									variant="outline"
+									size="sm"
+									onclick={() => {
+										settingsDesc = group.description || '';
+										settingsPublic = group.isPublic;
+										settingsOpen = true;
+									}}
+								>
 									<HugeiconsIcon icon={Settings01Icon} class="h-4 w-4" />
 									Settings
 								</Button>
@@ -370,7 +457,9 @@
 			<button
 				onclick={() => switchTab(tab.id)}
 				class="rounded-md px-4 py-2 text-sm font-medium transition-colors
-					{activeTab === tab.id ? 'bg-primary text-primary-foreground' : 'hover:bg-muted text-muted-foreground'}"
+					{activeTab === tab.id
+					? 'bg-primary text-primary-foreground'
+					: 'hover:bg-muted text-muted-foreground'}"
 			>
 				{tab.label}
 			</button>
@@ -382,7 +471,12 @@
 			{#if isMember}
 				<Card.Root>
 					<Card.Content class="p-4">
-						<Textarea bind:value={wallContent} placeholder="Post something on the wall..." maxlength={500} rows={2} />
+						<Textarea
+							bind:value={wallContent}
+							placeholder="Post something on the wall..."
+							maxlength={500}
+							rows={2}
+						/>
 						<div class="mt-2 flex justify-between">
 							<span class="text-muted-foreground text-xs">{wallContent.length}/500</span>
 							<Button size="sm" onclick={postWall} disabled={postingWall || !wallContent.trim()}>
@@ -407,10 +501,15 @@
 								<div class="flex items-start gap-3">
 									<Avatar.Root class="h-8 w-8 shrink-0">
 										<Avatar.Image src={getPublicUrl(post.userImage)} alt={post.userName} />
-										<Avatar.Fallback class="text-xs">{(post.userName || '?').charAt(0)}</Avatar.Fallback>
+										<Avatar.Fallback class="text-xs"
+											>{(post.userName || '?').charAt(0)}</Avatar.Fallback
+										>
 									</Avatar.Root>
 									<div>
-										<button class="text-sm font-medium hover:underline" onclick={() => goto(`/user/${post.username}`)}>
+										<button
+											class="text-sm font-medium hover:underline"
+											onclick={() => goto(`/user/${post.username}`)}
+										>
 											{post.userName || 'Deleted User'}
 										</button>
 										<p class="mt-1 text-sm">{post.content}</p>
@@ -418,7 +517,12 @@
 									</div>
 								</div>
 								{#if $USER_DATA && (post.userId === Number($USER_DATA.id) || isAdmin)}
-									<Button variant="ghost" size="sm" class="h-7 w-7 p-0 text-red-500" onclick={() => deletePost(post.id)}>
+									<Button
+										variant="ghost"
+										size="sm"
+										class="h-7 w-7 p-0 text-red-500"
+										onclick={() => deletePost(post.id)}
+									>
 										<HugeiconsIcon icon={Delete01Icon} class="h-3 w-3" />
 									</Button>
 								{/if}
@@ -438,7 +542,10 @@
 				{#each members as member}
 					<Card.Root>
 						<Card.Content class="flex items-center justify-between p-3">
-							<button class="flex items-center gap-3" onclick={() => goto(`/user/${member.username}`)}>
+							<button
+								class="flex items-center gap-3"
+								onclick={() => goto(`/user/${member.username}`)}
+							>
 								<Avatar.Root class="h-8 w-8">
 									<Avatar.Image src={getPublicUrl(member.image)} alt={member.name} />
 									<Avatar.Fallback class="text-xs">{member.name.charAt(0)}</Avatar.Fallback>
@@ -449,19 +556,41 @@
 								</div>
 							</button>
 							<div class="flex items-center gap-2">
-								<Badge variant={member.role === 'owner' ? 'default' : member.role === 'admin' ? 'secondary' : 'outline'} class="text-xs capitalize">
+								<Badge
+									variant={member.role === 'owner'
+										? 'default'
+										: member.role === 'admin'
+											? 'secondary'
+											: 'outline'}
+									class="text-xs capitalize"
+								>
 									{member.role}
 								</Badge>
 								{#if isAdmin && member.userId !== Number($USER_DATA?.id) && member.role !== 'owner'}
 									{#if isOwner}
 										{#if member.role === 'member'}
-											<Button variant="ghost" size="sm" class="h-7 text-xs" onclick={() => changeRole(member.userId, 'admin')}>Promote</Button>
+											<Button
+												variant="ghost"
+												size="sm"
+												class="h-7 text-xs"
+												onclick={() => changeRole(member.userId, 'admin')}>Promote</Button
+											>
 										{:else if member.role === 'admin'}
-											<Button variant="ghost" size="sm" class="h-7 text-xs" onclick={() => changeRole(member.userId, 'member')}>Demote</Button>
+											<Button
+												variant="ghost"
+												size="sm"
+												class="h-7 text-xs"
+												onclick={() => changeRole(member.userId, 'member')}>Demote</Button
+											>
 										{/if}
 									{/if}
 									{#if member.role === 'member' || (isOwner && member.role === 'admin')}
-										<Button variant="ghost" size="sm" class="h-7 w-7 p-0 text-red-500" onclick={() => kickMember(member.userId)}>
+										<Button
+											variant="ghost"
+											size="sm"
+											class="h-7 w-7 p-0 text-red-500"
+											onclick={() => kickMember(member.userId)}
+										>
 											<HugeiconsIcon icon={UserRemove01Icon} class="h-3 w-3" />
 										</Button>
 									{/if}
@@ -491,7 +620,13 @@
 					<div class="space-y-2">
 						<Label>Deposit</Label>
 						<div class="flex gap-2">
-							<Input type="number" bind:value={depositAmount} placeholder="Amount" min="0.01" step="0.01" />
+							<Input
+								type="number"
+								bind:value={depositAmount}
+								placeholder="Amount"
+								min="0.01"
+								step="0.01"
+							/>
 							<Input bind:value={depositNote} placeholder="Note (optional)" maxlength={200} />
 						</div>
 						<Button class="w-full" onclick={doDeposit} disabled={treasuryLoading || !depositAmount}>
@@ -502,10 +637,21 @@
 						<div class="space-y-2">
 							<Label>Withdraw</Label>
 							<div class="flex gap-2">
-								<Input type="number" bind:value={withdrawAmount} placeholder="Amount" min="0.01" step="0.01" />
+								<Input
+									type="number"
+									bind:value={withdrawAmount}
+									placeholder="Amount"
+									min="0.01"
+									step="0.01"
+								/>
 								<Input bind:value={withdrawNote} placeholder="Note (optional)" maxlength={200} />
 							</div>
-							<Button variant="outline" class="w-full" onclick={doWithdraw} disabled={treasuryLoading || !withdrawAmount}>
+							<Button
+								variant="outline"
+								class="w-full"
+								onclick={doWithdraw}
+								disabled={treasuryLoading || !withdrawAmount}
+							>
 								{treasuryLoading ? 'Processing...' : 'Withdraw'}
 							</Button>
 						</div>
@@ -530,7 +676,8 @@
 										<span class={tx.type === 'deposit' ? 'text-green-600' : 'text-red-600'}>
 											{tx.type === 'deposit' ? '+' : '-'}{formatValue(Number(tx.amount))}
 										</span>
-										{#if tx.username}<span class="text-muted-foreground ml-1">by {tx.username}</span>{/if}
+										{#if tx.username}<span class="text-muted-foreground ml-1">by {tx.username}</span
+											>{/if}
 										{#if tx.note}<p class="text-muted-foreground text-xs italic">{tx.note}</p>{/if}
 									</div>
 									<span class="text-muted-foreground text-xs">{formatDate(tx.createdAt)}</span>
@@ -562,12 +709,16 @@
 								</Avatar.Root>
 								<div class="text-left">
 									<p class="text-sm font-medium hover:underline">{req.name}</p>
-									<p class="text-muted-foreground text-xs">@{req.username} · {formatDate(req.createdAt)}</p>
+									<p class="text-muted-foreground text-xs">
+										@{req.username} · {formatDate(req.createdAt)}
+									</p>
 								</div>
 							</button>
 							<div class="flex gap-2">
 								<Button size="sm" onclick={() => handleRequest(req.id, 'accept')}>Accept</Button>
-								<Button variant="outline" size="sm" onclick={() => handleRequest(req.id, 'deny')}>Deny</Button>
+								<Button variant="outline" size="sm" onclick={() => handleRequest(req.id, 'deny')}
+									>Deny</Button
+								>
 							</div>
 						</Card.Content>
 					</Card.Root>

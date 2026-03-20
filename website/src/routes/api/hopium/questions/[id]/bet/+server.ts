@@ -5,6 +5,7 @@ import { user, predictionQuestion, predictionBet } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
 import { checkAndAwardAchievements } from '$lib/server/achievements';
+import { hasFlag } from '$lib/data/flags';
 
 export const POST: RequestHandler = async ({ params, request }) => {
 	const session = await auth.api.getSession({ headers: request.headers });
@@ -19,6 +20,14 @@ export const POST: RequestHandler = async ({ params, request }) => {
 
 	const userId = Number(session.user.id);
 
+	const [currentUser] = await db
+		.select({ flags: user.flags })
+		.from(user)
+		.where(eq(user.id, userId))
+		.limit(1);
+	if (hasFlag(currentUser.flags, 'NO_HOPIUM'))
+		return json({ error: "You aren't authorized to use Hopium." }, { status: 403 });
+	
 	try {
 		const result = await db.transaction(async (tx) => {
 			// Check question exists and is active
