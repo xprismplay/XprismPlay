@@ -5,7 +5,7 @@ export const UserFlags = {
 	NO_ARCADE: 1n << 3n,
 	NO_TRADING: 1n << 4n,
 	NO_TRANSFER: 1n << 5n,
-	NO_HOPIUM: 1n << 6n, // soon
+	NO_HOPIUM: 1n << 6n,
 	NO_GROUP_TRANSFER: 1n << 7n,
 	NO_PROMOCODES: 1n << 8n
 } as const;

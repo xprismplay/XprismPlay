@@ -27,7 +27,7 @@ export const POST: RequestHandler = async ({ params, request }) => {
 		.limit(1);
 	if (hasFlag(currentUser.flags, 'NO_HOPIUM'))
 		return json({ error: "You aren't authorized to use Hopium." }, { status: 403 });
-	
+
 	try {
 		const result = await db.transaction(async (tx) => {
 			// Check question exists and is active

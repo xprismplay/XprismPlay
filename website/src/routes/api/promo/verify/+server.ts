@@ -4,6 +4,7 @@ import { db } from '$lib/server/db';
 import { user, promoCode, promoCodeRedemption } from '$lib/server/db/schema';
 import { eq, and, count } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
+import { hasFlag } from '$lib/data/flags';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const session = await auth.api.getSession({ headers: request.headers });
@@ -78,7 +79,8 @@ export const POST: RequestHandler = async ({ request }) => {
 		const [userData] = await tx
 			.select({
 				baseCurrencyBalance: user.baseCurrencyBalance,
-				gems: user.gems
+				gems: user.gems,
+				flags: user.flags
 			})
 			.from(user)
 			.where(eq(user.id, userId))
@@ -87,6 +89,9 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		if (!userData) {
 			throw error(404, 'User not found');
+		}
+		if (hasFlag(userData.flags, 'NO_PROMOCODES')) {
+			throw error(400, "You aren't allowed to use Promocodes.");
 		}
 
 		const rewardAmountNum = Number(promoData.rewardAmount);
