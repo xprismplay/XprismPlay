@@ -40,6 +40,7 @@ export default {
 		leaderboard: 'Placar de Líderes',
 		shop: 'Loja',
 		achievements: 'Conquistas',
+		groups: 'Grupos',
 		portfolio: 'Portfólio',
 		treemap: 'Treemap',
 		create_coin: 'Criar Moeda',
@@ -242,5 +243,110 @@ export default {
 			'Sem transações ainda',
 			'Você não fez nenhuma troca ainda. Começe comprando ou vendendo moedas.'
 		]
+	},
+	groups: {
+		title: 'Grupos',
+		description: 'Entre em comunidades e gerencie um tesouro compartilhado',
+		create: {
+			button: 'Criar Grupo',
+			title: 'Criar um Grupo',
+			description: 'Custa ${{cost}} para criar um grupo. Você pode criar até {{max}} grupos.',
+			name_label: 'Nome',
+			name_placeholder: 'Meu Grupo Incrível',
+			name_hint: 'Letras, números, espaços, hífens, sublinhados',
+			desc_label: 'Descrição',
+			desc_placeholder: 'Sobre o que é este grupo?',
+			public_label: 'Grupo Público',
+			public_hint: 'Qualquer pessoa pode entrar sem aprovação',
+			submit: 'Criar (${{cost}})',
+			creating: 'Criando...',
+			success: 'Grupo criado!',
+			errors: {
+				name_required: 'Nome obrigatório',
+				failed: 'Falha ao criar grupo'
+			}
+		},
+		my_groups: 'Meus Grupos',
+		browse: 'Explorar Grupos',
+		no_groups: 'Nenhum grupo encontrado',
+		members_count: '{{count}} membros',
+		treasury: 'Tesouro: {{value}}',
+		search_placeholder: 'Pesquisar grupos...',
+		visibility: {
+			public: 'Público',
+			private: 'Privado'
+		},
+		roles: {
+			owner: 'dono',
+			admin: 'admin',
+			member: 'membro'
+		},
+		detail: {
+			back: 'Voltar para Grupos',
+			tabs: {
+				wall: 'Mural',
+				members: 'Membros',
+				treasury: 'Tesouro',
+				requests: 'Solicitações'
+			},
+			join: 'Entrar',
+			request_join: 'Solicitar Entrada',
+			leave: 'Sair',
+			settings: 'Configurações',
+			delete: 'Excluir',
+			joined: 'Entrou no grupo!',
+			request_sent: 'Solicitação de entrada enviada!',
+			left: 'Saiu do grupo',
+			settings_saved: 'Configurações salvas',
+			deleted: 'Grupo excluído',
+			settings_dialog: {
+				title: 'Configurações do Grupo',
+				desc_label: 'Descrição',
+				public_label: 'Grupo Público',
+				public_hint: 'Qualquer pessoa pode entrar sem aprovação',
+				save: 'Salvar',
+				saving: 'Salvando...'
+			},
+			delete_dialog: {
+				title: 'Excluir Grupo',
+				description: 'Esta ação é permanente. Os fundos do tesouro serão devolvidos a você.',
+				confirm: 'Excluir',
+				deleting: 'Excluindo...'
+			},
+			wall: {
+				placeholder: 'Poste algo no mural...',
+				post: 'Publicar',
+				posting: 'Publicando...',
+				empty: 'Nenhuma publicação ainda',
+				deleted: 'Publicação removida'
+			},
+			members: {
+				promote: 'Promover',
+				demote: 'Rebaixar',
+				kick: 'Expulsar',
+				kick_success: 'Membro expulso',
+				role_updated: 'Cargo atualizado'
+			},
+			treasury: {
+				title: 'Tesouro',
+				balance: 'Saldo',
+				deposit: 'Depositar',
+				withdraw: 'Sacar',
+				processing: 'Processando...',
+				deposited: 'Depositado {{value}}',
+				withdrew: 'Sacado {{value}}',
+				amount_placeholder: 'Quantia',
+				note_placeholder: 'Anotação (opcional)',
+				no_transactions: 'Nenhuma transação ainda',
+				recent: 'Transações Recentes'
+			},
+			requests: {
+				empty: 'Nenhuma solicitação de entrada pendente',
+				accept: 'Aceitar',
+				deny: 'Recusar',
+				accepted: 'Solicitação aceita',
+				denied: 'Solicitação recusada'
+			}
+		}
 	}
 } satisfies typeof en;
