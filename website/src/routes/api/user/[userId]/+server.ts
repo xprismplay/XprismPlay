@@ -61,7 +61,9 @@ export async function GET({ params }) {
 		const portfolioHoldings = await db
 			.select({
 				quantity: userPortfolio.quantity,
-				currentPrice: coin.currentPrice
+				currentPrice: coin.currentPrice,
+				poolBaseCurrencyAmount: coin.poolBaseCurrencyAmount,
+				poolCoinAmount: coin.poolCoinAmount
 			})
 			.from(userPortfolio)
 			.innerJoin(coin, eq(userPortfolio.coinId, coin.id))
@@ -69,7 +71,6 @@ export async function GET({ params }) {
 
 		const holdingsValue = portfolioHoldings.reduce((total, holding) => {
 			const quantity = Number(holding.quantity);
-			const price = Number(holding.currentPrice);
 			const baseCurrency = Number(holding.poolBaseCurrencyAmount);
 			const coinAmount = Number(holding.poolCoinAmount);
 
