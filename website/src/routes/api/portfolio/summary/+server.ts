@@ -25,7 +25,7 @@ export async function GET({ request }) {
 				quantity: userPortfolio.quantity,
 				currentPrice: coin.currentPrice,
 				poolBaseCurrencyAmount: coin.poolBaseCurrencyAmount,
-				poolCoinAmount: coin.poolCoinAmount,
+				poolCoinAmount: coin.poolCoinAmount
 			})
 			.from(userPortfolio)
 			.innerJoin(coin, eq(userPortfolio.coinId, coin.id))
@@ -40,12 +40,12 @@ export async function GET({ request }) {
 
 	for (const holding of holdings) {
 		const baseCurrency = Number(holding.poolBaseCurrencyAmount);
-		const coinAmount = Number(holding.poolCoinAmount)
-		
-		let k = baseCurrency * coinAmount
-		let newCoinAmount = coinAmount + quantity;
-		let newBaseCurrency = k / newCoinAmount;
-		let value = baseCurrency - newBaseCurrency;
+		const coinAmount = Number(holding.poolCoinAmount);
+
+		const k = baseCurrency * coinAmount;
+		const newCoinAmount = coinAmount + +holding.quantity;
+		const newBaseCurrency = k / newCoinAmount;
+		const value = baseCurrency - newBaseCurrency;
 		totalCoinValue += value;
 	}
 
