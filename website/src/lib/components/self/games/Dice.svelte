@@ -24,7 +24,7 @@
 		amountWagered: number;
 	}
 
-	const MAX_BET_AMOUNT = 1000000;
+	const MAX_BET_AMOUNT = 1000000000000;
 	const baseRotation = 'rotate3d(1, 1, 0, 340deg)';
 
 	const faceRotations = {

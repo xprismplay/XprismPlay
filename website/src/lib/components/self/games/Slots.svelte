@@ -46,7 +46,7 @@
 
 	const BASE_SPINS_PER_REEL = [8, 10, 12];
 	const NUM_RENDERED_CYCLES = Math.max(...BASE_SPINS_PER_REEL) + 3;
-	const MAX_BET_AMOUNT = 1000000;
+	const MAX_BET_AMOUNT = 1000000000000;
 
 	let betAmount = $state(10);
 	let betAmountDisplay = $state('10');

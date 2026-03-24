@@ -429,7 +429,7 @@ export function getMaxPrestigeLevel(): number {
 export function validateBetAmount(
 	amount: unknown,
 	minBet: number = 0.01,
-	maxBet: number = 1000000
+	maxBet: number = 1000000000000
 ): number {
 	if (!amount || typeof amount !== 'number' || !Number.isFinite(amount)) {
 		throw new Error('Invalid bet amount');

@@ -176,7 +176,7 @@
 	}
 
 	const cssEaseInOut = bezier(0.42, 0, 0.58, 1.0);
-	const MAX_BET_AMOUNT = 1000000;
+	const MAX_BET_AMOUNT = 1000000000000;
 
 	let {
 		balance = $bindable(),

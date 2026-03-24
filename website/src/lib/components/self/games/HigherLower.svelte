@@ -32,7 +32,7 @@
 		number: number;
 	}
 
-	const MAX_BET_AMOUNT = 1000000;
+	const MAX_BET_AMOUNT = 1000000000000;
 
 	let {
 		balance = $bindable(),
