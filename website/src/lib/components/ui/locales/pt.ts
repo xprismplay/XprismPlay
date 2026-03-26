@@ -27,16 +27,17 @@ export default {
 		live: '● AO VIVO'
 	},
 	greetings: {
-		good_morning: 'Bom Dia, {name}!',
-		good_afternoon: 'Boa Tarde, {name}!',
-		good_evening: 'Boa Noite, {name}!',
-		good_night: 'Boa Noite, {name}!'
+		good_morning: 'Bom Dia, {{name}}!',
+		good_afternoon: 'Boa Tarde, {{name}}!',
+		good_evening: 'Boa Noite, {{name}}!',
+		good_night: 'Boa Noite, {{name}}!'
 	},
 	page_names: {
 		home: 'Início',
 		market: 'Mercado',
 		hopium: 'Hopium',
 		arcade: 'Arcade',
+		lottery: 'Loteria',
 		leaderboard: 'Placar de Líderes',
 		shop: 'Loja',
 		achievements: 'Conquistas',
@@ -48,10 +49,9 @@ export default {
 		about: 'Sobre',
 		live_trades: 'Negociações ao vivo',
 		settings: 'Configurações',
-		lottery: 'Loteria',
 		admin: {
 			main: 'Admin',
-			promo: 'Códigos promocionais'
+			promo: 'Promo Codes'
 		}
 	},
 	main: {
@@ -60,58 +60,55 @@ export default {
 		market_overview: 'Visão Geral do Mercado'
 	},
 	lottery: {
-	title: 'Loteria',
-	description:
-		'Sorteio diário — 90% para o vencedor, 10% para o banco. A chance cresce com o prêmio (50% em $1M).',
-	seo_description: 'Jogue a loteria diária no Rugplay. Ganhe até 90% do prêmio. $500 por ticket.',
-	loading: 'Carregando loteria...',
-	active_title: 'Loteria ativa',
-	active_subtitle: 'Sorteio atual. Veja abaixo como funciona a escala e a validade dos tickets.',
-	current_draw: 'SORTEIO ATUAL',
-	prize_pool: 'Prêmio total',
-	winner_share: 'Vencedor (90%)',
-	bank_share: 'Banco (10%)',
-	draw_at: 'Sorteio em',
-	how_it_works: 'Como funciona',
-	how_chance_title: 'A chance escala com o prêmio',
-	how_chance_body:
-		'Com $0, a chance é 0,1%. Cresce até 50% em $1M. Com o prêmio atual de {pool}, a chance hoje é {chance}%. Se não houver vencedor, o prêmio é acumulado.',
-	how_tickets_title: 'Tickets são válidos para um sorteio apenas',
-	how_tickets_body:
-		'Cada ticket te coloca no sorteio do dia apenas. Se não houver vencedor, o prêmio acumula — mas seus tickets não. Compre novos tickets para o próximo sorteio.',
-	breakdown_title: 'Detalhamento do prêmio',
-	breakdown_tickets: 'Receita de tickets',
-	breakdown_bank: 'Contribuição do banco (20% do lucro)',
-	breakdown_donations: 'Doações',
-	breakdown_rollover: 'Acumulado do anterior',
-	odds_title: 'Tickets e probabilidades',
-	odds_tickets_sold: 'Tickets vendidos',
-	odds_draw_chance: 'Chance de um vencedor ser sorteado',
-	odds_per_ticket: 'Sua chance por ticket',
-	odds_your_tickets: 'Seus tickets (este sorteio)',
-	odds_combined: 'Sua chance combinada de ganhar',
-	purchase_title: 'Comprar tickets',
-	purchase_subtitle: '{price} por ticket. Válidos apenas para este sorteio — se acumular, compre novamente.',
-	number_of_tickets: 'Número de tickets',
-	each: 'cada',
-	total: 'Total',
-	purchase_button: 'Comprar tickets',
-	purchasing: 'Comprando...',
-	sign_in_to_purchase: 'Faça login para comprar tickets.',
-	history_title: 'Loterias anteriores',
-	history_subtitle: 'Sorteios e acúmulos concluídos. Vencedores são anunciados no feed.',
-	history_date: 'Data',
-	history_pool: 'Prêmio',
-	history_tickets: 'Tickets vendidos',
-	history_status: 'Status',
-	history_winner: 'Vencedor',
-	history_prize: 'Prêmio',
-	no_history: 'Nenhum sorteio concluído ainda.',
-	status_won: 'Ganhou',
-	status_rollover: 'Acumulou',
-	invalid_quantity: 'Insira uma quantidade válida entre 1 e 100.',
-	purchase_failed: 'Falha ao comprar tickets.',
-	purchased: '{n} ticket(s) comprado(s) com sucesso!'
+  title: 'Loteria',
+  description: 'Sorteio diário — 90% para o vencedor, 10% para o banco. A chance cresce com o prêmio (50% em $1M).',
+  seo_description: 'Jogue a loteria diária no Rugplay. Ganhe até 90% do prêmio. $500 por ticket.',
+  loading: 'Carregando loteria...',
+  active_title: 'Loteria ativa',
+  active_subtitle: 'Sorteio atual. Veja abaixo como funciona a escala e a validade dos tickets.',
+  current_draw: 'SORTEIO ATUAL',
+  prize_pool: 'Prêmio total',
+  winner_share: 'Vencedor (90%)',
+  bank_share: 'Banco (10%)',
+  draw_at: 'Sorteio em',
+  how_it_works: 'Como funciona',
+  how_chance_title: 'A chance escala com o prêmio',
+  how_chance_body: 'Com $0, a chance é 0,1%. Cresce até 50% em $1M. Com o prêmio atual de {{pool}}, a chance hoje é {{chance}}%. Se não houver vencedor, o prêmio é acumulado.',
+  how_tickets_title: 'Tickets são válidos para um sorteio apenas',
+  how_tickets_body: 'Cada ticket te coloca no sorteio do dia apenas. Se não houver vencedor, o prêmio acumula — mas seus tickets não. Compre novos tickets para o próximo sorteio.',
+  breakdown_title: 'Detalhamento do prêmio',
+  breakdown_tickets: 'Receita de tickets',
+  breakdown_bank: 'Contribuição do banco (20% do lucro)',
+  breakdown_donations: 'Doações',
+  breakdown_rollover: 'Acumulado do anterior',
+  odds_title: 'Tickets e probabilidades',
+  odds_tickets_sold: 'Tickets vendidos',
+  odds_draw_chance: 'Chance de um vencedor ser sorteado',
+  odds_per_ticket: 'Sua chance por ticket',
+  odds_your_tickets: 'Seus tickets (este sorteio)',
+  odds_combined: 'Sua chance combinada de ganhar',
+  purchase_title: 'Comprar tickets',
+  purchase_subtitle: '{{price}} por ticket. Válidos apenas para este sorteio — se acumular, compre novamente.',
+  number_of_tickets: 'Número de tickets',
+  each: 'cada',
+  total: 'Total',
+  purchase_button: 'Comprar tickets',
+  purchasing: 'Comprando...',
+  sign_in_to_purchase: 'Faça login para comprar tickets.',
+  history_title: 'Loterias anteriores',
+  history_subtitle: 'Sorteios e acúmulos concluídos. Vencedores são anunciados no feed.',
+  history_date: 'Data',
+  history_pool: 'Prêmio',
+  history_tickets: 'Tickets vendidos',
+  history_status: 'Status',
+  history_winner: 'Vencedor',
+  history_prize: 'Prêmio',
+  no_history: 'Nenhum sorteio concluído ainda.',
+  status_won: 'Ganhou',
+  status_rollover: 'Acumulou',
+  invalid_quantity: 'Insira uma quantidade válida entre 1 e 100.',
+  purchase_failed: 'Falha ao comprar tickets.',
+  purchased: '{{n}} ticket(s) comprado(s) com sucesso!'
 },
 	coin: {
 		'24hchange': 'Mudança em 24h',
@@ -120,7 +117,7 @@ export default {
 		delisted: 'Deslistado',
 		createdBy: 'Criado por',
 		priceChart: [
-			'Gráfico de Preços ({time})',
+			'Gráfico de Preços ({{time}})',
 			'1 minuto',
 			'5 minutos',
 			'15 minutos',
@@ -130,23 +127,23 @@ export default {
 			'Nenhum dado de troca disponível'
 		],
 		trade: {
-			title: 'Negocie {symbol}',
-			youOwn: 'Você tem: {shares} {symbol}',
+			title: 'Negocie {{symbol}}',
+			youOwn: 'Você tem: {{shares}} {{symbol}}',
 			lock: [
-				'🔒 Período exclusivo para o criador: {time} restantes',
-				'🔒 Negociação desbloqueia em: {time}'
+				'🔒 Período exclusivo para o criador: {{time}} restantes',
+				'🔒 Negociação desbloqueia em: {{time}}'
 			],
 			buy: {
-				title: 'Comprar {symbol}',
-				current: 'Preço atual: ${price} por {symbol}',
-				amountSpend: ['Quantidade para gastar ($)', 'Saldo: {balance}'],
-				buy: 'Compre {symbol}'
+				title: 'Comprar {{symbol}}',
+				current: 'Preço atual: ${{price}} por {{symbol}}',
+				amountSpend: ['Quantidade para gastar ($)', 'Saldo: {{balance}}'],
+				buy: 'Compre {{symbol}}'
 			},
 			sell: {
-				title: 'Vender {symbol}'
+				title: 'Vender {{symbol}}'
 			},
 			burn: {
-				title: 'Queimar Tokens de {symbol}'
+				title: 'Queimar Tokens de {{symbol}}'
 			}
 		},
 		pool: {
@@ -214,19 +211,19 @@ export default {
 	market: {
 		title: 'Mercado',
 		description: 'Descubra Moedas, Acompanhe seu desempenho, e encontre seu próximo investimento',
-		showing: 'Mostrando {startIndex}-{endIndex} de {totalCount} moedas',
+		showing: 'Mostrando {{startIndex}}-{{endIndex}} de {{totalCount}} moedas',
 		search: {
 			placeholder: 'Pesquisar moedas pelo nome ou símbolo...',
 			filters: {
 				title: 'Filtros',
-				sort_by: 'Ordenar por',
+				sort_by: 'Sortear por',
 				change24h: 'Mudança (24h)',
 				price: 'Preço',
 				marketcap: 'Capitalização',
 				volume24h: 'Volume (24h)',
 				clear: 'Limpar todos os filtros',
 				sort_order: {
-					title: 'Ordem',
+					title: 'Ordem de Sorteio',
 					high_low: 'Alto para Baixo',
 					low_high: 'Baixo para Alto'
 				},
@@ -252,8 +249,8 @@ export default {
 	portfolio: {
 		title: 'Portfólio',
 		description: 'Gerencie seus investimentos e transações',
-		cash_balance: ['Saldo em Dinheiro', '{percent}% do portfólio'],
-		coin_holdings: ['Participações em Moedas', '{quantity} posições'],
+		cash_balance: ['Saldo em Dinheiro', '{{percent}}% do portfólio'],
+		coin_holdings: ['Participações em Moedas', '{{quantity}} posições'],
 		your_holdings: ['Suas Ações', 'As ações em seu portfólio'],
 		recent_transactions: ['Transações Recentes', 'Suas últimas atividades de troca', 'Ver todas'],
 		total: 'Total',
@@ -270,25 +267,29 @@ export default {
 			type: ['Tipo', 'Dinheiro ($)', 'Moedas', 'Selecione o tipo de transferência'],
 			cash: [
 				'Quantidade ($)',
-				'Disponível: ${balance}',
+				'Disponível: ${{balance}}',
 				'Mínimo: $10.00 por transferência',
 				'Transferências de dinheiro precisam ser de pelo menos $10.00',
 				'Fundos insuficientes',
 				'Dinheiro enviado com sucesso!',
-				'Enviado ${amount} para @{recipent}'
+				'Enviado ${{amount}} para @{{recipent}}'
 			],
 			coins: [
 				'Selecione a Moeda',
-				'Quantidade {coinSymbol}',
-				'Disponível: {shares}',
+				'Quantidade {{coinSymbol}}',
+				'Disponível: {{shares}}',
 				'Valor mínimo estimado: $10.00 por transferência',
 				'Transferências de moedas precisam de um valor estimado de pelo menos $10.00',
 				'Moedas não suficientes',
 				'Moedas enviadas com sucesso!',
-				'Enviou {amount} {symbol} (≈${estimated}) para @{recipent}'
+				'Enviou {{amount}} {{symbol}} (≈${{estimated}}) para @${{recipent}}'
 			],
-			note: ['Anotação', '(Opcional)', 'Adicione uma nota de referência para essa transferência...'],
-			youre_sending: ['Você está mandando:', '{amount} USD', 'Para:']
+			note: [
+				'Anotação',
+				'(Opcional)',
+				'Adicione uma nota de referência para essa transferência...'
+			],
+			youre_sending: ['Você está mandando:', '{{amount}} USD', 'Para:']
 		},
 		no_transactions: [
 			'Sem transações ainda',
@@ -301,7 +302,7 @@ export default {
 		create: {
 			button: 'Criar Grupo',
 			title: 'Criar um Grupo',
-			description: 'Custa ${cost} para criar um grupo. Você pode criar até {max} grupos.',
+			description: 'Custa ${{cost}} para criar um grupo. Você pode criar até {{max}} grupos.',
 			name_label: 'Nome',
 			name_placeholder: 'Meu Grupo Incrível',
 			name_hint: 'Letras, números, espaços, hífens, sublinhados',
@@ -309,7 +310,7 @@ export default {
 			desc_placeholder: 'Sobre o que é este grupo?',
 			public_label: 'Grupo Público',
 			public_hint: 'Qualquer pessoa pode entrar sem aprovação',
-			submit: 'Criar (${cost})',
+			submit: 'Criar (${{cost}})',
 			creating: 'Criando...',
 			success: 'Grupo criado!',
 			errors: {
@@ -320,8 +321,8 @@ export default {
 		my_groups: 'Meus Grupos',
 		browse: 'Explorar Grupos',
 		no_groups: 'Nenhum grupo encontrado',
-		members_count: '{count} membros',
-		treasury: 'Tesouro: {value}',
+		members_count: '{{count}} membros',
+		treasury: 'Tesouro: {{value}}',
 		search_placeholder: 'Pesquisar grupos...',
 		visibility: {
 			public: 'Público',
@@ -333,7 +334,6 @@ export default {
 			member: 'membro'
 		},
 		detail: {
-			owner: 'Dono',
 			back: 'Voltar para Grupos',
 			tabs: {
 				wall: 'Mural',
@@ -385,8 +385,8 @@ export default {
 				deposit: 'Depositar',
 				withdraw: 'Sacar',
 				processing: 'Processando...',
-				deposited: 'Depositado {value}',
-				withdrew: 'Sacado {value}',
+				deposited: 'Depositado {{value}}',
+				withdrew: 'Sacado {{value}}',
 				amount_placeholder: 'Quantia',
 				note_placeholder: 'Anotação (opcional)',
 				no_transactions: 'Nenhuma transação ainda',

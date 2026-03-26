@@ -702,3 +702,12 @@ export const lotteryTicket = pgTable(
 		userIdIdx: index('lottery_ticket_user_id_idx').on(table.userId)
 	})
 );
+
+export const globalFeedEvent = pgTable('global_feed_event', {
+  id: serial('id').primaryKey(),
+  type: text('type').notNull(),
+  content: text('content'),
+  metadata: text('metadata'),
+  userId: integer('user_id'),
+  createdAt: timestamp('created_at').defaultNow()
+});

@@ -23,7 +23,8 @@ export const auth = betterAuth({
 		'https://xprismplay.dpdns.org',
 		'http://xprismplay.dpdns.org',
 		'http://localhost:5173',
-		'http://localhost:4173'
+		'http://localhost:4173',
+		'https://fails-rapid-forbes-guides.trycloudflare.com'
 	],
 
 	plugins: [
