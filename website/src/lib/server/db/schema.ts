@@ -660,3 +660,45 @@ export const groupTreasuryTx = pgTable(
 		groupIdIdx: index('group_treasury_tx_group_id_idx').on(table.groupId)
 	})
 );
+
+export const lotteryStatusEnum = pgEnum('lottery_status', ['ACTIVE', 'DRAWN', 'ROLLED_OVER']);
+
+export const lotteryDraw = pgTable(
+	'lottery_draw',
+	{
+		id: serial('id').primaryKey(),
+		drawDate: timestamp('draw_date', { withTimezone: true }).notNull(),
+		prizePool: decimal('prize_pool', { precision: 30, scale: 8 }).notNull().default('0'),
+		ticketRevenue: decimal('ticket_revenue', { precision: 30, scale: 8 }).notNull().default('0'),
+		bankContribution: decimal('bank_contribution', { precision: 30, scale: 8 }).notNull().default('0'),
+		donations: decimal('donations', { precision: 30, scale: 8 }).notNull().default('0'),
+		rolloverAmount: decimal('rollover_amount', { precision: 30, scale: 8 }).notNull().default('0'),
+		totalTickets: integer('total_tickets').notNull().default(0),
+		status: lotteryStatusEnum('status').notNull().default('ACTIVE'),
+		winnerId: integer('winner_id').references(() => user.id, { onDelete: 'set null' }),
+		winnerPrize: decimal('winner_prize', { precision: 30, scale: 8 }),
+		drawChance: decimal('draw_chance', { precision: 10, scale: 8 }).notNull().default('0.00100000'),
+		drawnAt: timestamp('drawn_at', { withTimezone: true }),
+		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+	},
+	(table) => ({
+		statusIdx: index('lottery_draw_status_idx').on(table.status),
+		drawDateIdx: index('lottery_draw_date_idx').on(table.drawDate)
+	})
+);
+
+export const lotteryTicket = pgTable(
+	'lottery_ticket',
+	{
+		id: serial('id').primaryKey(),
+		drawId: integer('draw_id').notNull().references(() => lotteryDraw.id, { onDelete: 'cascade' }),
+		userId: integer('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+		quantity: integer('quantity').notNull().default(1),
+		purchasedAt: timestamp('purchased_at', { withTimezone: true }).notNull().defaultNow()
+	},
+	(table) => ({
+		drawUserUnique: unique('lottery_ticket_draw_user_unique').on(table.drawId, table.userId),
+		drawIdIdx: index('lottery_ticket_draw_id_idx').on(table.drawId),
+		userIdIdx: index('lottery_ticket_user_id_idx').on(table.userId)
+	})
+);
