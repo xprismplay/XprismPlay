@@ -91,6 +91,8 @@
 			'/admin': $_('page_names.admin.main'),
 			'/admin/promo': $_('page_names.admin.promo'),
 			'/transactions': $_('page_names.transactions'),
+			'/groups': $_('page_names.groups'),
+			'/lottery': $_('page_names.lottery'),
 			'/hopium': $_('page_names.hopium'),
 			'/arcade': $_('page_names.arcade'),
 			'/live': $_('page_names.live_trades'),

@@ -39,7 +39,8 @@
 		GemIcon,
 		Award05Icon,
 		ArrowDown01Icon,
-		UserGroupIcon
+		UserGroupIcon,
+		Money01Icon
 	} from '@hugeicons/core-free-icons';
 	import { mode, setMode } from 'mode-watcher';
 	import type { HTMLAttributes } from 'svelte/elements';
@@ -68,10 +69,11 @@
 			{ title: $_('page_names.market'), url: '/market', icon: Store01Icon },
 			{ title: $_('page_names.hopium'), url: '/hopium', icon: ArrowUpDownIcon },
 			{ title: $_('page_names.arcade'), url: '/arcade', icon: Joystick04Icon },
+			{ title: $_('page_names.lottery'), url: '/lottery', icon: Money01Icon },
 			{ title: $_('page_names.leaderboard'), url: '/leaderboard', icon: ChampionIcon },
 			{ title: $_('page_names.shop'), url: '/shop', icon: ShoppingBasket01Icon },
 			{ title: $_('page_names.achievements'), url: '/achievements', icon: Award05Icon },
-			{ title: 'Groups', url: '/groups', icon: UserGroupIcon },
+			{ title: $_('page_names.groups'), url: '/groups', icon: UserGroupIcon },
 			{ title: $_('page_names.portfolio'), url: '/portfolio', icon: Briefcase01Icon },
 			{ title: $_('page_names.treemap'), url: '/treemap', icon: Analytics01Icon },
 			{ title: $_('page_names.create_coin'), url: '/coin/create', icon: Coins02Icon },
