@@ -1,4 +1,4 @@
-import { lotteryDraw } from "$lib/server/db/schema";
+import type { lotteryDraw } from "$lib/server/db/schema";
 
 export default {
 	lang: {
