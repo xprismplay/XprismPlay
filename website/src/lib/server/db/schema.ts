@@ -702,3 +702,48 @@ export const lotteryTicket = pgTable(
 		userIdIdx: index('lottery_ticket_user_id_idx').on(table.userId)
 	})
 );
+
+export const weeklyLotteryDraw = pgTable(
+	'weekly_lottery_draw',
+	{
+		id: serial('id').primaryKey(),
+		drawDate: timestamp('draw_date', { withTimezone: true }).notNull(),
+		prizePool: decimal('prize_pool', { precision: 30, scale: 8 }).notNull().default('0'),
+		ticketRevenue: decimal('ticket_revenue', { precision: 30, scale: 8 }).notNull().default('0'),
+		donations: decimal('donations', { precision: 30, scale: 8 }).notNull().default('0'),
+		rolloverAmount: decimal('rollover_amount', { precision: 30, scale: 8 }).notNull().default('0'),
+		totalTickets: integer('total_tickets').notNull().default(0),
+		status: lotteryStatusEnum('status').notNull().default('ACTIVE'),
+		drawnNumbers: varchar('drawn_numbers', { length: 50 }),
+		jackpotWinnersCount: integer('jackpot_winners_count'),
+		match5WinnersCount: integer('match5_winners_count'),
+		match4WinnersCount: integer('match4_winners_count'),
+		drawnAt: timestamp('drawn_at', { withTimezone: true }),
+		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+	},
+	(table) => ({
+		wkStatusIdx: index('weekly_lottery_draw_status_idx').on(table.status),
+		wkDateIdx: index('weekly_lottery_draw_date_idx').on(table.drawDate)
+	})
+);
+
+export const weeklyLotteryTicket = pgTable(
+	'weekly_lottery_ticket',
+	{
+		id: serial('id').primaryKey(),
+		drawId: integer('draw_id')
+			.notNull()
+			.references(() => weeklyLotteryDraw.id, { onDelete: 'cascade' }),
+		userId: integer('user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		numbers: varchar('numbers', { length: 50 }).notNull(),
+		matchCount: integer('match_count'),
+		winnings: decimal('winnings', { precision: 30, scale: 8 }),
+		purchasedAt: timestamp('purchased_at', { withTimezone: true }).notNull().defaultNow()
+	},
+	(table) => ({
+		wkTicketDrawIdx: index('weekly_lottery_ticket_draw_id_idx').on(table.drawId),
+		wkTicketUserIdx: index('weekly_lottery_ticket_user_id_idx').on(table.userId)
+	})
+);
