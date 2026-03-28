@@ -13,8 +13,8 @@ export async function POST({ request }) {
 	const body = await request.json();
 	const quantity = Math.floor(Number(body.quantity));
 
-	if (!Number.isInteger(quantity) || quantity < 1 || quantity > 100) {
-		throw error(400, 'Quantity must be between 1 and 100');
+	if (!Number.isInteger(quantity) || quantity < 1 || quantity > 1000) {
+		throw error(400, 'Quantity must be between 1 and 1000');
 	}
 
 	const totalCost = quantity * TICKET_PRICE;
