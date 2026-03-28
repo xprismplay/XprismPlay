@@ -8,7 +8,7 @@
 		setTimeout(() => {
 			try {
 				// Only target AdSense slots that haven't been filled by Google yet
-				// This safely replaces the <script>push({})</script> tags from your snippet
+				// This safely replaces the old push tags from your snippet
 				const uninitializedAds = document.querySelectorAll('.adsbygoogle:not([data-adsbygoogle-status])');
 				uninitializedAds.forEach(() => {
 					// @ts-ignore
