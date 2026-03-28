@@ -471,7 +471,7 @@ export function calculateMinesMultiplier(picks: number, mines: number, betAmount
 	const fairMultiplier = (1 / probability) * (1 - HOUSE_EDGE);
 
 	// Backend payout cap logic
-	const MAX_PAYOUT = 2_000_000;
+	const MAX_PAYOUT = 2_000_000_000_000;
 	const HIGH_BET_THRESHOLD = 50_000;
 	const mineFactor = 1 + mines / 25;
 	const baseMultiplier = (1.4 + Math.pow(picks, 0.45)) * mineFactor;
