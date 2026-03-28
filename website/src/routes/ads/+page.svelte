@@ -1,70 +1,80 @@
 <script lang="ts">
-	import { USER_DATA } from '$lib/stores/user-data';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
+	import { onMount } from 'svelte';
 	import { HugeiconsIcon } from '@hugeicons/svelte';
-	import {
-		Shield01Icon,
-		LegalHammerIcon,
-		Ticket01Icon,
-		ArrowRight01Icon,
-		UserGroupIcon,
-		Analytics01Icon
-	} from '@hugeicons/core-free-icons';
-	import { goto } from '$app/navigation';
-	import { hasFlag } from '$lib/data/flags';
+	import { HatIcon } from '@hugeicons/core-free-icons';
 
-	const adminSections = [
-		{
-			title: 'User Management',
-			description: 'Manage Users.',
-			icon: LegalHammerIcon,
-			url: '/admin/users',
-			color: 'text-blue-500'
-		},
-		{
-			title: 'Promo Codes',
-			description: 'Manage Promo Codes.',
-			icon: Ticket01Icon,
-			url: '/admin/promo',
-			color: 'text-green-500'
-		},
-		{
-			title: 'Admin Logs',
-			description: 'Live feed of all moderator and admin actions.',
-			icon: Shield01Icon,
-			url: '/admin/logs',
-			color: 'text-orange-500'
-		},
-		{
-			title: 'Transactions Logs',
-			description: 'Complete record of trading activity and transactions of the entire platform.',
-			icon: Analytics01Icon,
-			url: '/admin/transactions',
-			color: 'text-red-500'
+	// This triggers Google AdSense to fill all the <ins> tags on the page
+	onMount(() => {
+		try {
+			const ads = document.querySelectorAll('.adsbygoogle');
+			ads.forEach(() => {
+				// @ts-ignore - adsbygoogle is injected by the external script
+				(window.adsbygoogle = window.adsbygoogle || []).push({});
+			});
+		} catch (e) {
+			console.error('AdSense error:', e);
 		}
-	];
+	});
 </script>
 
 <svelte:head>
-	<title>All the Ads of XprismPlay</title>
+	<title>Support Xprism - XprismPlay</title>
 	<meta name="robots" content="noindex, nofollow" />
+	<script
+		async
+		src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8656856296349420"
+		crossorigin="anonymous"
+	></script>
 </svelte:head>
 
-<div class="container mx-auto space-y-6 p-6">
-	<div class="flex items-center gap-3">
-		<div class="bg-primary/10 rounded-lg p-2">
-			<HugeiconsIcon icon={Shield01Icon} class="text-primary h-6 w-6" />
+<div class="container mx-auto space-y-8 p-6">
+	<div class="flex flex-col items-center justify-center text-center gap-4 py-8">
+		<div class="bg-primary/10 rounded-full p-4">
+			<HugeiconsIcon icon={HatIcon} class="text-primary h-8 w-8" />
 		</div>
-		<div>
-			<h1 class="text-3xl font-bold tracking-tight">
-				All the Ads (stored here so not put around site instead)
-			</h1>
-			<script
-				async
-				src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8656856296349420"
-				crossorigin="anonymous"
-			></script>
+		<h1 class="text-4xl font-bold tracking-tight">
+			Support XprismPlay
+		</h1>
+		<p class="text-muted-foreground max-w-2xl text-lg">
+			Thank you for wanting to support Xprism! By visiting this page and viewing the ads below, you help keep Xprism servers running. Xprism've contained all Xprism ads exclusively to this page so the rest of your experience stays completely ad-free!
+		</p>
+	</div>
+
+	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+		<div class="bg-card border rounded-xl p-4 min-h-[300px] flex items-center justify-center overflow-hidden">
+			<ins class="adsbygoogle"
+                style="display:block"
+                data-ad-client="ca-pub-8656856296349420"
+                data-ad-slot="8306019595"
+                data-ad-format="auto"
+                data-full-width-responsive="true"></ins>
 		</div>
+
+		<div class="bg-card border rounded-xl p-4 min-h-[300px] flex items-center justify-center overflow-hidden">
+			<ins class="adsbygoogle"
+				style="display:block; width:100%; height:100%;"
+				data-ad-client="ca-pub-8656856296349420"
+				data-ad-slot="5137134038"
+				data-ad-format="auto"
+				data-full-width-responsive="true"></ins>
+		</div>
+
+		<div class="bg-card border rounded-xl p-4 min-h-[300px] flex items-center justify-center overflow-hidden">
+			<ins class="adsbygoogle"
+				style="display:block; width:100%; height:100%;"
+				data-ad-client="ca-pub-8656856296349420"
+				data-ad-slot="5137134038"
+				data-ad-format="auto"
+				data-full-width-responsive="true"></ins>
+		</div>
+	</div>
+
+	<div class="bg-card border rounded-xl p-4 mt-8 min-h-[250px] flex items-center justify-center overflow-hidden">
+		<ins class="adsbygoogle"
+			style="display:block; width:100%; height:100%;"
+			data-ad-client="ca-pub-8656856296349420"
+			data-ad-slot="5137134038"
+			data-ad-format="auto"
+			data-full-width-responsive="true"></ins>
 	</div>
 </div>
