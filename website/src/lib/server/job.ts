@@ -17,6 +17,7 @@ import { eq, and, lte, isNull } from 'drizzle-orm';
 import { resolveQuestion, getRugplayData } from '$lib/server/ai';
 import { createNotification } from '$lib/server/notification';
 import { formatValue } from '$lib/utils';
+import { env } from '$env/dynamic/private';
 
 export async function resolveExpiredQuestions() {
 	const now = new Date();
@@ -52,6 +53,26 @@ export async function resolveExpiredQuestions() {
 					rugplayData
 				);
 				console.log('Resolution result:', resolution);
+				if (env.DISCORD_WEBHOOK_URL) {
+			// Formatting it exactly like your console output
+				const discordMessage = `\`\`\`text
+Resolving question: ${question.question}
+Resolution result: {
+  resolution: ${resolution.resolution},
+  confidence: ${resolution.confidence},
+  reasoning: "${resolution.reasoning}"
+}
+\`\`\``;
+				try {
+				await fetch(env.DISCORD_WEBHOOK_URL, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ content: discordMessage })
+				});
+				} catch (err) {
+					console.error('Failed to send Hopium resolution to Discord:', err);
+				}
+			}
 
 				if (resolution.confidence < 50) {
 					console.log(
