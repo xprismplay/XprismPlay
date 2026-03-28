@@ -8,7 +8,10 @@ import {
 	validateTicketNumbers,
 	WEEKLY_TICKET_PRICE,
 	NUMBERS_COUNT,
-	NUMBERS_MAX
+	NUMBERS_MAX,
+	combination,
+	BASE_NUMBERS,
+	MAX_CHOSEN_NUMBERS
 } from '$lib/server/weekly-lottery';
 
 const MAX_RANDOM_TICKETS = 1000;
@@ -26,6 +29,7 @@ export async function POST({ request }) {
 
 	const body = await request.json();
 	let ticketSets: number[][];
+	let ticketCount: number;
 
 	if (body.random != null) {
 		const count = parseInt(String(body.random), 10);
@@ -33,9 +37,12 @@ export async function POST({ request }) {
 			throw error(400, 'Random count must be between 1 and 1000');
 		}
 		ticketSets = Array.from({ length: count }, () => generateRandom(NUMBERS_COUNT, NUMBERS_MAX));
+		ticketCount = ticketSets.length;
 	} else if (body.numbers != null) {
 		try {
-			ticketSets = [validateTicketNumbers(body.numbers)];
+			const nums = validateTicketNumbers(body.numbers);
+			ticketSets = [nums];
+			ticketCount = combination(nums.length, BASE_NUMBERS);
 		} catch (e) {
 			throw error(400, (e as Error).message);
 		}
@@ -43,7 +50,7 @@ export async function POST({ request }) {
 		throw error(400, 'Provide numbers array or random count');
 	}
 
-	const totalCost = ticketSets.length * WEEKLY_TICKET_PRICE;
+	const totalCost = ticketCount * WEEKLY_TICKET_PRICE;
 	const draw = await getOrCreateActiveWeeklyDraw();
 	const now = new Date();
 
@@ -83,7 +90,7 @@ export async function POST({ request }) {
 			.set({
 				prizePool: sql`${weeklyLotteryDraw.prizePool} + ${totalCost}`,
 				ticketRevenue: sql`${weeklyLotteryDraw.ticketRevenue} + ${totalCost}`,
-				totalTickets: sql`${weeklyLotteryDraw.totalTickets} + ${ticketSets.length}`
+				totalTickets: sql`${weeklyLotteryDraw.totalTickets} + ${ticketCount}`
 			})
 			.where(eq(weeklyLotteryDraw.id, draw.id));
 
@@ -91,6 +98,7 @@ export async function POST({ request }) {
 			success: true,
 			tickets: inserted.map((t) => ({ id: t.id, numbers: t.numbers.split(',').map(Number) })),
 			totalCost,
+			ticketCount,
 			newBalance: balance - totalCost
 		});
 	});

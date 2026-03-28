@@ -49,6 +49,16 @@
 	let newsLoading = $state(false);
 	let newsLoaded = $state(false);
 
+	function combination(n: number, k: number): number {
+		if (k > n) return 0;
+		if (k > n / 2) k = n - k;
+		let res = 1;
+		for (let i = 1; i <= k; i++) {
+			res = (res * (n - i + 1)) / i;
+		}
+		return Math.round(res);
+	}
+
 	function tick() {
 		if (current?.draw?.drawDate) {
 			const diff = new Date(current.draw.drawDate).getTime() - Date.now();
@@ -149,9 +159,9 @@
 			return;
 		}
 		if (weeklyPurchasing) return;
-		const need = weekly?.numbersCount ?? 6;
-		if (pickedNumbers.length !== need) {
-			toast.error($_('lottery.weekly.pick_exactly').replace('{{n}}', String(need)));
+		const need = weekly?.baseNumbers ?? 6;
+		if (pickedNumbers.length < need) {
+			toast.error($_('lottery.weekly.pick_at_least').replace('{{n}}', String(need)));
 			return;
 		}
 		weeklyPurchasing = true;
@@ -249,7 +259,7 @@
 	}
 
 	function toggleNumber(n: number) {
-		const max = weekly?.numbersCount ?? 6;
+		const max = weekly?.maxChosenNumbers ?? 10;
 		if (pickedNumbers.includes(n)) {
 			pickedNumbers = pickedNumbers.filter((x) => x !== n);
 		} else if (pickedNumbers.length < max) {
@@ -304,7 +314,11 @@
 	);
 	let numbersCount = $derived(weekly?.numbersCount ?? 6);
 	let numbersMax = $derived(weekly?.numbersMax ?? 60);
+	let baseNumbers = $derived(weekly?.baseNumbers ?? 6);
+	let maxChosenNumbers = $derived(weekly?.maxChosenNumbers ?? 10);
 	let weeklyTicketPrice = $derived(weekly?.ticketPrice ?? 2500);
+	let pickedCombinations = $derived(combination(pickedNumbers.length, baseNumbers));
+	let pickedTotalCost = $derived(pickedCombinations * weeklyTicketPrice);
 	let userWeeklyTickets = $derived(weekly?.userTickets ?? []);
 </script>
 
@@ -599,8 +613,13 @@
 							<Card.Description>
 								{$_('lottery.weekly.numbers_picked')
 									.replace('{{n}}', String(pickedNumbers.length))
-									.replace('{{total}}', String(numbersCount))}
-								· {formatValue(weeklyTicketPrice)} {$_('lottery.each')}
+									.replace('{{total}}', String(maxChosenNumbers))}
+								·
+								{#if pickedNumbers.length >= baseNumbers}
+									{pickedCombinations} {$_('lottery.weekly.combinations')} · {formatValue(pickedTotalCost)}
+								{:else}
+									{formatValue(weeklyTicketPrice)} {$_('lottery.each')}
+								{/if}
 							</Card.Description>
 						</Card.Header>
 						<Card.Content class="space-y-4">
@@ -612,7 +631,7 @@
 											? 'bg-primary text-primary-foreground font-bold'
 											: 'bg-muted hover:bg-muted/80'} disabled:cursor-not-allowed disabled:opacity-40"
 										onclick={() => toggleNumber(n)}
-										disabled={!picked && pickedNumbers.length >= numbersCount}
+										disabled={!picked && pickedNumbers.length >= maxChosenNumbers}
 									>
 										{n}
 									</button>
@@ -632,10 +651,10 @@
 									<Button
 										size="sm"
 										onclick={purchaseWeekly}
-										disabled={weeklyPurchasing || pickedNumbers.length !== numbersCount}
+										disabled={weeklyPurchasing || pickedNumbers.length < baseNumbers}
 									>
 										<HugeiconsIcon icon={Ticket01Icon} class="h-4 w-4" />
-										{weeklyPurchasing ? $_('lottery.purchasing') : $_('lottery.weekly.buy_ticket')} ({formatValue(weeklyTicketPrice)})
+										{weeklyPurchasing ? $_('lottery.purchasing') : $_('lottery.weekly.buy_ticket')} ({formatValue(pickedTotalCost)})
 									</Button>
 								{:else}
 									<Button size="sm" onclick={() => (shouldSignIn = true)}>{$_('sign_in.sign_in')}</Button>

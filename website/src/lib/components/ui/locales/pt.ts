@@ -145,6 +145,8 @@ export default {
       ticket_bought: "Ticket(s) semanal(is) comprado(s)!",
       your_tickets_title: "Seus tickets deste sorteio",
       match_count: "acertos",
+	  pick_at_least: 'Escolha pelo menos {{n}} números',
+      combinations: 'Combinações',
       history_title: "Sorteios semanais anteriores",
       drawn_numbers: "Números sorteados",
       jackpot_winners: "Jackpot",

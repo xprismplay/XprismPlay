@@ -6,6 +6,8 @@ import { createNotification } from './notification';
 export const WEEKLY_TICKET_PRICE = 2500;
 export const NUMBERS_COUNT = 6;
 export const NUMBERS_MAX = 60;
+export const BASE_NUMBERS = NUMBERS_COUNT;
+export const MAX_CHOSEN_NUMBERS = 10;
 const BANK_PCT = 0.1;
 const JACKPOT_PCT = 0.5;
 const MATCH5_PCT = 0.3;
@@ -30,9 +32,19 @@ function drawNumbers(): number[] {
 	return Array.from(nums).sort((a, b) => a - b);
 }
 
+export function combination(n: number, k: number): number {
+	if (k > n) return 0;
+	if (k > n / 2) k = n - k;
+	let res = 1;
+	for (let i = 1; i <= k; i++) {
+		res = (res * (n - i + 1)) / i;
+	}
+	return Math.round(res);
+}
+
 export function validateTicketNumbers(raw: unknown): number[] {
-	if (!Array.isArray(raw) || raw.length !== NUMBERS_COUNT) {
-		throw new Error(`Must pick exactly ${NUMBERS_COUNT} numbers`);
+	if (!Array.isArray(raw) || raw.length < NUMBERS_COUNT || raw.length > MAX_CHOSEN_NUMBERS) {
+		throw new Error(`Must pick between ${NUMBERS_COUNT} and ${MAX_CHOSEN_NUMBERS} numbers`);
 	}
 	const nums = raw.map((n) => {
 		const v = parseInt(String(n), 10);
@@ -41,10 +53,9 @@ export function validateTicketNumbers(raw: unknown): number[] {
 		}
 		return v;
 	});
-	if (new Set(nums).size !== NUMBERS_COUNT) throw new Error('Numbers must be unique');
+	if (new Set(nums).size !== raw.length) throw new Error('Numbers must be unique');
 	return nums;
 }
-
 async function executeExpiredWeeklyDraws() {
 	const now = new Date();
 	const expired = await db

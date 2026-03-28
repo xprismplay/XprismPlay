@@ -141,6 +141,8 @@ export default {
 		ticket_bought: 'Weekly ticket(s) purchased!',
 		your_tickets_title: 'Your Tickets This Draw',
 		match_count: 'matches',
+		pick_at_least: 'Pick at least {{n}} numbers',
+        combinations: 'combinations',
 		history_title: 'Past Weekly Draws',
 		drawn_numbers: 'Drawn Numbers',
 		jackpot_winners: 'Jackpot',

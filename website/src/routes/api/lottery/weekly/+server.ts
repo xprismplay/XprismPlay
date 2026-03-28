@@ -7,7 +7,9 @@ import {
 	getOrCreateActiveWeeklyDraw,
 	WEEKLY_TICKET_PRICE,
 	NUMBERS_COUNT,
-	NUMBERS_MAX
+	NUMBERS_MAX,
+	BASE_NUMBERS,
+	MAX_CHOSEN_NUMBERS
 } from '$lib/server/weekly-lottery';
 
 export async function GET({ request }) {
@@ -37,6 +39,8 @@ export async function GET({ request }) {
 		ticketPrice: WEEKLY_TICKET_PRICE,
 		numbersCount: NUMBERS_COUNT,
 		numbersMax: NUMBERS_MAX,
+		baseNumbers: BASE_NUMBERS,
+		maxChosenNumbers: MAX_CHOSEN_NUMBERS,
 		userTickets: userTickets.map((t) => ({
 			id: t.id,
 			numbers: t.numbers.split(',').map(Number),
