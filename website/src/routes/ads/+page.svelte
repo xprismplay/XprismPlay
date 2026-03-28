@@ -17,9 +17,6 @@
 	});
 </script>
 
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
 
 <svelte:head>
 	<title>Support Xprism - XprismPlay</title>
@@ -81,4 +78,7 @@
 			data-ad-format="auto"
 			data-full-width-responsive="true"></ins>
 	</div>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
 </div>
