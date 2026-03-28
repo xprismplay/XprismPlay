@@ -17,6 +17,10 @@
 	});
 </script>
 
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
 <svelte:head>
 	<title>Support Xprism - XprismPlay</title>
 	<meta name="robots" content="noindex, nofollow" />
