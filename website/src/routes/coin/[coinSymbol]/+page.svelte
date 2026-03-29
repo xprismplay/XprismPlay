@@ -11,6 +11,7 @@
 	import UserName from '$lib/components/self/UserName.svelte';
 	import CoinSkeleton from '$lib/components/self/skeletons/CoinSkeleton.svelte';
 	import TopHolders from '$lib/components/self/TopHolders.svelte';
+	import DividendMetrics from '$lib/components/self/DividendMetrics.svelte';
 	import { HugeiconsIcon } from '@hugeicons/svelte';
 	import {
 		TradeUpIcon,
@@ -878,6 +879,8 @@
 					</Card.Content>
 				</Card.Root>
 			</div>
+
+			<DividendMetrics {coin} userHolding={userHolding} />
 
 			<!-- Comments Section -->
 			<CommentSection {coinSymbol} />
