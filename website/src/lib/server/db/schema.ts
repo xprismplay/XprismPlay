@@ -747,3 +747,60 @@ export const weeklyLotteryTicket = pgTable(
 		wkTicketUserIdx: index('weekly_lottery_ticket_user_id_idx').on(table.userId)
 	})
 );
+
+export const dividendCoinConfig = pgTable('dividend_coin_config', {
+	coinId: integer('coin_id')
+		.primaryKey()
+		.references(() => coin.id, { onDelete: 'cascade' }),
+	mode: varchar('mode', { length: 10 }).notNull().default('fees'), // 'fees' | 'apr'
+	poolFeeRate: decimal('pool_fee_rate', { precision: 10, scale: 8 })
+		.notNull()
+		.default('0.00300000'),
+	holdersShareRate: decimal('holders_share_rate', { precision: 10, scale: 8 })
+		.notNull()
+		.default('0.50000000'),
+	targetApr: decimal('target_apr', { precision: 10, scale: 8 })
+		.notNull()
+		.default('0.10000000'),
+	isEnabled: boolean('is_enabled').notNull().default(true),
+	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+});
+
+export const dividendPayoutLog = pgTable(
+	'dividend_payout_log',
+	{
+		id: serial('id').primaryKey(),
+		coinId: integer('coin_id')
+			.notNull()
+			.references(() => coin.id, { onDelete: 'cascade' }),
+		payoutDate: varchar('payout_date', { length: 10 }).notNull(),
+		totalPayout: decimal('total_payout', { precision: 30, scale: 8 }).notNull(),
+		holderCount: integer('holder_count').notNull().default(0),
+		executedAt: timestamp('executed_at', { withTimezone: true }).notNull().defaultNow()
+	},
+	(table) => ({
+		coinDateUnique: unique('dividend_payout_log_coin_date').on(table.coinId, table.payoutDate),
+		coinIdIdx: index('dividend_payout_log_coin_id_idx').on(table.coinId)
+	})
+);
+
+export const userDividendReward = pgTable(
+	'user_dividend_reward',
+	{
+		id: serial('id').primaryKey(),
+		userId: integer('user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		coinId: integer('coin_id')
+			.notNull()
+			.references(() => coin.id, { onDelete: 'cascade' }),
+		totalEarned: decimal('total_earned', { precision: 30, scale: 8 }).notNull().default('0'),
+		lastPayoutDate: varchar('last_payout_date', { length: 10 }),
+		updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
+	},
+	(table) => ({
+		userCoinUnique: unique('user_dividend_reward_user_coin').on(table.userId, table.coinId),
+		userIdIdx: index('user_dividend_reward_user_id_idx').on(table.userId),
+		coinIdIdx: index('user_dividend_reward_coin_id_idx').on(table.coinId)
+	})
+);
