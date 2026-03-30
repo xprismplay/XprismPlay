@@ -35,6 +35,7 @@ export default {
   page_names: {
     home: "Início",
     market: "Mercado",
+    titles: "Títulos",
     hopium: "Hopium",
     arcade: "Arcade",
     leaderboard: "Placar de Líderes",
@@ -59,6 +60,81 @@ export default {
     description: "Aqui está um panorama do mercado para hoje.",
     market_overview: "Visão Geral do Mercado",
   },
+  titles: {
+	title: 'Títulos',
+	description: 'Gerencie seus títulos, acompanhe seus rendimentos e faça retiradas.',
+	seo: {
+		title: 'Títulos',
+		description: 'Gerencie seus títulos, acompanhe seus rendimentos e faça retiradas.'
+	},
+	page: {
+		title: 'Títulos',
+		description: 'Crie títulos, acompanhe o valor atual e resgate seus fundos quando quiser.',
+		sign_in_prompt: 'Você precisa entrar para acessar esta área.'
+	},
+	stats: {
+		total_locked: 'Total bloqueado',
+		current_value: 'Valor atual',
+		rewards_earned: 'Recompensas obtidas'
+	},
+	list: {
+		empty: 'Nenhum título ativo no momento.',
+		withdrawn_header: '{{n}} título(s) retirado(s)',
+		withdrawn_meta: 'Depósito de {{amount}} • prazo de {{days}} dia(s) • retirado há {{time}}'
+	},
+	badge: {
+		expired: 'Expirado',
+		expires: 'Expira em {{time}}',
+		withdrawn: 'Retirado'
+	},
+	card: {
+		deposited: 'Depositado',
+		current_value: 'Valor atual',
+		rewards: 'Recompensas',
+		pool_share: 'Participação no fundo',
+		gain_info: 'Ganho de {{pct}}% ao longo de {{days}} dia(s).',
+		claim: 'Resgatar',
+		early_exit: 'Saída antecipada',
+		early_warning: 'Saída antecipada aplicada: você receberá {{deposit}} e perderá {{rewards}} em recompensas.'
+	},
+	form: {
+		title: 'Criar título',
+		description: 'Defina um nome, valor e duração para criar um novo título.',
+		label: 'Nome',
+		label_placeholder: 'Ex.: Título Premium',
+		amount: 'Valor',
+		max: 'Máximo',
+		balance: 'Saldo disponível: {{balance}}',
+		duration: 'Duração: {{n}} dia(s)',
+		duration_min: '1 dia',
+		duration_max: '60 dias',
+		creating: 'Criando...',
+		submit: 'Criar título'
+	},
+	summary: {
+		fee_rate: 'Taxa',
+		fee_rate_value: '0%',
+		pool_share: 'Participação estimada',
+		early_exit: 'Saída antecipada',
+		early_exit_value: 'Perde recompensas acumuladas'
+	},
+	fund: {
+		title: 'Resumo do fundo',
+		total_shares: 'Total de cotas',
+		active_titles: 'Títulos ativos'
+	},
+	errors: {
+		load_failed: 'Não foi possível carregar os títulos.',
+		invalid_input: 'Preencha um nome válido e um valor maior que zero.',
+		create_failed: 'Não foi possível criar o título.',
+		withdraw_failed: 'Não foi possível realizar a retirada.'
+	},
+	toast: {
+		created: 'Título criado com sucesso.',
+		withdraw_early: 'Retirada antecipada realizada. Você recebeu {{payout}} e perdeu {{forfeited}}.',
+		withdraw_full: 'Retirada concluída. Você recebeu {{payout}} e {{rewards}} em recompensas.'
+	}
+},
   lottery: {
     title: "Loteria",
     description:

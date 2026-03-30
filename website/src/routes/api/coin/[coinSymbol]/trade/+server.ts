@@ -8,6 +8,7 @@ import { createNotification } from '$lib/server/notification';
 import { calculate24hMetrics, executeSellTrade } from '$lib/server/amm';
 import { checkAndAwardAchievements } from '$lib/server/achievements';
 import { hasFlag } from '$lib/data/flags';
+import { applyFeeToFund, TRADE_FEE_RATE } from '$lib/server/titles';
 
 export async function POST({ params, request }) {
 	const session = await auth.api.getSession({
@@ -122,9 +123,11 @@ export async function POST({ params, request }) {
 		}
 
 		if (type === 'BUY') {
+			const fee = Math.round(amount * TRADE_FEE_RATE * 100000000) / 100000000;
+			const effectiveAmount = amount - fee;
 			// AMM BUY: amount = dollars to spend
 			const k = poolCoinAmount * poolBaseCurrencyAmount;
-			const newPoolBaseCurrency = poolBaseCurrencyAmount + amount;
+			const newPoolBaseCurrency = poolBaseCurrencyAmount + effectiveAmount;
 			const newPoolCoin = k / newPoolBaseCurrency;
 			const coinsBought = poolCoinAmount - newPoolCoin;
 
@@ -206,6 +209,7 @@ export async function POST({ params, request }) {
 					updatedAt: new Date()
 				})
 				.where(eq(coin.id, coinData.id));
+				await applyFeeToFund(fee, tx);
 
 			const priceUpdateData = {
 				currentPrice: newPrice,
@@ -313,6 +317,7 @@ export async function POST({ params, request }) {
 					updatedAt: new Date()
 				})
 				.where(eq(user.id, userId));
+				await applyFeeToFund(sellFee, tx);
 
 			const newQuantity = Number(userHolding.quantity) - amount;
 			if (newQuantity > 0.000001) {

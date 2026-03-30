@@ -747,3 +747,33 @@ export const weeklyLotteryTicket = pgTable(
 		wkTicketUserIdx: index('weekly_lottery_ticket_user_id_idx').on(table.userId)
 	})
 );
+
+export const titleFund = pgTable('title_fund', {
+	id: integer('id').primaryKey(),
+	accRewardPerShare: decimal('acc_reward_per_share', { precision: 50, scale: 30 })
+		.notNull()
+		.default('0'),
+	totalShares: decimal('total_shares', { precision: 30, scale: 8 }).notNull().default('0')
+});
+
+export const userTitle = pgTable(
+	'user_title',
+	{
+		id: serial('id').primaryKey(),
+		userId: integer('user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		label: varchar('label', { length: 100 }).notNull(),
+		initialDeposit: decimal('initial_deposit', { precision: 30, scale: 8 }).notNull(),
+		shares: decimal('shares', { precision: 30, scale: 8 }).notNull(),
+		rewardDebt: decimal('reward_debt', { precision: 50, scale: 30 }).notNull().default('0'),
+		durationDays: integer('duration_days').notNull(),
+		expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+		withdrawnAt: timestamp('withdrawn_at', { withTimezone: true }),
+		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+	},
+	(table) => ({
+		userIdIdx: index('user_title_user_id_idx').on(table.userId),
+		expiresAtIdx: index('user_title_expires_at_idx').on(table.expiresAt)
+	})
+);
