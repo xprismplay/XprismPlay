@@ -40,7 +40,7 @@
 		Award05Icon,
 		ArrowDown01Icon,
 		UserGroupIcon,
-		Money01Icon
+		Money01Icon,
 	} from '@hugeicons/core-free-icons';
 	import { mode, setMode } from 'mode-watcher';
 	import type { HTMLAttributes } from 'svelte/elements';
@@ -70,6 +70,7 @@
 			{ title: $_('page_names.hopium'), url: '/hopium', icon: ArrowUpDownIcon },
 			{ title: $_('page_names.arcade'), url: '/arcade', icon: Joystick04Icon },
 			{ title: $_('page_names.lottery'), url: '/lottery', icon: Money01Icon },
+			{ title: $_('page_names.titles'), url: '/titles', icon: PiggyBankIcon },
 			{ title: $_('page_names.leaderboard'), url: '/leaderboard', icon: ChampionIcon },
 			{ title: $_('page_names.shop'), url: '/shop', icon: ShoppingBasket01Icon },
 			{ title: $_('page_names.achievements'), url: '/achievements', icon: Award05Icon },
