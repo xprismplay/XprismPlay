@@ -21,7 +21,10 @@ export const transactionTypeEnum = pgEnum('transaction_type', [
 	'SELL',
 	'TRANSFER_IN',
 	'TRANSFER_OUT',
-	'BURN'
+	'BURN',
+	'STAKE',
+	'UNSTAKE',
+	'CLAIM_REWARD'
 ]);
 export const predictionMarketEnum = pgEnum('prediction_market_status', [
 	'ACTIVE',
@@ -113,6 +116,50 @@ export const user = pgTable(
 			updatedAtIdx: index('user_updated_at_idx').on(table.updatedAt)
 		};
 	}
+);
+
+export const coinStakingPool = pgTable('coin_staking_pool', {
+	coinId: integer('coin_id')
+		.primaryKey()
+		.references(() => coin.id, { onDelete: 'cascade' }),
+	totalStaked: decimal('total_staked', { precision: 30, scale: 8 })
+		.notNull()
+		.default('0.00000000'),
+	// Standard accumulator tracking for hyper-efficient rewards calculation
+	rewardPerShare: decimal('reward_per_share', { precision: 30, scale: 18 })
+		.notNull()
+		.default('0.000000000000000000'),
+	lastEpochAt: timestamp('last_epoch_at', { withTimezone: true })
+		.notNull()
+		.defaultNow(),
+	// The % of remaining pool tokens distributed every 4 hours (e.g., '0.0100' = 1%)
+	distributionRate4h: decimal('distribution_rate_4h', { precision: 6, scale: 4 })
+		.notNull()
+		.default('0.0100')
+});
+
+export const userStake = pgTable(
+	'user_stake',
+	{
+		userId: integer('user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		coinId: integer('coin_id')
+			.notNull()
+			.references(() => coin.id, { onDelete: 'cascade' }),
+		amount: decimal('amount', { precision: 30, scale: 8 })
+			.notNull()
+			.default('0.00000000'),
+		rewardDebt: decimal('reward_debt', { precision: 30, scale: 18 })
+			.notNull()
+			.default('0.000000000000000000'),
+		claimableRewards: decimal('claimable_rewards', { precision: 30, scale: 8 })
+			.notNull()
+			.default('0.00000000')
+	},
+	(table) => ({
+		pk: primaryKey({ columns: [table.userId, table.coinId] })
+	})
 );
 
 export const session = pgTable('session', {

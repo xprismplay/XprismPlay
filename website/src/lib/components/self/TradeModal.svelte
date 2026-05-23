@@ -18,15 +18,17 @@
 
 	let {
 		open = $bindable(false),
-		type,
+		type, // Upgraded Type Definitions
 		coin,
 		userHolding = 0,
+		userStaked = 0, // New reactive state input to reference current staking allocations
 		onSuccess
 	} = $props<{
 		open?: boolean;
-		type: 'BUY' | 'SELL' | 'BURN';
+		type: 'BUY' | 'SELL' | 'BURN' | 'STAKE' | 'UNSTAKE';
 		coin: any;
 		userHolding?: number;
+		userStaked?: number;
 		onSuccess?: () => void;
 	}>();
 
@@ -36,14 +38,7 @@
 
 	let numericAmount = $derived(parseFloat(amount) || 0);
 	let currentPrice = $derived(coin.currentPrice || 0);
-
-	let poolTokensAfterBurn = $derived(() => {
-		if (type !== 'BURN' || numericAmount <= 0) return numericAmount;
-		const poolCoin = Number(coin.poolCoinAmount);
-		let finalTokenCount = poolCoin - numericAmount;
-		if (finalTokenCount != 0) return finalTokenCount;
-	});
-
+	
 	let maxSellableAmount = $derived(
 		type === 'SELL' && coin
 			? Math.min(userHolding, Math.floor(Number(coin.poolCoinAmount) * 0.995))
@@ -68,34 +63,35 @@
 			? calculateEstimate(effectiveSellCoinAmount(), type, currentPrice)
 			: calculateEstimate(numericAmount, type, currentPrice)
 	);
+	
 	let hasValidAmount = $derived(numericAmount > 0);
 	let userBalance = $derived($PORTFOLIO_SUMMARY ? $PORTFOLIO_SUMMARY.baseCurrencyBalance : 0);
+	
+	// Dynamic constraint logic mapping across all platform wallet mechanics
 	let hasEnoughFunds = $derived(() => {
 		if (type === 'BUY') return numericAmount <= userBalance;
-		if (sellByDollar) {
-			return effectiveSellCoinAmount() <= userHolding;
-		}
+		if (type === 'STAKE') return numericAmount <= userHolding;
+		if (type === 'UNSTAKE') return numericAmount <= userStaked;
+		if (type === 'BURN') return numericAmount <= userHolding;
+		if (sellByDollar) return effectiveSellCoinAmount() <= userHolding;
 		return numericAmount <= userHolding;
 	});
+	
 	let canTrade = $derived(hasValidAmount && hasEnoughFunds() && !loading);
 
-	function calculateEstimate(amount: number, tradeType: 'BUY' | 'SELL', price: number) {
-		if (!amount || !price || !coin) return { result: 0 };
-
+	function calculateEstimate(amount: number, tradeType: string, price: number) {
+		if (!amount || !price || !coin || ['STAKE', 'UNSTAKE', 'BURN'].includes(tradeType)) return { result: 0 };
 		const poolCoin = Number(coin.poolCoinAmount);
 		const poolBase = Number(coin.poolBaseCurrencyAmount);
 
 		if (poolCoin <= 0 || poolBase <= 0) return { result: 0 };
-
 		const k = poolCoin * poolBase;
 
 		if (tradeType === 'BUY') {
-			// AMM formula: how many coins for spending 'amount' dollars
 			const newPoolBase = poolBase + amount;
 			const newPoolCoin = k / newPoolBase;
 			return { result: poolCoin - newPoolCoin };
 		} else {
-			// AMM formula: how many dollars for selling 'amount' coins
 			const newPoolCoin = poolCoin + amount;
 			const newPoolBase = k / newPoolCoin;
 			return { result: poolBase - newPoolBase };
@@ -111,47 +107,44 @@
 
 	async function handleTrade() {
 		if (!canTrade) return;
-
 		loading = true;
-		try {
-			const tradeAmount =
-				type === 'SELL' && sellByDollar ? effectiveSellCoinAmount() : numericAmount;
 
-			const response = await fetch(`/api/coin/${coin.symbol}/trade`, {
+		// Dynamically fork the route and structure parameters depending on context action
+		const isStakingAction = ['STAKE', 'UNSTAKE'].includes(type);
+		const targetUrl = isStakingAction ? `/api/coin/${coin.symbol}/stake` : `/api/coin/${coin.symbol}/trade`;
+		const tradeAmount = type === 'SELL' && sellByDollar ? effectiveSellCoinAmount() : numericAmount;
+
+		try {
+			const response = await fetch(targetUrl, {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					type,
-					amount: tradeAmount
-				})
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ type, amount: tradeAmount })
 			});
 
 			const result = await response.json();
-
-			if (!response.ok) {
-				throw new Error(result.message || 'Trade failed');
-			}
+			if (!response.ok) throw new Error(result.message || 'Transaction context failed');
 
 			haptic.trigger('success');
-			toast.success(
-				`${type === 'BUY' ? 'Bought' : type === 'SELL' ? 'Sold' : 'Burned'} successfully!`,
-				{
-					description:
-						type === 'BUY'
-							? `Purchased ${result.coinsBought.toFixed(6)} ${coin.symbol} for $${result.totalCost.toFixed(6)}`
-							: type === 'SELL'
-								? `Sold ${result.coinsSold.toFixed(6)} ${coin.symbol} for $${result.totalReceived.toFixed(6)}`
-								: `Burned ${result.coinsBurned.toFixed(6)} ${coin.symbol}`
-				}
-			);
+			
+			// Dynamic visual feedback notifications matching your exact system structures
+			const actionLabels = { BUY: 'Bought', SELL: 'Sold', BURN: 'Burned', STAKE: 'Staked', UNSTAKE: 'Unstaked' };
+			const descriptions = {
+				BUY: `Purchased ${result.coinsBought?.toFixed(6)} ${coin.symbol} for $${result.totalCost?.toFixed(6)}`,
+				SELL: `Sold ${result.coinsSold?.toFixed(6)} ${coin.symbol} for $${result.totalReceived?.toFixed(6)}`,
+				BURN: `Burned ${result.coinsBurned?.toFixed(6)} ${coin.symbol}`,
+				STAKE: `Deposited ${amount} ${coin.symbol} into the compounding yield pool.`,
+				UNSTAKE: `Withdrew ${amount} ${coin.symbol} back to active balance wallet.`
+			};
+
+			toast.success(`${actionLabels[type]} successfully!`, {
+				description: descriptions[type]
+			});
 
 			onSuccess?.();
 			handleClose();
 		} catch (e) {
 			haptic.trigger('error');
-			toast.error('Trade failed', {
+			toast.error('Transaction processing halted', {
 				description: (e as Error).message
 			});
 		} finally {
@@ -168,7 +161,11 @@
 				amount = maxSellableAmount.toString();
 			}
 		} else if (type === 'BURN') {
-			amount = userHolding;
+			amount = userHolding.toString();
+		} else if (type === 'STAKE') {
+			amount = userHolding.toString();
+		} else if (type === 'UNSTAKE') {
+			amount = userStaked.toString();
 		} else if ($PORTFOLIO_SUMMARY) {
 			amount = userBalance.toString();
 		}
@@ -182,9 +179,15 @@
 				{#if type === 'BUY'}
 					<HugeiconsIcon icon={TradeUpIcon} class="h-5 w-5 text-green-500" />
 					Buy {coin.symbol}
+				{:else if type === 'STAKE'}
+					<HugeiconsIcon icon={TradeUpIcon} class="h-5 w-5 text-indigo-500" />
+					Stake {coin.symbol}
 				{:else if type === 'SELL'}
 					<HugeiconsIcon icon={TradeDownIcon} class="h-5 w-5 text-red-500" />
 					Sell {coin.symbol}
+				{:else if type === 'UNSTAKE'}
+					<HugeiconsIcon icon={TradeDownIcon} class="h-5 w-5 text-amber-500" />
+					Unstake {coin.symbol}
 				{:else}
 					<HugeiconsIcon icon={TradeDownIcon} class="h-5 w-5 text-red-500" />
 					Burn {coin.symbol}
@@ -196,14 +199,19 @@
 		</Dialog.Header>
 
 		<div class="space-y-4">
-			<!-- Amount Input -->
 			<div class="space-y-2">
 				<Label for="amount">
-					{type === 'BUY'
-						? 'Amount to spend ($)'
-						: sellByDollar
-							? 'Dollar amount to receive ($)'
-							: `Amount (${coin.symbol})`}
+					{#if type === 'BUY'}
+						Amount to spend ($)
+					{:else if type === 'STAKE'}
+						Tokens to stake ({coin.symbol})
+					{:else if type === 'UNSTAKE'}
+						Tokens to unlock ({coin.symbol})
+					{:else if sellByDollar}
+						Dollar amount to receive ($)
+					{:else}
+						Amount ({coin.symbol})
+					{/if}
 				</Label>
 				<div class="flex gap-2">
 					<Input
@@ -231,22 +239,19 @@
 							{/key}
 						</Button>
 					{/if}
-					<Button variant="outline" size="sm" class="h-9 shrink-0" onclick={setMaxAmount}
-						>Max</Button
-					>
+					<Button variant="outline" size="sm" class="h-9 shrink-0" onclick={setMaxAmount}>Max</Button>
 				</div>
-				{#if type === 'SELL'}
+
+				{#if type === 'SELL' || type === 'BURN' || type === 'STAKE'}
 					<p class="text-muted-foreground text-xs">
-						Available: {userHolding.toFixed(6)}
-						{coin.symbol}
-						{#if maxSellableAmount < userHolding}
+						Available in wallet: {userHolding.toFixed(6)} {coin.symbol}
+						{#if type === 'SELL' && maxSellableAmount < userHolding}
 							<br />Max sellable: {maxSellableAmount.toFixed(0)} {coin.symbol} (pool limit)
 						{/if}
 					</p>
-				{:else if type === 'BURN'}
+				{:else if type === 'UNSTAKE'}
 					<p class="text-muted-foreground text-xs">
-						Available: {userHolding.toFixed(6)}
-						{coin.symbol}
+						Active Staked Deposit: {userStaked.toFixed(6)} {coin.symbol}
 					</p>
 				{:else if $PORTFOLIO_SUMMARY}
 					<p class="text-muted-foreground text-xs">
@@ -255,16 +260,11 @@
 				{/if}
 			</div>
 
-			<!-- Estimated Cost/Return with explicit fees -->
-			{#if hasValidAmount && type !== 'BURN'}
+			{#if hasValidAmount && !['STAKE', 'UNSTAKE', 'BURN'].includes(type)}
 				<div class="bg-muted/50 rounded-lg p-3">
 					<div class="flex items-center justify-between">
 						<span class="text-sm font-medium">
-							{type === 'BUY'
-								? `${coin.symbol} you'll get:`
-								: sellByDollar
-									? `${coin.symbol} to sell:`
-									: "You'll receive:"}
+							{type === 'BUY' ? `${coin.symbol} you'll get:` : sellByDollar ? `${coin.symbol} to sell:` : "You'll receive:"}
 						</span>
 						<span class="font-bold">
 							{#if type === 'BUY'}
@@ -284,7 +284,7 @@
 
 			{#if !hasEnoughFunds() && hasValidAmount}
 				<Badge variant="destructive" class="text-xs">
-					{type === 'BUY' ? 'Insufficient funds' : 'Insufficient coins'}
+					{type === 'BUY' ? 'Insufficient funds' : 'Insufficient coin allocation'}
 				</Badge>
 			{/if}
 		</div>
@@ -294,13 +294,13 @@
 			<Button
 				onclick={handleTrade}
 				disabled={!canTrade}
-				variant={type === 'BUY' ? 'default' : 'destructive'}
+				variant={['BUY', 'STAKE'].includes(type) ? 'default' : 'destructive'}
 			>
 				{#if loading}
 					<HugeiconsIcon icon={Loading03Icon} class="h-4 w-4 animate-spin" />
 					Processing...
 				{:else}
-					{type === 'BUY' ? 'Buy' : type === 'SELL' ? 'Sell' : 'Burn'} {coin.symbol}
+					{#if type === 'BUY'}Buy{:else if type === 'SELL'}Sell{:else if type === 'STAKE'}Stake{:else if type === 'UNSTAKE'}Unstake{:else}Burn{/if} {coin.symbol}
 				{/if}
 			</Button>
 		</Dialog.Footer>
