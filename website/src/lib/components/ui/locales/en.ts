@@ -35,6 +35,7 @@ export default {
 	page_names: {
 		home: 'Home',
 		market: 'Market',
+		titles: 'Titles',
 		hopium: 'Hopium',
 		arcade: 'Arcade',
 		leaderboard: 'Leaderboard',
@@ -59,6 +60,81 @@ export default {
 		description: "Here's the market overview for today.",
 		market_overview: 'Market Overview'
 	},
+	titles: {
+	title: 'Titles',
+	description: 'Manage your titles, track earnings, and withdraw funds.',
+	seo: {
+		title: 'Titles',
+		description: 'Manage your titles, track earnings, and withdraw funds.'
+	},
+	page: {
+		title: 'Titles',
+		description: 'Create titles, track their current value, and redeem your funds whenever you want.',
+		sign_in_prompt: 'You need to sign in to access this area.'
+	},
+	stats: {
+		total_locked: 'Total locked',
+		current_value: 'Current value',
+		rewards_earned: 'Rewards earned'
+	},
+	list: {
+		empty: 'There are no active titles right now.',
+		withdrawn_header: '{{n}} withdrawn title(s)',
+		withdrawn_meta: 'Deposit of {{amount}} • {{days}} day(s) term • withdrawn {{time}} ago'
+	},
+	badge: {
+		expired: 'Expired',
+		expires: 'Expires in {{time}}',
+		withdrawn: 'Withdrawn'
+	},
+	card: {
+		deposited: 'Deposited',
+		current_value: 'Current value',
+		rewards: 'Rewards',
+		pool_share: 'Pool share',
+		gain_info: 'Gain of {{pct}}% over {{days}} day(s).',
+		claim: 'Claim',
+		early_exit: 'Early exit',
+		early_warning: 'Early exit applied: you will receive {{deposit}} and lose {{rewards}} in rewards.'
+	},
+	form: {
+		title: 'Create title',
+		description: 'Choose a name, amount, and duration to create a new title.',
+		label: 'Name',
+		label_placeholder: 'E.g. Premium Title',
+		amount: 'Amount',
+		max: 'Max',
+		balance: 'Available balance: {{balance}}',
+		duration: 'Duration: {{n}} day(s)',
+		duration_min: '1 day',
+		duration_max: '60 days',
+		creating: 'Creating...',
+		submit: 'Create title'
+	},
+	summary: {
+		fee_rate: 'Fee rate',
+		fee_rate_value: '0%',
+		pool_share: 'Estimated share',
+		early_exit: 'Early exit',
+		early_exit_value: 'Loses accrued rewards'
+	},
+	fund: {
+		title: 'Fund summary',
+		total_shares: 'Total shares',
+		active_titles: 'Active titles'
+	},
+	errors: {
+		load_failed: 'Could not load titles.',
+		invalid_input: 'Please enter a valid name and an amount greater than zero.',
+		create_failed: 'Could not create the title.',
+		withdraw_failed: 'Could not complete the withdrawal.'
+	},
+	toast: {
+		created: 'Title created successfully.',
+		withdraw_early: 'Early withdrawal completed. You received {{payout}} and lost {{forfeited}}.',
+		withdraw_full: 'Withdrawal completed. You received {{payout}} and {{rewards}} in rewards.'
+	}
+},
 	lottery: {
 	title: 'Lottery',
 	description: 'Daily draw — 90% to the winner, 10% to the bank. Win chance grows with the pool (50% at $1M).',
