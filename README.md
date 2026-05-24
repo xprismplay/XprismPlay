@@ -33,7 +33,7 @@ Before you begin, make sure you have the following installed:
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/outpoot/XprismPlay.git
+   git clone https://github.com/xprismplay/XprismPlay.git
    cd XprismPlay
    ```
 
