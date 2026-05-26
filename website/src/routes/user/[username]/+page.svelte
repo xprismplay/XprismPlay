@@ -26,7 +26,11 @@
 		ClockIcon,
 		UserGroupIcon,
 		Globe02Icon,
-		Locker01Icon
+		Locker01Icon,
+		UserAdd01Icon,
+		UserCheck01Icon,
+		UserRemove01Icon,
+		Message01Icon
 	} from '@hugeicons/core-free-icons';
 	import { goto } from '$app/navigation';
 	import { USER_DATA } from '$lib/stores/user-data';
@@ -58,6 +62,76 @@
 
 	let isBlocked = $state(false);
 	let blockLoading = $state(false);
+
+	let friendshipStatus = $state<'NONE' | 'FRIENDS' | 'PENDING_SENT' | 'PENDING_RECEIVED'>('NONE');
+	let friendActionLoading = $state(false);
+
+	async function checkFriendshipStatus() {
+		if (!$USER_DATA || isOwnProfile || !profileData?.profile?.id) return;
+		try {
+			const res = await fetch('/api/friends');
+			if (res.ok) {
+				const d = await res.json();
+				const targetId = profileData.profile.id;
+				
+				if (d.friends?.some((f: any) => f.id === targetId)) {
+					friendshipStatus = 'FRIENDS';
+				} else if (d.pendingRequests?.some((r: any) => r.senderId === targetId)) {
+					friendshipStatus = 'PENDING_RECEIVED';
+				} else if (d.sentRequests?.some((r: any) => r.receiverId === targetId)) {
+					friendshipStatus = 'PENDING_SENT';
+				} else {
+					friendshipStatus = 'NONE';
+				}
+			}
+		} catch {}
+	}
+
+	async function handleFriendAction(action: 'SEND' | 'ACCEPT' | 'DECLINE' | 'REMOVE') {
+		if (!$USER_DATA || isOwnProfile || friendActionLoading || !profileData?.profile?.id) return;
+		friendActionLoading = true;
+		try {
+			const res = await fetch('/api/friends', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ action, targetId: profileData.profile.id })
+			});
+			if (res.ok) {
+				toast.success(
+					action === 'SEND' ? 'Friend request sent' : 
+					action === 'ACCEPT' ? 'Friend request accepted' : 
+					action === 'DECLINE' ? 'Friend request declined' : 'Friend removed'
+				);
+				await checkFriendshipStatus();
+			} else {
+				const d = await res.json();
+				toast.error(d.message || 'Failed to perform action');
+			}
+		} catch {
+			toast.error('Network error');
+		} finally {
+			friendActionLoading = false;
+		}
+	}
+
+	async function startChat() {
+		if (!$USER_DATA || !profileData?.profile?.id) return;
+		try {
+			const res = await fetch('/api/chat/channels', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ targetUserId: profileData.profile.id })
+			});
+			if (res.ok) {
+				const d = await res.json();
+				goto(`/chat?channel=${d.channel.id}`);
+			} else {
+				toast.error('Failed to start chat');
+			}
+		} catch {
+			toast.error('Network error');
+		}
+	}
 
 	async function checkBlockStatus() {
 		if (!$USER_DATA || isOwnProfile) return;
@@ -112,6 +186,7 @@
 		fetchAchievements();
 		fetchUserGroups();
 		checkBlockStatus();
+		checkFriendshipStatus();
 		if (isOwnProfile) await fetchTransactions();
 	});
 
@@ -122,6 +197,7 @@
 			fetchAchievements();
 			fetchUserGroups();
 			checkBlockStatus();
+			checkFriendshipStatus();
 			previousUsername = username;
 		}
 	});
@@ -498,7 +574,41 @@
 						</div>
 					</div>
 					{#if $USER_DATA && !isOwnProfile}
-						<div class="ml-auto self-start">
+						<div class="ml-auto self-start flex gap-2">
+							{#if friendshipStatus === 'FRIENDS'}
+								<Button variant="secondary" onclick={startChat} class="gap-2">
+									<HugeiconsIcon icon={Message01Icon} class="h-4 w-4" />
+									Message
+								</Button>
+								<Tooltip.Provider>
+									<Tooltip.Root>
+										<Tooltip.Trigger>
+											<Button variant="outline" size="icon" onclick={() => handleFriendAction('REMOVE')} disabled={friendActionLoading}>
+												<HugeiconsIcon icon={UserRemove01Icon} class="h-4 w-4" />
+											</Button>
+										</Tooltip.Trigger>
+										<Tooltip.Content>Remove Friend</Tooltip.Content>
+									</Tooltip.Root>
+								</Tooltip.Provider>
+							{:else if friendshipStatus === 'PENDING_RECEIVED'}
+								<Button variant="default" onclick={() => handleFriendAction('ACCEPT')} disabled={friendActionLoading} class="gap-2">
+									<HugeiconsIcon icon={UserCheck01Icon} class="h-4 w-4" />
+									Accept Request
+								</Button>
+								<Button variant="outline" onclick={() => handleFriendAction('DECLINE')} disabled={friendActionLoading}>
+									Decline
+								</Button>
+							{:else if friendshipStatus === 'PENDING_SENT'}
+								<Button variant="secondary" disabled class="gap-2">
+									Request Sent
+								</Button>
+							{:else if !isBlocked}
+								<Button variant="default" onclick={() => handleFriendAction('SEND')} disabled={friendActionLoading} class="gap-2">
+									<HugeiconsIcon icon={UserAdd01Icon} class="h-4 w-4" />
+									Add Friend
+								</Button>
+							{/if}
+
 							<Tooltip.Provider>
 								<Tooltip.Root>
 									<Tooltip.Trigger>
@@ -507,7 +617,7 @@
 											size="icon"
 											onclick={toggleBlock}
 											disabled={blockLoading}
-											class="h-8 w-8 {isBlocked
+											class="h-10 w-10 {isBlocked
 												? 'text-destructive'
 												: 'text-muted-foreground hover:text-destructive'}"
 										>

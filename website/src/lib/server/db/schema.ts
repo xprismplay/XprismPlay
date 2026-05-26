@@ -36,7 +36,8 @@ export const notificationTypeEnum = pgEnum('notification_type', [
 	'SYSTEM',
 	'TRANSFER',
 	'RUG_PULL',
-	'MENTION'
+	'MENTION',
+	'FRIEND_REQUEST'
 ]);
 export const shopItemTypeEnum = pgEnum('shop_item_type', ['namecolor']);
 export const promoRewardTypeEnum = pgEnum('promo_reward_type', ['BASE_CURRENCY', 'GEMS']);
@@ -792,5 +793,94 @@ export const weeklyLotteryTicket = pgTable(
 	(table) => ({
 		wkTicketDrawIdx: index('weekly_lottery_ticket_draw_id_idx').on(table.drawId),
 		wkTicketUserIdx: index('weekly_lottery_ticket_user_id_idx').on(table.userId)
+	})
+);
+
+export const friendRequest = pgTable(
+	'friend_request',
+	{
+		id: serial('id').primaryKey(),
+		senderId: integer('sender_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		receiverId: integer('receiver_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		status: varchar('status', { length: 20 }).notNull().default('PENDING'), // PENDING, ACCEPTED, DECLINED
+		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+	},
+	(table) => ({
+		uniqueReq: unique('friend_request_unique').on(table.senderId, table.receiverId),
+		receiverIdIdx: index('friend_request_receiver_id_idx').on(table.receiverId),
+		senderIdIdx: index('friend_request_sender_id_idx').on(table.senderId)
+	})
+);
+
+export const friendship = pgTable(
+	'friendship',
+	{
+		user1Id: integer('user1_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		user2Id: integer('user2_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+	},
+	(table) => ({
+		pk: primaryKey({ columns: [table.user1Id, table.user2Id] }),
+		checkOrder: check('user_order_check', sql`user1_id < user2_id`),
+		user1IdIdx: index('friendship_user1_id_idx').on(table.user1Id),
+		user2IdIdx: index('friendship_user2_id_idx').on(table.user2Id)
+	})
+);
+
+export const chatChannelTypeEnum = pgEnum('chat_channel_type', [
+	'DIRECT',
+	'ADMIN_GLOBAL',
+	'HEAD_ADMIN'
+]);
+
+export const chatChannel = pgTable(
+	'chat_channel',
+	{
+		id: serial('id').primaryKey(),
+		type: chatChannelTypeEnum('type').notNull(),
+		// For DIRECT chats, store user1Id and user2Id (user1Id < user2Id)
+		user1Id: integer('user1_id').references(() => user.id, { onDelete: 'cascade' }),
+		user2Id: integer('user2_id').references(() => user.id, { onDelete: 'cascade' }),
+		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+	},
+	(table) => ({
+		uniqueDirect: unique('chat_channel_direct_unique').on(
+			table.type,
+			table.user1Id,
+			table.user2Id
+		),
+		checkOrder: check(
+			'chat_channel_user_order_check',
+			sql`user1_id < user2_id OR (user1_id IS NULL AND user2_id IS NULL)`
+		),
+		user1IdIdx: index('chat_channel_user1_id_idx').on(table.user1Id),
+		user2IdIdx: index('chat_channel_user2_id_idx').on(table.user2Id)
+	})
+);
+
+export const chatMessage = pgTable(
+	'chat_message',
+	{
+		id: serial('id').primaryKey(),
+		channelId: integer('channel_id')
+			.notNull()
+			.references(() => chatChannel.id, { onDelete: 'cascade' }),
+		senderId: integer('sender_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		content: text('content').notNull(),
+		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+	},
+	(table) => ({
+		channelIdIdx: index('chat_message_channel_id_idx').on(table.channelId),
+		createdAtIdx: index('chat_message_created_at_idx').on(table.createdAt)
 	})
 );

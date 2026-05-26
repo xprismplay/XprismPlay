@@ -40,7 +40,8 @@
 		Award05Icon,
 		ArrowDown01Icon,
 		UserGroupIcon,
-		Money01Icon
+		Money01Icon,
+		Message01Icon
 	} from '@hugeicons/core-free-icons';
 	import { mode, setMode } from 'mode-watcher';
 	import type { HTMLAttributes } from 'svelte/elements';
@@ -72,13 +73,14 @@
 			{ title: $_('page_names.lottery'), url: '/lottery', icon: Money01Icon },
 			{ title: $_('page_names.leaderboard'), url: '/leaderboard', icon: ChampionIcon },
 			{ title: $_('page_names.shop'), url: '/shop', icon: ShoppingBasket01Icon },
-			{ title: $_('page_names.achievements'), url: '/achievements', icon: Award05Icon },
-			{ title: $_('page_names.groups'), url: '/groups', icon: UserGroupIcon },
-			{ title: $_('page_names.portfolio'), url: '/portfolio', icon: Briefcase01Icon },
-			{ title: $_('page_names.treemap'), url: '/treemap', icon: Analytics01Icon },
-			{ title: $_('page_names.create_coin'), url: '/coin/create', icon: Coins02Icon },
-			{ title: $_('page_names.notifications'), url: '/notifications', icon: Notification01Icon },
-			{ title: $_('page_names.about'), url: '/about', icon: InformationCircleIcon }
+			{ title: $_('page_names.achievements') || 'Achievements', url: '/achievements', icon: Award05Icon },
+			{ title: $_('page_names.groups') || 'Groups', url: '/groups', icon: UserGroupIcon },
+			{ title: $_('page_names.chat') || 'Chat', url: '/chat', icon: Message01Icon },
+			{ title: $_('page_names.portfolio') || 'Portfolio', url: '/portfolio', icon: Briefcase01Icon },
+			{ title: $_('page_names.treemap') || 'Treemap', url: '/treemap', icon: Analytics01Icon },
+			{ title: $_('page_names.create_coin') || 'Create Coin', url: '/coin/create', icon: Coins02Icon },
+			{ title: $_('page_names.notifications') || 'Notifications', url: '/notifications', icon: Notification01Icon },
+			{ title: $_('page_names.about') || 'About', url: '/about', icon: InformationCircleIcon }
 		]
 	};
 	type MenuButtonProps = HTMLAttributes<HTMLAnchorElement | HTMLButtonElement>;

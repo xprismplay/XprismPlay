@@ -4,6 +4,7 @@ import { PUBLIC_WEBSOCKET_URL } from '$env/static/public';
 import { NOTIFICATIONS, UNREAD_COUNT } from './notifications';
 import { NEW_ACHIEVEMENTS_COUNT } from './achievements';
 import { USER_DATA } from './user-data';
+import { addChatMessage } from './chat';
 import { toast } from 'svelte-sonner';
 import { goto } from '$app/navigation';
 import { hasFlag, UserFlags } from '$lib/data/flags';
@@ -334,6 +335,11 @@ function handleWebSocketMessage(event: MessageEvent): void {
 						duration: 5000
 					});
 				}
+				break;
+
+			case 'chat_message':
+				addChatMessage(message.data);
+				// Optionally show a toast if the user is not currently in this chat
 				break;
 
 			default:
