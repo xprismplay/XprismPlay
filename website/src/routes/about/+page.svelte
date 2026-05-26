@@ -161,6 +161,9 @@
 							class="text-primary underline">admurin</a
 						>
 					</p>
+					<p class="text-muted-foreground text-sm">
+						Thank you to vaaq and the Rugplay++ plugin for inparation for the chat system.
+					</p>
 				</div>
 			</CardContent>
 		</Card>
