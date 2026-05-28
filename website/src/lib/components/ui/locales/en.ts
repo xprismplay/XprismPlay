@@ -1,5 +1,3 @@
-import type { lotteryDraw } from "$lib/server/db/schema";
-
 export default {
 	lang: {
 		code: 'en',
@@ -37,6 +35,7 @@ export default {
 		market: 'Market',
 		hopium: 'Hopium',
 		arcade: 'Arcade',
+		chat: 'Chat',
 		leaderboard: 'Leaderboard',
 		shop: 'Shop',
 		achievements: 'Achievements',

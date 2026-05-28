@@ -32,7 +32,7 @@ function randomColorByRarity(
 	}
 
 	// If all colors of the target rarity are owned, try other rarities (epic > rare > legendary > uncommon)
-	const fallbackOrder: Rarity[] = ['epic', 'rare', 'legendary', 'uncommon'];
+	const fallbackOrder: Rarity[] = ['epic', 'rare', 'legendary', 'light', 'dark', 'uncommon'];
 	for (const fallbackRarity of fallbackOrder) {
 		if (fallbackRarity === rarity) continue;
 		const fallbackPool = NAME_COLOR_CATALOG.filter(
