@@ -1,4 +1,4 @@
-export type Rarity = 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic';
+export type Rarity = 'uncommon' | 'rare' | 'epic' | 'legendary' | 'light' | 'dark';
 
 export interface NameColorItem {
 	key: string;
@@ -14,7 +14,8 @@ export const RARITY_LABEL: Record<Rarity, string> = {
 	rare: 'Rare',
 	epic: 'Epic',
 	legendary: 'Legendary',
-	mythic: 'Mythic'
+	light: 'Light',
+	dark: 'Dark'
 };
 
 export const RARITY_CLASS: Record<Rarity, string> = {
@@ -22,7 +23,8 @@ export const RARITY_CLASS: Record<Rarity, string> = {
 	rare: 'text-blue-500',
 	epic: 'text-purple-500',
 	legendary: 'text-yellow-400',
-	mythic: 'text-red-500'
+	light: 'text-red-500',
+	dark: 'text-red-900'
 };
 
 export const NAME_COLOR_CATALOG: NameColorItem[] = [
@@ -33,6 +35,14 @@ export const NAME_COLOR_CATALOG: NameColorItem[] = [
 		rarity: 'uncommon',
 		price: 300,
 		classes: 'text-green-500'
+	},
+	{
+		key: 'uncommon_white',
+		label: 'Uncommon Default Color',
+		rarity: 'uncommon',
+		price: 300,
+		style: 'color: var(--foreground)',
+		classes: ''
 	},
 	{ key: 'blue', label: 'Blue Chip', rarity: 'uncommon', price: 300, classes: 'text-blue-500' },
 	{
@@ -47,7 +57,7 @@ export const NAME_COLOR_CATALOG: NameColorItem[] = [
 	{ key: 'red', label: 'Red Alert', rarity: 'rare', price: 700, classes: 'text-red-500' },
 	{
 		key: 'white',
-		label: 'Default Color',
+		label: 'Rare Default Color',
 		rarity: 'rare',
 		price: 700,
 		style: 'color: var(--foreground)',
@@ -62,6 +72,14 @@ export const NAME_COLOR_CATALOG: NameColorItem[] = [
 		price: 1800,
 		classes: 'bg-clip-text text-transparent',
 		style: 'background-image: linear-gradient(90deg, #f97316, #ef4444, #f59e0b)'
+	},
+	{
+		key: 'epic_white',
+		label: 'Epic Default Color',
+		rarity: 'epic',
+		price: 1800,
+		style: 'color: var(--foreground)',
+		classes: ''
 	},
 	{
 		key: 'ocean',
@@ -88,6 +106,14 @@ export const NAME_COLOR_CATALOG: NameColorItem[] = [
 		price: 5000,
 		classes: 'bg-clip-text text-transparent animate-diamond-shimmer',
 		style: 'background-image: linear-gradient(135deg, #e2e8f0, #67e8f9, #c084fc, #e2e8f0)'
+	},
+	{
+		key: 'legendary_white',
+		label: 'Legendary Default Color',
+		rarity: 'legendary',
+		price: 5000,
+		style: 'color: var(--foreground)',
+		classes: ''
 	},
 	{
 		key: 'coffee',
@@ -122,113 +148,213 @@ export const NAME_COLOR_CATALOG: NameColorItem[] = [
 		style: 'background-image: linear-gradient(135deg, #ff6999, #ffabab, #ff6999)'
 	},
 
-	// Mythic
+	// Light
 
 	{
 		key: 'green_glow',
 		label: 'Green Light',
-		rarity: 'mythic',
-		price: 7000,
+		rarity: 'light',
+		price: 8000,
 		classes: 'text-green-500',
 		style: 'text-shadow: 0px 0px 10px var(--color-green-600);'
 	},
 	{
 		key: 'red_glow',
 		label: 'Red Light',
-		rarity: 'mythic',
-		price: 7000,
+		rarity: 'light',
+		price: 8000,
 		classes: 'text-red-500',
 		style: 'text-shadow: 0px 0px 10px var(--color-red-600);'
 	},
 	{
 		key: 'blue_glow',
 		label: 'Blue Light',
-		rarity: 'mythic',
-		price: 7000,
+		rarity: 'light',
+		price: 8000,
 		classes: 'text-blue-500',
 		style: 'text-shadow: 0px 0px 10px var(--color-blue-600);'
 	},
 	{
 		key: 'yellow_glow',
 		label: 'Yellow Light',
-		rarity: 'mythic',
-		price: 7000,
+		rarity: 'light',
+		price: 8000,
 		classes: 'text-yellow-500',
 		style: 'text-shadow: 0px 0px 10px var(--color-yellow-600);'
 	},
 	{
 		key: 'purple_glow',
 		label: 'Purple Light',
-		rarity: 'mythic',
-		price: 7000,
+		rarity: 'light',
+		price: 8000,
 		classes: 'text-purple-500',
 		style: 'text-shadow: 0px 0px 10px var(--color-purple-600);'
 	},
 	{
 		key: 'pink_glow',
 		label: 'Pink Light',
-		rarity: 'mythic',
-		price: 7000,
+		rarity: 'light',
+		price: 8000,
 		classes: 'text-[#ffabab]',
 		style: 'text-shadow: 0px 0px 10px var(--color-pink-600);'
 	},
 	{
 		key: 'orange_glow',
 		label: 'Orange Light',
-		rarity: 'mythic',
-		price: 7000,
+		rarity: 'light',
+		price: 8000,
 		classes: 'text-orange-400',
 		style: 'text-shadow: 0px 0px 10px var(--color-orange-500);'
 	},
 	{
 		key: 'mint_glow',
 		label: 'Mint Light',
-		rarity: 'mythic',
-		price: 7000,
+		rarity: 'light',
+		price: 8000,
 		classes: 'text-emerald-500',
 		style: 'text-shadow: 0px 0px 10px var(--color-emerald-600);'
 	},
 	{
 		key: 'cyan_glow',
 		label: 'Cyan Light',
-		rarity: 'mythic',
-		price: 7000,
+		rarity: 'light',
+		price: 8000,
 		classes: 'text-cyan-400',
 		style: 'text-shadow: 0px 0px 10px var(--color-cyan-500);'
 	},
 	{
 		key: 'silver_glow',
 		label: 'Silver Light',
-		rarity: 'mythic',
-		price: 7000,
+		rarity: 'light',
+		price: 8000,
 		classes: 'text-slate-500',
 		style: 'text-shadow: 0px 0px 10px var(--color-slate-700);'
 	},
 	{
 		key: 'coffee_glow',
 		label: 'Coffee Light',
-		rarity: 'mythic',
-		price: 7000,
+		rarity: 'light',
+		price: 8000,
+		classes: 'bg-clip-text text-transparent animate-diamond-shimmer',
+		style:
+			'background-image: linear-gradient(135deg, #5B3A29, #3E2723, #A0785A); text-shadow: 0px 0px 10px #3E2723;'
+	},
+	{
+		key: 'default_glow',
+		label: 'Default Light',
+		rarity: 'light',
+		price: 8000,
+		classes: '',
+		style: 'text-shadow: 0px 0px 10px var(--foreground);'
+	},
+	{
+		key: 'violet_light',
+		label: 'Violet Light',
+		rarity: 'light',
+		price: 9000,
+		classes: 'text-violet-800',
+		style:
+			'text-shadow: 0px 0px 10px var(--foreground); text-shadow: 0px 0px 7px var(--color-purple-950), 0px 0px 10px var(--color-purple-900), 0px 0px 14px var(--color-purple-800);'
+	},
+
+	// Dark
+
+	{
+		key: 'green_dark',
+		label: 'Green Dark',
+		rarity: 'dark',
+		price: 8000,
+		classes: 'text-green-700',
+		style: 'text-shadow: 0px 0px 10px var(--color-green-700);'
+	},
+	{
+		key: 'red_dark',
+		label: 'Red Dark',
+		rarity: 'dark',
+		price: 8000,
+		classes: 'text-red-700',
+		style: 'text-shadow: 0px 0px 10px var(--color-red-700);'
+	},
+	{
+		key: 'blue_dark',
+		label: 'Blue Dark',
+		rarity: 'dark',
+		price: 8000,
+		classes: 'text-blue-700',
+		style: 'text-shadow: 0px 0px 10px var(--color-blue-700);'
+	},
+	{
+		key: 'yellow_dark',
+		label: 'Yellow Dark',
+		rarity: 'dark',
+		price: 8000,
+		classes: 'text-yellow-700',
+		style: 'text-shadow: 0px 0px 10px var(--color-yellow-700);'
+	},
+	{
+		key: 'purple_dark',
+		label: 'Purple Dark',
+		rarity: 'dark',
+		price: 8000,
+		classes: 'text-purple-700',
+		style: 'text-shadow: 0px 0px 10px var(--color-purple-600);'
+	},
+	{
+		key: 'pink_dark',
+		label: 'Pink Dark',
+		rarity: 'dark',
+		price: 8000,
+		classes: 'text-[#ad6c6c]',
+		style: 'text-shadow: 0px 0px 10px var(--color-pink-800);'
+	},
+	{
+		key: 'orange_dark',
+		label: 'Orange Dark',
+		rarity: 'dark',
+		price: 8000,
+		classes: 'text-orange-700',
+		style: 'text-shadow: 0px 0px 10px var(--color-orange-800);'
+	},
+	{
+		key: 'mint_dark',
+		label: 'Mint Dark',
+		rarity: 'dark',
+		price: 8000,
+		classes: 'text-emerald-700',
+		style: 'text-shadow: 0px 0px 10px var(--color-emerald-800);'
+	},
+	{
+		key: 'cyan_dark',
+		label: 'Cyan Dark',
+		rarity: 'dark',
+		price: 8000,
+		classes: 'text-cyan-700',
+		style: 'text-shadow: 0px 0px 10px var(--color-cyan-800);'
+	},
+	{
+		key: 'silver_dark',
+		label: 'Silver Dark',
+		rarity: 'dark',
+		price: 8000,
+		classes: 'text-slate-700',
+		style: 'text-shadow: 0px 0px 10px var(--color-slate-700);'
+	},
+	{
+		key: 'coffee_dark',
+		label: 'Coffee Dark',
+		rarity: 'dark',
+		price: 8000,
 		classes: 'bg-clip-text text-transparent animate-diamond-shimmer',
 		style:
 			'background-image: linear-gradient(135deg, #5B3A29, #3E2723, #A0785A); text-shadow: 0px 0px 10px #3E2723;'
 	},
 	{
 		key: 'face_glow',
-		label: 'Face Light',
-		rarity: 'mythic',
-		price: 7000,
+		label: 'Face Dark',
+		rarity: 'dark',
+		price: 8000,
 		classes: 'bg-clip-text text-transparent animate-diamond-shimmer',
-		style:
-			'background-image: linear-gradient(135deg, #000000, #ffffff); text-shadow: 0px 0px 6px #000;'
-	},
-	{
-		key: 'default_glow',
-		label: 'Default Light',
-		rarity: 'mythic',
-		price: 7000,
-		classes: '',
-		style: 'text-shadow: 0px 0px 10px var(--foreground);'
+		style: 'background-image: linear-gradient(135deg, #000, #fff); text-shadow: 0px 0px 6px #000;'
 	}
 ];
 
@@ -330,7 +456,7 @@ export const CRATE_TIERS: Record<CrateTierId, CrateTier> = {
 				label: 'Epic color + $2,500'
 			},
 			{
-				weight: 24,
+				weight: 23,
 				type: 'color',
 				min: 10000,
 				max: 10000,
@@ -340,10 +466,18 @@ export const CRATE_TIERS: Record<CrateTierId, CrateTier> = {
 			{
 				weight: 1,
 				type: 'color',
-				min: 20000,
-				max: 20000,
-				rarity: 'mythic',
-				label: 'Mythic color + $20,000'
+				min: 10000,
+				max: 10000,
+				rarity: 'light',
+				label: 'Light color + $10,000'
+			},
+			{
+				weight: 1,
+				type: 'color',
+				min: 10000,
+				max: 10000,
+				rarity: 'dark',
+				label: 'Dark color + $10,000'
 			}
 		]
 	},
@@ -365,7 +499,7 @@ export const CRATE_TIERS: Record<CrateTierId, CrateTier> = {
 				label: 'Epic color + $5,000'
 			},
 			{
-				weight: 40,
+				weight: 45,
 				type: 'color',
 				min: 20000,
 				max: 20000,
@@ -373,12 +507,20 @@ export const CRATE_TIERS: Record<CrateTierId, CrateTier> = {
 				label: 'Legendary color + $20,000'
 			},
 			{
-				weight: 15,
+				weight: 5,
 				type: 'color',
-				min: 40000,
-				max: 40000,
-				rarity: 'mythic',
-				label: 'Mythic color + $40,000'
+				min: 20000,
+				max: 20000,
+				rarity: 'light',
+				label: 'Light color + $20,000'
+			},
+			{
+				weight: 5,
+				type: 'color',
+				min: 20000,
+				max: 20000,
+				rarity: 'dark',
+				label: 'Dark color + $20,000'
 			}
 		]
 	}

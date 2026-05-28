@@ -710,10 +710,44 @@ export const ACHIEVEMENTS: AchievementDef[] = [
 		icon: 'lock.png',
 		difficulty: 'hard',
 		cashReward: 30000,
-		gemReward: 120,
+		gemReward: 320,
 		category: 'shop',
 		targetValue: 15
 	},
+	{
+		id: 'own_20_colors',
+		name: 'Ultra Addicted Collector',
+		description: 'Own 20 different name colors',
+		icon: 'lock.png',
+		difficulty: 'hard',
+		cashReward: 35000,
+		gemReward: 370,
+		category: 'shop',
+		targetValue: 20
+	},
+	{
+		id: 'own_30_colors',
+		name: 'Addicted Collector Pro',
+		description: 'Own 30 different name colors',
+		icon: 'lock.png',
+		difficulty: 'hard',
+		cashReward: 40000,
+		gemReward: 400,
+		category: 'shop',
+		targetValue: 30
+	},
+	{
+		id: 'own_40_colors',
+		name: 'Addicted Collector Pro Max',
+		description: 'Own 40 different name colors',
+		icon: 'lock.png',
+		difficulty: 'hard',
+		cashReward: 70000,
+		gemReward: 480,
+		category: 'shop',
+		targetValue: 40
+	},
+	
 	{
 		id: 'open_50_crates',
 		name: 'Crate Addict',
@@ -724,6 +758,39 @@ export const ACHIEVEMENTS: AchievementDef[] = [
 		gemReward: 75,
 		category: 'shop',
 		targetValue: 50
+	},
+	{
+		id: 'open_100_crates',
+		name: 'Mega Crate Addict',
+		description: 'Open 100 crates',
+		icon: 'box.png',
+		difficulty: 'hard',
+		cashReward: 20000,
+		gemReward: 90,
+		category: 'shop',
+		targetValue: 100
+	},
+	{
+		id: 'open_150_crates',
+		name: 'Ultra Crate Addict',
+		description: 'Open 150 crates',
+		icon: 'box.png',
+		difficulty: 'hard',
+		cashReward: 30000,
+		gemReward: 150,
+		category: 'shop',
+		targetValue: 150
+	},
+	{
+		id: 'open_200_crates',
+		name: 'Crate Addict Pro',
+		description: 'Open 200 crates',
+		icon: 'box.png',
+		difficulty: 'hard',
+		cashReward: 45000,
+		gemReward: 200,
+		category: 'shop',
+		targetValue: 200
 	},
 
 	//SPECIAL (2)

@@ -118,8 +118,6 @@
 		previousCoinSymbol = coinSymbol;
 	});
 
-	
-
 	$effect(() => {
 		return () => {
 			if (previousCoinSymbol) {
@@ -185,7 +183,7 @@
 
 			if (remainingMs <= 0) {
 				stakingCountdownString = '00:00:00';
-				loadStakingMetrics(); 
+				loadStakingMetrics();
 			} else {
 				const hours = Math.floor(remainingMs / (60 * 60 * 1000));
 				const mins = Math.floor((remainingMs % (60 * 60 * 1000)) / (60 * 1000));
@@ -236,7 +234,12 @@
 		}
 	}
 	async function handleTradeSuccess() {
-		await Promise.all([loadCoinData(), loadUserHolding(), loadStakingMetrics(), fetchPortfolioSummary()]);
+		await Promise.all([
+			loadCoinData(),
+			loadUserHolding(),
+			loadStakingMetrics(),
+			fetchPortfolioSummary()
+		]);
 	}
 	async function handleBurnSuccess() {
 		await Promise.all([loadCoinData(), loadUserHolding(), fetchPortfolioSummary()]);
@@ -581,13 +584,19 @@
 	let canTrade = $derived(!isTradingLocked || isCreator);
 
 	// Percentage of pool owned by you right now
-	let individualPoolShare = $derived(poolTotalStaked > 0 ? (userStaked / poolTotalStaked) * 100 : 0);
-	
+	let individualPoolShare = $derived(
+		poolTotalStaked > 0 ? (userStaked / poolTotalStaked) * 100 : 0
+	);
+
 	// Total tokens targeted to leave AMM and enter staking payouts next epoch
-	let globalTokensGoingOutNextEpoch = $derived(Number(coin?.poolCoinAmount || 0) * poolDistributionRate);
-	
+	let globalTokensGoingOutNextEpoch = $derived(
+		Number(coin?.poolCoinAmount || 0) * poolDistributionRate
+	);
+
 	// Exact calculation of how many tokens you stand to receive
-	let estimatedPersonalTokensNextEpoch = $derived(poolTotalStaked > 0 ? (userStaked / poolTotalStaked) * globalTokensGoingOutNextEpoch : 0);
+	let estimatedPersonalTokensNextEpoch = $derived(
+		poolTotalStaked > 0 ? (userStaked / poolTotalStaked) * globalTokensGoingOutNextEpoch : 0
+	);
 </script>
 
 <SEO
@@ -624,8 +633,20 @@
 		{userHolding}
 		onSuccess={handleBurnSuccess}
 	/>
-	<TradeModal bind:open={stakeModalOpen} type="STAKE" {coin} {userHolding} onSuccess={handleTradeSuccess} />
-	<TradeModal bind:open={unstakeModalOpen} type="UNSTAKE" {coin} {userStaked} onSuccess={handleTradeSuccess} />
+	<TradeModal
+		bind:open={stakeModalOpen}
+		type="STAKE"
+		{coin}
+		{userHolding}
+		onSuccess={handleTradeSuccess}
+	/>
+	<TradeModal
+		bind:open={unstakeModalOpen}
+		type="UNSTAKE"
+		{coin}
+		{userStaked}
+		onSuccess={handleTradeSuccess}
+	/>
 {/if}
 <div class="container mx-auto max-w-7xl p-6">
 	{#if loading}
@@ -789,52 +810,89 @@
 						<Card.Content>
 							{#if $USER_DATA}
 								<div class="space-y-3">
-	<Button class="w-full" variant="default" size="lg" onclick={() => (buyModalOpen = true)} disabled={!coin.isListed || !canTrade}>
-		<HugeiconsIcon icon={TradeUpIcon} class="h-4 w-4" />
-		{$_('coin.trade.buy.title').replace('{{symbol}}', coin.symbol)}
-	</Button>
+									<Button
+										class="w-full"
+										variant="default"
+										size="lg"
+										onclick={() => (buyModalOpen = true)}
+										disabled={!coin.isListed || !canTrade}
+									>
+										<HugeiconsIcon icon={TradeUpIcon} class="h-4 w-4" />
+										{$_('coin.trade.buy.title').replace('{{symbol}}', coin.symbol)}
+									</Button>
 
-	<Button class="w-full" variant="outline" size="lg" onclick={() => (sellModalOpen = true)} disabled={!coin.isListed || userHolding <= 0 || !canTrade}>
-		<HugeiconsIcon icon={TradeDownIcon} class="h-4 w-4" />
-		{$_('coin.trade.sell.title').replace('{{symbol}}', coin.symbol)}
-	</Button>
+									<Button
+										class="w-full"
+										variant="outline"
+										size="lg"
+										onclick={() => (sellModalOpen = true)}
+										disabled={!coin.isListed || userHolding <= 0 || !canTrade}
+									>
+										<HugeiconsIcon icon={TradeDownIcon} class="h-4 w-4" />
+										{$_('coin.trade.sell.title').replace('{{symbol}}', coin.symbol)}
+									</Button>
 
-	<Button class="w-full border-indigo-500 text-indigo-500 hover:bg-indigo-500/10" variant="outline" size="lg" onclick={() => (stakeModalOpen = true)} disabled={!coin.isListed || userHolding <= 0 || !canTrade}>
-		<HugeiconsIcon icon={TradeUpIcon} class="h-4 w-4" />
-		Stake {coin.symbol}
-	</Button>
+									<Button
+										class="w-full border-indigo-500 text-indigo-500 hover:bg-indigo-500/10"
+										variant="outline"
+										size="lg"
+										onclick={() => (stakeModalOpen = true)}
+										disabled={!coin.isListed || userHolding <= 0 || !canTrade}
+									>
+										<HugeiconsIcon icon={TradeUpIcon} class="h-4 w-4" />
+										Stake {coin.symbol}
+									</Button>
 
-	<Button class="w-full border-amber-500 text-amber-500 hover:bg-amber-500/10" variant="outline" size="lg" onclick={() => (unstakeModalOpen = true)} disabled={!coin.isListed || userStaked <= 0 || !canTrade}>
-		<HugeiconsIcon icon={TradeDownIcon} class="h-4 w-4" />
-		Unstake {coin.symbol}
-	</Button>
+									<Button
+										class="w-full border-amber-500 text-amber-500 hover:bg-amber-500/10"
+										variant="outline"
+										size="lg"
+										onclick={() => (unstakeModalOpen = true)}
+										disabled={!coin.isListed || userStaked <= 0 || !canTrade}
+									>
+										<HugeiconsIcon icon={TradeDownIcon} class="h-4 w-4" />
+										Unstake {coin.symbol}
+									</Button>
 
-	<Button class="w-full bg-indigo-600 text-white hover:bg-indigo-700" size="lg" disabled={claiming} onclick={async () => {
-		claiming = true;
-		try {
-			const res = await fetch(`/api/coin/${coin.symbol}/stake`, {
-				method: 'POST',
-				body: JSON.stringify({ type: 'CLAIM' })
-			});
-			if(res.ok) {
-				toast.success('Yield rewards claimed successfully!');
-				handleTradeSuccess(); // Refreshes the UI balances
-			} else {
-				toast.error('Failed to claim rewards. No yield generated yet.');
-			}
-		} catch(e) { 
-			toast.error('Claim transaction aborted');
-		} finally { claiming = false; }
-	}}>
-		<HugeiconsIcon icon={MoneyBag02Icon} class="h-4 w-4" />
-		Claim Accrued Rewards
-	</Button>
+									<Button
+										class="w-full bg-indigo-600 text-white hover:bg-indigo-700"
+										size="lg"
+										disabled={claiming}
+										onclick={async () => {
+											claiming = true;
+											try {
+												const res = await fetch(`/api/coin/${coin.symbol}/stake`, {
+													method: 'POST',
+													body: JSON.stringify({ type: 'CLAIM' })
+												});
+												if (res.ok) {
+													toast.success('Yield rewards claimed successfully!');
+													handleTradeSuccess(); // Refreshes the UI balances
+												} else {
+													toast.error('Failed to claim rewards. No yield generated yet.');
+												}
+											} catch (e) {
+												toast.error('Claim transaction aborted');
+											} finally {
+												claiming = false;
+											}
+										}}
+									>
+										<HugeiconsIcon icon={MoneyBag02Icon} class="h-4 w-4" />
+										Claim Accrued Rewards
+									</Button>
 
-	<Button class="w-full" variant="outline" size="lg" onclick={() => (burnModalOpen = true)} disabled={!coin.isListed || userHolding <= 0 || !canTrade}>
-		<HugeiconsIcon icon={Coins01Icon} class="h-4 w-4" />
-		{$_('coin.trade.burn.title').replace('{{symbol}}', coin.symbol)}
-	</Button>
-</div>
+									<Button
+										class="w-full"
+										variant="outline"
+										size="lg"
+										onclick={() => (burnModalOpen = true)}
+										disabled={!coin.isListed || userHolding <= 0 || !canTrade}
+									>
+										<HugeiconsIcon icon={Coins01Icon} class="h-4 w-4" />
+										{$_('coin.trade.burn.title').replace('{{symbol}}', coin.symbol)}
+									</Button>
+								</div>
 							{:else}
 								<div class="py-4 text-center">
 									<p class="text-muted-foreground mb-3 text-sm">{$_('sign_in.trade')}</p>
@@ -906,7 +964,8 @@
 										<div class="flex justify-between">
 											<span class="text-muted-foreground text-sm">Your Staked Tokens:</span>
 											<span class="font-mono text-sm font-bold text-indigo-300">
-												{formatSupply(userStaked)} {coin.symbol}
+												{formatSupply(userStaked)}
+												{coin.symbol}
 											</span>
 										</div>
 										<div class="flex justify-between">
@@ -918,31 +977,34 @@
 										<div class="flex justify-between">
 											<span class="text-muted-foreground text-sm">Unclaimed Claimable Yield:</span>
 											<span class="font-mono text-sm text-green-400">
-												{formatSupply(claimableYield)} {coin.symbol}
+												{formatSupply(claimableYield)}
+												{coin.symbol}
 											</span>
 										</div>
 									</div>
 								</div>
-								
-								<div class="border-t border-muted/60 pt-3">
+
+								<div class="border-muted/60 border-t pt-3">
 									<h4 class="mb-3 font-medium text-amber-400">Next Payout</h4>
 									<div class="space-y-2">
 										<div class="flex justify-between">
 											<span class="text-muted-foreground text-sm">Next Payout Countdown:</span>
-											<span class="font-mono text-sm font-bold text-amber-400 animate-pulse">
+											<span class="animate-pulse font-mono text-sm font-bold text-amber-400">
 												{stakingCountdownString}
 											</span>
 										</div>
 										<div class="flex justify-between">
 											<span class="text-muted-foreground text-sm">Global Tokens Going Out:</span>
 											<span class="font-mono text-sm">
-												{formatSupply(globalTokensGoingOutNextEpoch)} {coin.symbol}
+												{formatSupply(globalTokensGoingOutNextEpoch)}
+												{coin.symbol}
 											</span>
 										</div>
 										<div class="flex justify-between">
 											<span class="text-muted-foreground text-sm">Your Est. Next Reward:</span>
 											<span class="font-mono text-sm font-bold text-green-400">
-												+{formatSupply(estimatedPersonalTokensNextEpoch)} {coin.symbol}
+												+{formatSupply(estimatedPersonalTokensNextEpoch)}
+												{coin.symbol}
 											</span>
 										</div>
 									</div>

@@ -24,7 +24,7 @@
 
 	let currentTab = $state<'chats' | 'friends'>('chats');
 
-	let activeChannel = $derived(channels.find(c => c.id === activeChannelId));
+	let activeChannel = $derived(channels.find((c) => c.id === activeChannelId));
 	let messages = $derived($CHAT_MESSAGES[activeChannelId as number] || []);
 
 	let scrollViewport: HTMLElement;
@@ -40,7 +40,7 @@
 		const channelQuery = $page.url.searchParams.get('channel');
 		if (channelQuery) {
 			const id = parseInt(channelQuery);
-			if (channels.some(c => c.id === id)) {
+			if (channels.some((c) => c.id === id)) {
 				selectChannel(id);
 			}
 		} else if (channels.length > 0) {
@@ -111,7 +111,7 @@
 			});
 			if (res.ok) {
 				const d = await res.json();
-				if (!channels.find(c => c.id === d.channel.id)) {
+				if (!channels.find((c) => c.id === d.channel.id)) {
 					await fetchChannels();
 				}
 				selectChannel(d.channel.id);
@@ -155,26 +155,37 @@
 	}
 </script>
 
-<SEO title="Chat - XprismPlay" description="Chat with your friends and fellow traders on XprismPlay." />
+<SEO
+	title="Chat - XprismPlay"
+	description="Chat with your friends and fellow traders on XprismPlay."
+/>
 
-<div class="container mx-auto max-w-6xl p-6 h-[calc(100vh-80px)] flex flex-col">
+<div class="container mx-auto flex h-[calc(100vh-80px)] max-w-6xl flex-col p-6">
 	<div class="mb-4">
 		<h1 class="text-3xl font-bold">Messages</h1>
 	</div>
 
-	<div class="flex flex-1 gap-4 min-h-0">
+	<div class="flex min-h-0 flex-1 gap-4">
 		<!-- Sidebar -->
-		<Card.Root class="flex flex-col overflow-hidden {activeChannelId ? 'hidden md:flex md:w-1/3' : 'w-full md:w-1/3'} py-0">
+		<Card.Root
+			class="flex flex-col overflow-hidden {activeChannelId
+				? 'hidden md:flex md:w-1/3'
+				: 'w-full md:w-1/3'} py-0"
+		>
 			<div class="flex gap-4 border-b px-4 pt-4">
 				<button
-					class="pb-3 text-sm font-medium border-b-2 transition-colors {currentTab === 'chats' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}"
-					onclick={() => currentTab = 'chats'}
+					class="border-b-2 pb-3 text-sm font-medium transition-colors {currentTab === 'chats'
+						? 'border-primary text-primary'
+						: 'text-muted-foreground hover:text-foreground border-transparent'}"
+					onclick={() => (currentTab = 'chats')}
 				>
 					Chats
 				</button>
 				<button
-					class="pb-3 text-sm font-medium border-b-2 transition-colors {currentTab === 'friends' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}"
-					onclick={() => currentTab = 'friends'}
+					class="border-b-2 pb-3 text-sm font-medium transition-colors {currentTab === 'friends'
+						? 'border-primary text-primary'
+						: 'text-muted-foreground hover:text-foreground border-transparent'}"
+					onclick={() => (currentTab = 'friends')}
 				>
 					Friends
 				</button>
@@ -182,38 +193,49 @@
 			<div class="flex-1 overflow-y-auto">
 				{#if currentTab === 'chats'}
 					{#if loadingChannels}
-						<div class="p-4 space-y-3">
+						<div class="space-y-3 p-4">
 							{#each Array(5) as _}
 								<div class="flex items-center gap-3">
-									<div class="w-10 h-10 rounded-full bg-muted animate-pulse"></div>
+									<div class="bg-muted h-10 w-10 animate-pulse rounded-full"></div>
 									<div class="flex-1 space-y-1">
-										<div class="h-4 bg-muted animate-pulse rounded w-2/3"></div>
-										<div class="h-3 bg-muted animate-pulse rounded w-1/3"></div>
+										<div class="bg-muted h-4 w-2/3 animate-pulse rounded"></div>
+										<div class="bg-muted h-3 w-1/3 animate-pulse rounded"></div>
 									</div>
 								</div>
 							{/each}
 						</div>
 					{:else if channels.length === 0}
-						<div class="p-6 text-center text-muted-foreground text-sm">
+						<div class="text-muted-foreground p-6 text-center text-sm">
 							No conversations yet. Add some friends to start chatting!
 						</div>
 					{:else}
-						<div class="flex flex-col p-2 gap-0.5">
+						<div class="flex flex-col gap-0.5 p-2">
 							{#each channels as channel}
 								<button
-									class="flex items-center gap-3 p-3 rounded-lg transition-colors hover:bg-muted text-left {activeChannelId === channel.id ? 'bg-muted' : ''}"
+									class="hover:bg-muted flex items-center gap-3 rounded-lg p-3 text-left transition-colors {activeChannelId ===
+									channel.id
+										? 'bg-muted'
+										: ''}"
 									onclick={() => selectChannel(channel.id)}
 								>
-									<Avatar.Root class="w-10 h-10 border shrink-0">
+									<Avatar.Root class="h-10 w-10 shrink-0 border">
 										{#if channel.image}
 											<Avatar.Image src={getPublicUrl(channel.image)} />
 										{/if}
-										<Avatar.Fallback class="text-sm">{channel.name?.charAt(channel.name?.startsWith('@') ? 1 : 0)?.toUpperCase() || '?'}</Avatar.Fallback>
+										<Avatar.Fallback class="text-sm"
+											>{channel.name
+												?.charAt(channel.name?.startsWith('@') ? 1 : 0)
+												?.toUpperCase() || '?'}</Avatar.Fallback
+										>
 									</Avatar.Root>
-									<div class="flex-1 min-w-0">
-										<div class="font-medium text-sm truncate">{channel.name}</div>
-										<div class="text-xs text-muted-foreground truncate">
-											{channel.user1Id === null && channel.user2Id === null ? 'Group Chat' : channel.type === 'DIRECT' ? 'Direct Message' : channel.type?.replace('_', ' ')}
+									<div class="min-w-0 flex-1">
+										<div class="truncate text-sm font-medium">{channel.name}</div>
+										<div class="text-muted-foreground truncate text-xs">
+											{channel.user1Id === null && channel.user2Id === null
+												? 'Group Chat'
+												: channel.type === 'DIRECT'
+													? 'Direct Message'
+													: channel.type?.replace('_', ' ')}
 										</div>
 									</div>
 								</button>
@@ -222,37 +244,39 @@
 					{/if}
 				{:else if currentTab === 'friends'}
 					{#if loadingFriends}
-						<div class="p-4 space-y-3">
+						<div class="space-y-3 p-4">
 							{#each Array(5) as _}
 								<div class="flex items-center gap-3">
-									<div class="w-10 h-10 rounded-full bg-muted animate-pulse"></div>
+									<div class="bg-muted h-10 w-10 animate-pulse rounded-full"></div>
 									<div class="flex-1 space-y-1">
-										<div class="h-4 bg-muted animate-pulse rounded w-2/3"></div>
-										<div class="h-3 bg-muted animate-pulse rounded w-1/3"></div>
+										<div class="bg-muted h-4 w-2/3 animate-pulse rounded"></div>
+										<div class="bg-muted h-3 w-1/3 animate-pulse rounded"></div>
 									</div>
 								</div>
 							{/each}
 						</div>
 					{:else if friends.length === 0}
-						<div class="p-6 text-center text-muted-foreground text-sm">
+						<div class="text-muted-foreground p-6 text-center text-sm">
 							You don't have any friends yet. Add some from their profile!
 						</div>
 					{:else}
-						<div class="flex flex-col p-2 gap-0.5">
+						<div class="flex flex-col gap-0.5 p-2">
 							{#each friends as friend}
 								<button
-									class="flex items-center gap-3 p-3 rounded-lg transition-colors hover:bg-muted text-left"
+									class="hover:bg-muted flex items-center gap-3 rounded-lg p-3 text-left transition-colors"
 									onclick={() => startChatWithFriend(friend.id)}
 								>
-									<Avatar.Root class="w-10 h-10 border shrink-0">
+									<Avatar.Root class="h-10 w-10 shrink-0 border">
 										{#if friend.image}
 											<Avatar.Image src={getPublicUrl(friend.image)} />
 										{/if}
-										<Avatar.Fallback class="text-sm">{friend.username?.charAt(0)?.toUpperCase() || '?'}</Avatar.Fallback>
+										<Avatar.Fallback class="text-sm"
+											>{friend.username?.charAt(0)?.toUpperCase() || '?'}</Avatar.Fallback
+										>
 									</Avatar.Root>
-									<div class="flex-1 min-w-0">
-										<div class="font-medium text-sm truncate">@{friend.username}</div>
-										<div class="text-xs text-muted-foreground truncate">Click to chat</div>
+									<div class="min-w-0 flex-1">
+										<div class="truncate text-sm font-medium">@{friend.username}</div>
+										<div class="text-muted-foreground truncate text-xs">Click to chat</div>
 									</div>
 								</button>
 							{/each}
@@ -263,50 +287,67 @@
 		</Card.Root>
 
 		<!-- Main Chat Area -->
-		<Card.Root class="flex-1 flex flex-col overflow-hidden py-0 {activeChannelId ? 'flex' : 'hidden md:flex'}">
+		<Card.Root
+			class="flex flex-1 flex-col overflow-hidden py-0 {activeChannelId
+				? 'flex'
+				: 'hidden md:flex'}"
+		>
 			{#if activeChannel}
-				<div class="flex items-center gap-3 p-4 border-b shrink-0">
-					<button
-						class="md:hidden p-1 -ml-1 rounded-full hover:bg-muted"
-						onclick={goBackToList}
-					>
-						<HugeiconsIcon icon={ArrowLeft01Icon} class="w-5 h-5" />
+				<div class="flex shrink-0 items-center gap-3 border-b p-4">
+					<button class="hover:bg-muted -ml-1 rounded-full p-1 md:hidden" onclick={goBackToList}>
+						<HugeiconsIcon icon={ArrowLeft01Icon} class="h-5 w-5" />
 					</button>
-					<Avatar.Root class="w-10 h-10 border shrink-0">
+					<Avatar.Root class="h-10 w-10 shrink-0 border">
 						{#if activeChannel.image}
 							<Avatar.Image src={getPublicUrl(activeChannel.image)} />
 						{/if}
-						<Avatar.Fallback class="text-sm">{activeChannel.name?.charAt(activeChannel.name?.startsWith('@') ? 1 : 0)?.toUpperCase() || '?'}</Avatar.Fallback>
+						<Avatar.Fallback class="text-sm"
+							>{activeChannel.name
+								?.charAt(activeChannel.name?.startsWith('@') ? 1 : 0)
+								?.toUpperCase() || '?'}</Avatar.Fallback
+						>
 					</Avatar.Root>
 					<div class="min-w-0">
-						<div class="font-semibold text-base truncate">{activeChannel.name}</div>
-						<div class="text-xs text-muted-foreground">
-							{activeChannel.user1Id === null && activeChannel.user2Id === null ? 'Group Chat' : activeChannel.type === 'DIRECT' ? 'Direct Message' : activeChannel.type?.replace('_', ' ')}
+						<div class="truncate text-base font-semibold">{activeChannel.name}</div>
+						<div class="text-muted-foreground text-xs">
+							{activeChannel.user1Id === null && activeChannel.user2Id === null
+								? 'Group Chat'
+								: activeChannel.type === 'DIRECT'
+									? 'Direct Message'
+									: activeChannel.type?.replace('_', ' ')}
 						</div>
 					</div>
 				</div>
 
-				<div class="flex-1 overflow-y-auto p-4 flex flex-col gap-3" bind:this={scrollViewport}>
+				<div class="flex flex-1 flex-col gap-3 overflow-y-auto p-4" bind:this={scrollViewport}>
 					{#if messages.length === 0}
-						<div class="m-auto text-muted-foreground text-sm flex flex-col items-center gap-2">
+						<div class="text-muted-foreground m-auto flex flex-col items-center gap-2 text-sm">
 							<span class="text-4xl">👋</span>
 							<p>No messages yet. Say hi!</p>
 						</div>
 					{:else}
 						{#each messages as msg (msg.id)}
 							{@const isMe = msg.senderId === Number($USER_DATA?.id)}
-							<div class="flex gap-2.5 max-w-[80%] {isMe ? 'self-end flex-row-reverse' : 'self-start'}">
-								<Avatar.Root class="w-7 h-7 shrink-0 mt-1">
+							<div
+								class="flex max-w-[80%] gap-2.5 {isMe ? 'flex-row-reverse self-end' : 'self-start'}"
+							>
+								<Avatar.Root class="mt-1 h-7 w-7 shrink-0">
 									{#if msg.senderImage}
 										<Avatar.Image src={getPublicUrl(msg.senderImage)} />
 									{/if}
-									<Avatar.Fallback class="text-xs">{msg.senderUsername?.charAt(0)?.toUpperCase() || '?'}</Avatar.Fallback>
+									<Avatar.Fallback class="text-xs"
+										>{msg.senderUsername?.charAt(0)?.toUpperCase() || '?'}</Avatar.Fallback
+									>
 								</Avatar.Root>
 								<div class="flex flex-col gap-0.5 {isMe ? 'items-end' : 'items-start'}">
-									<div class="text-[11px] text-muted-foreground px-1">
+									<div class="text-muted-foreground px-1 text-[11px]">
 										{msg.senderUsername} · {formatDate(msg.createdAt)}
 									</div>
-									<div class="rounded-2xl px-3.5 py-2 text-sm leading-relaxed {isMe ? 'bg-primary text-primary-foreground rounded-tr-sm' : 'bg-muted rounded-tl-sm'}">
+									<div
+										class="rounded-2xl px-3.5 py-2 text-sm leading-relaxed {isMe
+											? 'bg-primary text-primary-foreground rounded-tr-sm'
+											: 'bg-muted rounded-tl-sm'}"
+									>
 										{msg.content}
 									</div>
 								</div>
@@ -315,8 +356,14 @@
 					{/if}
 				</div>
 
-				<div class="p-3 border-t shrink-0">
-					<form class="flex gap-2" onsubmit={(e) => { e.preventDefault(); sendMessage(); }}>
+				<div class="shrink-0 border-t p-3">
+					<form
+						class="flex gap-2"
+						onsubmit={(e) => {
+							e.preventDefault();
+							sendMessage();
+						}}
+					>
 						<Input
 							placeholder="Type a message..."
 							bind:value={messageInput}
@@ -324,14 +371,18 @@
 							autocomplete="off"
 							class="flex-1 rounded-full"
 						/>
-						<Button type="submit" disabled={!messageInput.trim() || sending} class="rounded-full px-6">
+						<Button
+							type="submit"
+							disabled={!messageInput.trim() || sending}
+							class="rounded-full px-6"
+						>
 							Send
 						</Button>
 					</form>
 				</div>
 			{:else}
-				<div class="m-auto flex flex-col items-center text-muted-foreground gap-3">
-					<HugeiconsIcon icon={Message01Icon} class="w-12 h-12 opacity-20" />
+				<div class="text-muted-foreground m-auto flex flex-col items-center gap-3">
+					<HugeiconsIcon icon={Message01Icon} class="h-12 w-12 opacity-20" />
 					<p class="text-sm">Select a conversation to start chatting</p>
 				</div>
 			{/if}

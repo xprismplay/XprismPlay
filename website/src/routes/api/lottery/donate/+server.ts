@@ -37,7 +37,10 @@ export async function POST({ request }) {
 		const rounded = Math.round(amount * 100000000) / 100000000;
 
 		if (balance < rounded) {
-			throw error(400, `Insufficient funds. Have $${balance.toFixed(2)}, donating $${rounded.toFixed(2)}`);
+			throw error(
+				400,
+				`Insufficient funds. Have $${balance.toFixed(2)}, donating $${rounded.toFixed(2)}`
+			);
 		}
 
 		await tx

@@ -37,10 +37,7 @@ export async function POST({ request }) {
 
 		const balance = Number(userData.baseCurrencyBalance);
 		if (balance < totalCost) {
-			throw error(
-				400,
-				`Insufficient funds. Need $${totalCost} but have $${balance.toFixed(2)}`
-			);
+			throw error(400, `Insufficient funds. Need $${totalCost} but have $${balance.toFixed(2)}`);
 		}
 
 		await tx

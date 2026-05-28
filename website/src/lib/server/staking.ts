@@ -8,7 +8,11 @@ import { eq, and } from 'drizzle-orm';
  */
 export async function advancePoolEpochs(tx: any, coinId: number) {
 	// 1. Fetch current pool and coin metrics
-	const [poolData] = await tx.select().from(coinStakingPool).where(eq(coinStakingPool.coinId, coinId)).limit(1);
+	const [poolData] = await tx
+		.select()
+		.from(coinStakingPool)
+		.where(eq(coinStakingPool.coinId, coinId))
+		.limit(1);
 	const [coinData] = await tx.select().from(coin).where(eq(coin.id, coinId)).limit(1);
 
 	if (!poolData || !coinData) return null;
@@ -20,7 +24,7 @@ export async function advancePoolEpochs(tx: any, coinId: number) {
 
 	// If no 4-hour blocks have passed or nothing is staked, just advance time without distributing
 	if (epochsPassed <= 0) return poolData;
-	
+
 	let currentPoolCoin = Number(coinData.poolCoinAmount);
 	const totalStaked = Number(poolData.totalStaked);
 	const rate = Number(poolData.distributionRate4h);
@@ -38,7 +42,9 @@ export async function advancePoolEpochs(tx: any, coinId: number) {
 
 	const rewardPerShareDelta = totalStaked > 0 ? totalRewardsDistributed / totalStaked : 0;
 	const newRewardPerShare = Number(poolData.rewardPerShare) + rewardPerShareDelta;
-	const newEpochTime = new Date(new Date(poolData.lastEpochAt).getTime() + epochsPassed * FOUR_HOURS_MS);
+	const newEpochTime = new Date(
+		new Date(poolData.lastEpochAt).getTime() + epochsPassed * FOUR_HOURS_MS
+	);
 
 	// Recalculate AMM price based on shrunken pool coin depth
 	const poolBaseCurrencyAmount = Number(coinData.poolBaseCurrencyAmount);
@@ -50,7 +56,7 @@ export async function advancePoolEpochs(tx: any, coinId: number) {
 		.update(coinStakingPool)
 		.set({
 			rewardPerShare: newRewardPerShare.toString(),
-			lastEpochAt: newEpochTime,
+			lastEpochAt: newEpochTime
 		})
 		.where(eq(coinStakingPool.coinId, coinId));
 
@@ -96,7 +102,8 @@ export async function syncUserStake(tx: any, userId: number, coinId: number) {
 
 	if (!stake) return;
 
-	const pendingRewards = (Number(stake.amount) * Number(pool.rewardPerShare)) - Number(stake.rewardDebt);
+	const pendingRewards =
+		Number(stake.amount) * Number(pool.rewardPerShare) - Number(stake.rewardDebt);
 	const newClaimable = Number(stake.claimableRewards) + pendingRewards;
 
 	await tx

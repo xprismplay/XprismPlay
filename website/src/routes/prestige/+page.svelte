@@ -466,7 +466,7 @@
 					<Card.Header class="pb-2">
 						<Card.Title class="text-base">Levels</Card.Title>
 					</Card.Header>
-					<Card.Content>
+					<Card.Content style="max-height: 200px;overflow-y:auto">
 						{#each Object.entries(PRESTIGE_COSTS) as [level, cost]}
 							{@const levelNum = parseInt(level)}
 							{@const isCurrentNext = levelNum === nextPrestige && !hasMaxPrestige}

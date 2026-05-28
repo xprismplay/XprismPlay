@@ -542,6 +542,27 @@ async function checkAchievement(
 				.where(and(eq(userInventory.userId, userId), eq(userInventory.itemType, 'namecolor')));
 			return Number(result.cnt) >= 15;
 		}
+		case 'own_20_colors': {
+			const [result] = await db
+				.select({ cnt: count() })
+				.from(userInventory)
+				.where(and(eq(userInventory.userId, userId), eq(userInventory.itemType, 'namecolor')));
+			return Number(result.cnt) >= 20;
+		}
+		case 'own_30_colors': {
+			const [result] = await db
+				.select({ cnt: count() })
+				.from(userInventory)
+				.where(and(eq(userInventory.userId, userId), eq(userInventory.itemType, 'namecolor')));
+			return Number(result.cnt) >= 25;
+		}
+		case 'own_40_colors': {
+			const [result] = await db
+				.select({ cnt: count() })
+				.from(userInventory)
+				.where(and(eq(userInventory.userId, userId), eq(userInventory.itemType, 'namecolor')));
+			return Number(result.cnt) >= 25;
+		}
 
 		case 'open_50_crates': {
 			const [userData] = await db
@@ -550,6 +571,30 @@ async function checkAchievement(
 				.where(eq(user.id, userId))
 				.limit(1);
 			return (userData?.crates ?? 0) >= 50;
+		}
+		case 'open_100_crates': {
+			const [userData] = await db
+				.select({ crates: user.cratesOpened })
+				.from(user)
+				.where(eq(user.id, userId))
+				.limit(1);
+			return (userData?.crates ?? 0) >= 100;
+		}
+		case 'open_150_crates': {
+			const [userData] = await db
+				.select({ crates: user.cratesOpened })
+				.from(user)
+				.where(eq(user.id, userId))
+				.limit(1);
+			return (userData?.crates ?? 0) >= 150;
+		}
+		case 'open_200_crates': {
+			const [userData] = await db
+				.select({ crates: user.cratesOpened })
+				.from(user)
+				.where(eq(user.id, userId))
+				.limit(1);
+			return (userData?.crates ?? 0) >= 200;
 		}
 
 		// SPECIAL

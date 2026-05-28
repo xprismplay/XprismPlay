@@ -383,7 +383,12 @@ export const PRESTIGE_NAMES = {
 	12: 'Prestige XII',
 	13: 'Prestige XIII',
 	14: 'Prestige XIV',
-	15: 'Prestige XV'
+	15: 'Prestige XV',
+	16: 'Prestige XVI',
+	17: 'Prestige XVII',
+	18: 'Prestige XVIII',
+	19: 'Prestige XIX',
+	20: 'Prestige XX',
 } as const;
 
 export const PRESTIGE_COLORS = {
@@ -401,7 +406,12 @@ export const PRESTIGE_COLORS = {
 	12: 'text-fuchsia-500',
 	13: 'text-emerald-700',
 	14: 'text-rose-500',
-	15: 'text-purple-500'
+	15: 'text-purple-500',
+	16: 'text-sky-700',
+	17: 'text-fuchsia-700',
+	18: 'text-emerald-700',
+	19: 'text-rose-700',
+	20: 'text-purple-700'
 } as const;
 
 export function getPrestigeName(level: number): string | null {
@@ -423,7 +433,7 @@ export function getPrestigeColor(level: number): string {
 }
 
 export function getMaxPrestigeLevel(): number {
-	return 15;
+	return 20;
 }
 
 export function validateBetAmount(

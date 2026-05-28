@@ -280,8 +280,12 @@
 	let winnerAmt = $derived(pool * 0.9);
 	let bankAmt = $derived(pool * 0.1);
 	let drawChancePct = $derived(draw ? (draw.drawChance * 100).toFixed(2) : '0.00');
-	let perTicketPct = $derived(current?.chancePerTicket ? (current.chancePerTicket * 100).toFixed(4) : '0.0000');
-	let combinedPct = $derived(current?.userCombinedChance ? (current.userCombinedChance * 100).toFixed(2) : '0.00');
+	let perTicketPct = $derived(
+		current?.chancePerTicket ? (current.chancePerTicket * 100).toFixed(4) : '0.0000'
+	);
+	let combinedPct = $derived(
+		current?.userCombinedChance ? (current.userCombinedChance * 100).toFixed(2) : '0.00'
+	);
 	let userTickets = $derived(current?.userTickets ?? 0);
 	let ticketPrice = $derived(current?.ticketPrice ?? 500);
 	let totalCost = $derived(Math.max(1, Math.floor(Number(quantity))) * ticketPrice);
@@ -377,7 +381,10 @@
 								</div>
 								<div>
 									<p class="font-mono text-xl font-bold">{countdown}</p>
-									<p class="text-muted-foreground text-xs">{$_('lottery.draw_at')} {drawDateFull}</p>
+									<p class="text-muted-foreground text-xs">
+										{$_('lottery.draw_at')}
+										{drawDateFull}
+									</p>
 								</div>
 							</div>
 						</Card.Content>
@@ -389,12 +396,7 @@
 								<Card.Title class="text-base">{$_('lottery.breakdown_title')}</Card.Title>
 							</Card.Header>
 							<Card.Content class="space-y-2">
-								{#each [
-									[$_('lottery.breakdown_tickets'), draw.ticketRevenue],
-									[$_('lottery.breakdown_bank'), draw.bankContribution],
-									[$_('lottery.breakdown_donations'), draw.donations],
-									[$_('lottery.breakdown_rollover'), draw.rolloverAmount]
-								] as [label, value] (label)}
+								{#each [[$_('lottery.breakdown_tickets'), draw.ticketRevenue], [$_('lottery.breakdown_bank'), draw.bankContribution], [$_('lottery.breakdown_donations'), draw.donations], [$_('lottery.breakdown_rollover'), draw.rolloverAmount]] as [label, value] (label)}
 									<div class="flex justify-between text-sm">
 										<span class="text-muted-foreground">{label}</span>
 										<span class="font-mono">{formatValue(value as number)}</span>
@@ -408,13 +410,7 @@
 								<Card.Title class="text-base">{$_('lottery.odds_title')}</Card.Title>
 							</Card.Header>
 							<Card.Content class="space-y-2">
-								{#each [
-									[$_('lottery.odds_tickets_sold'), draw.totalTickets.toLocaleString()],
-									[$_('lottery.odds_draw_chance'), `${drawChancePct}%`],
-									[$_('lottery.odds_per_ticket'), `${perTicketPct}%`],
-									[$_('lottery.odds_your_tickets'), userTickets.toString()],
-									[$_('lottery.odds_combined'), `${combinedPct}%`]
-								] as [label, value] (label)}
+								{#each [[$_('lottery.odds_tickets_sold'), draw.totalTickets.toLocaleString()], [$_('lottery.odds_draw_chance'), `${drawChancePct}%`], [$_('lottery.odds_per_ticket'), `${perTicketPct}%`], [$_('lottery.odds_your_tickets'), userTickets.toString()], [$_('lottery.odds_combined'), `${combinedPct}%`]] as [label, value] (label)}
 									<div class="flex justify-between text-sm">
 										<span class="text-muted-foreground">{label}</span>
 										<span
@@ -433,17 +429,32 @@
 					<Card.Root>
 						<Card.Header>
 							<Card.Title class="text-base">{$_('lottery.purchase_title')}</Card.Title>
-							<Card.Description>{$_('lottery.purchase_subtitle').replace('{{price}}', formatValue(ticketPrice))}</Card.Description>
+							<Card.Description
+								>{$_('lottery.purchase_subtitle').replace(
+									'{{price}}',
+									formatValue(ticketPrice)
+								)}</Card.Description
+							>
 						</Card.Header>
 						<Card.Content>
 							{#if $USER_DATA}
 								<div class="max-w-xs space-y-4">
 									<div>
-										<label class="mb-1 block text-sm font-medium">{$_('lottery.number_of_tickets')}</label>
-										<Input type="number" min="1" max="1000" step="1" bind:value={quantity} class="w-40" />
+										<label class="mb-1 block text-sm font-medium"
+											>{$_('lottery.number_of_tickets')}</label
+										>
+										<Input
+											type="number"
+											min="1"
+											max="1000"
+											step="1"
+											bind:value={quantity}
+											class="w-40"
+										/>
 									</div>
 									<p class="text-muted-foreground text-sm">
-										{formatValue(ticketPrice)} {$_('lottery.each')} · {$_('lottery.total')}: {formatValue(totalCost)}
+										{formatValue(ticketPrice)}
+										{$_('lottery.each')} · {$_('lottery.total')}: {formatValue(totalCost)}
 									</p>
 									<Button onclick={purchase} disabled={purchasing || Number(quantity) < 1}>
 										<HugeiconsIcon icon={Ticket01Icon} class="h-4 w-4" />
@@ -452,7 +463,9 @@
 								</div>
 							{:else}
 								<div class="py-4">
-									<p class="text-muted-foreground mb-3 text-sm">{$_('lottery.sign_in_to_purchase')}</p>
+									<p class="text-muted-foreground mb-3 text-sm">
+										{$_('lottery.sign_in_to_purchase')}
+									</p>
 									<Button onclick={() => (shouldSignIn = true)}>{$_('sign_in.sign_in')}</Button>
 								</div>
 							{/if}
@@ -479,13 +492,18 @@
 										placeholder={$_('lottery.donate.placeholder')}
 										class="w-40"
 									/>
-									<Button onclick={donate} disabled={donating || !donateAmount || Number(donateAmount) < 1}>
+									<Button
+										onclick={donate}
+										disabled={donating || !donateAmount || Number(donateAmount) < 1}
+									>
 										{donating ? $_('lottery.donating') : $_('lottery.donate.button')}
 									</Button>
 								</div>
 							{:else}
 								<div class="py-2">
-									<p class="text-muted-foreground mb-3 text-sm">{$_('lottery.sign_in_to_purchase')}</p>
+									<p class="text-muted-foreground mb-3 text-sm">
+										{$_('lottery.sign_in_to_purchase')}
+									</p>
 									<Button onclick={() => (shouldSignIn = true)}>{$_('sign_in.sign_in')}</Button>
 								</div>
 							{/if}
@@ -527,15 +545,22 @@
 														timeZone: 'UTC'
 													})}
 												</Table.Cell>
-												<Table.Cell class="font-mono text-sm">{formatValue(d.prizePool)}</Table.Cell>
+												<Table.Cell class="font-mono text-sm">{formatValue(d.prizePool)}</Table.Cell
+												>
 												<Table.Cell class="text-sm">{d.totalTickets.toLocaleString()}</Table.Cell>
 												<Table.Cell>
 													<Badge variant={d.status === 'DRAWN' ? 'success' : 'secondary'}>
-														{d.status === 'DRAWN' ? $_('lottery.status_won') : $_('lottery.status_rollover')}
+														{d.status === 'DRAWN'
+															? $_('lottery.status_won')
+															: $_('lottery.status_rollover')}
 													</Badge>
 												</Table.Cell>
-												<Table.Cell class="text-sm">{d.winnerUsername ? `@${d.winnerUsername}` : '—'}</Table.Cell>
-												<Table.Cell class="font-mono text-sm">{d.winnerPrize ? formatValue(d.winnerPrize) : '—'}</Table.Cell>
+												<Table.Cell class="text-sm"
+													>{d.winnerUsername ? `@${d.winnerUsername}` : '—'}</Table.Cell
+												>
+												<Table.Cell class="font-mono text-sm"
+													>{d.winnerPrize ? formatValue(d.winnerPrize) : '—'}</Table.Cell
+												>
 											</Table.Row>
 										{/each}
 									{/if}
@@ -573,7 +598,10 @@
 							<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 								<div>
 									<p class="font-mono text-xl font-bold">{weeklyCountdown}</p>
-									<p class="text-muted-foreground text-xs">{$_('lottery.draw_at')} {wDrawDateFull}</p>
+									<p class="text-muted-foreground text-xs">
+										{$_('lottery.draw_at')}
+										{wDrawDateFull}
+									</p>
 								</div>
 								<div>
 									<p class="text-xl font-bold">{wDraw.totalTickets.toLocaleString()}</p>
@@ -616,7 +644,8 @@
 									.replace('{{total}}', String(maxChosenNumbers))}
 								·
 								{#if pickedNumbers.length >= baseNumbers}
-									{pickedCombinations} {$_('lottery.weekly.combinations')} · {formatValue(pickedTotalCost)}
+									{pickedCombinations}
+									{$_('lottery.weekly.combinations')} · {formatValue(pickedTotalCost)}
 								{:else}
 									{formatValue(weeklyTicketPrice)} {$_('lottery.each')}
 								{/if}
@@ -627,7 +656,7 @@
 								{#each Array.from({ length: numbersMax }, (_, i) => i + 1) as n}
 									{@const picked = pickedNumbers.includes(n)}
 									<button
-										class="rounded py-1.5 text-xs font-mono transition-colors {picked
+										class="rounded py-1.5 font-mono text-xs transition-colors {picked
 											? 'bg-primary text-primary-foreground font-bold'
 											: 'bg-muted hover:bg-muted/80'} disabled:cursor-not-allowed disabled:opacity-40"
 										onclick={() => toggleNumber(n)}
@@ -654,10 +683,14 @@
 										disabled={weeklyPurchasing || pickedNumbers.length < baseNumbers}
 									>
 										<HugeiconsIcon icon={Ticket01Icon} class="h-4 w-4" />
-										{weeklyPurchasing ? $_('lottery.purchasing') : $_('lottery.weekly.buy_ticket')} ({formatValue(pickedTotalCost)})
+										{weeklyPurchasing ? $_('lottery.purchasing') : $_('lottery.weekly.buy_ticket')} ({formatValue(
+											pickedTotalCost
+										)})
 									</Button>
 								{:else}
-									<Button size="sm" onclick={() => (shouldSignIn = true)}>{$_('sign_in.sign_in')}</Button>
+									<Button size="sm" onclick={() => (shouldSignIn = true)}
+										>{$_('sign_in.sign_in')}</Button
+									>
 								{/if}
 							</div>
 
@@ -666,7 +699,14 @@
 							<div>
 								<p class="mb-2 text-sm font-medium">{$_('lottery.weekly.random_tickets')}</p>
 								<div class="flex items-center gap-2">
-									<Input type="number" min="1" max="1000" step="1" bind:value={randomCount} class="w-24" />
+									<Input
+										type="number"
+										min="1"
+										max="1000"
+										step="1"
+										bind:value={randomCount}
+										class="w-24"
+									/>
 									{#if $USER_DATA}
 										<Button
 											variant="outline"
@@ -674,13 +714,19 @@
 											onclick={purchaseRandomWeekly}
 											disabled={weeklyPurchasing}
 										>
-											{weeklyPurchasing ? $_('lottery.purchasing') : $_('lottery.weekly.buy_random')}
+											{weeklyPurchasing
+												? $_('lottery.purchasing')
+												: $_('lottery.weekly.buy_random')}
 										</Button>
 										<span class="text-muted-foreground text-xs">
-											{formatValue(Math.max(1, Math.floor(Number(randomCount))) * weeklyTicketPrice)}
+											{formatValue(
+												Math.max(1, Math.floor(Number(randomCount))) * weeklyTicketPrice
+											)}
 										</span>
 									{:else}
-										<Button variant="outline" size="sm" onclick={() => (shouldSignIn = true)}>{$_('sign_in.sign_in')}</Button>
+										<Button variant="outline" size="sm" onclick={() => (shouldSignIn = true)}
+											>{$_('sign_in.sign_in')}</Button
+										>
 									{/if}
 								</div>
 							</div>
@@ -698,13 +744,18 @@
 										<div class="flex items-center justify-between rounded-lg border p-2 text-sm">
 											<div class="flex flex-wrap gap-1">
 												{#each t.numbers as n}
-													<span class="bg-primary/10 text-primary rounded px-1.5 py-0.5 font-mono text-xs">{n}</span>
+													<span
+														class="bg-primary/10 text-primary rounded px-1.5 py-0.5 font-mono text-xs"
+														>{n}</span
+													>
 												{/each}
 											</div>
 											{#if t.matchCount != null}
 												<Badge variant={t.winnings ? 'success' : 'secondary'}>
-													{t.matchCount} {$_('lottery.weekly.match_count')}
-													{#if t.winnings} · {formatValue(t.winnings)}{/if}
+													{t.matchCount}
+													{$_('lottery.weekly.match_count')}
+													{#if t.winnings}
+														· {formatValue(t.winnings)}{/if}
 												</Badge>
 											{/if}
 										</div>
@@ -745,11 +796,15 @@
 												<Table.Cell>
 													<div class="flex flex-wrap gap-0.5">
 														{#each d.drawnNumbers as n}
-															<span class="bg-primary text-primary-foreground rounded px-1 py-0.5 text-xs font-mono">{n}</span>
+															<span
+																class="bg-primary text-primary-foreground rounded px-1 py-0.5 font-mono text-xs"
+																>{n}</span
+															>
 														{/each}
 													</div>
 												</Table.Cell>
-												<Table.Cell class="font-mono text-sm">{formatValue(d.prizePool)}</Table.Cell>
+												<Table.Cell class="font-mono text-sm">{formatValue(d.prizePool)}</Table.Cell
+												>
 												<Table.Cell class="text-sm">{d.jackpotWinnersCount ?? 0}</Table.Cell>
 												<Table.Cell class="text-sm">{d.match5WinnersCount ?? 0}</Table.Cell>
 												<Table.Cell class="text-sm">{d.match4WinnersCount ?? 0}</Table.Cell>
@@ -787,7 +842,9 @@
 									<div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
 										<div class="flex items-center gap-3">
 											<Badge variant={item.type === 'daily' ? 'default' : 'secondary'}>
-												{item.type === 'daily' ? $_('lottery.news.daily') : $_('lottery.news.weekly')}
+												{item.type === 'daily'
+													? $_('lottery.news.daily')
+													: $_('lottery.news.weekly')}
 											</Badge>
 											<div>
 												<p class="text-sm font-medium">
@@ -800,24 +857,33 @@
 													})}
 												</p>
 												<p class="text-muted-foreground text-xs">
-													{item.totalTickets.toLocaleString()} tickets · {formatValue(item.prizePool)} pool
+													{item.totalTickets.toLocaleString()} tickets · {formatValue(
+														item.prizePool
+													)} pool
 												</p>
 											</div>
 										</div>
 										<div class="text-right">
 											{#if item.type === 'daily'}
 												{#if item.winnerUsername}
-													<p class="text-success text-sm font-medium">Winner: @{item.winnerUsername}</p>
+													<p class="text-success text-sm font-medium">
+														Winner: @{item.winnerUsername}
+													</p>
 													{#if item.winnerPrize}
 														<p class="font-mono text-sm">{formatValue(item.winnerPrize)}</p>
 													{/if}
 												{:else}
-													<p class="text-muted-foreground text-sm">{$_('lottery.status_rollover')}</p>
+													<p class="text-muted-foreground text-sm">
+														{$_('lottery.status_rollover')}
+													</p>
 												{/if}
 											{:else if item.drawnNumbers}
 												<div class="mb-1 flex flex-wrap justify-end gap-0.5">
 													{#each item.drawnNumbers as n}
-														<span class="bg-primary text-primary-foreground rounded px-1 text-xs font-mono">{n}</span>
+														<span
+															class="bg-primary text-primary-foreground rounded px-1 font-mono text-xs"
+															>{n}</span
+														>
 													{/each}
 												</div>
 												<p class="text-muted-foreground text-xs">
@@ -829,10 +895,16 @@
 												<p class="text-muted-foreground text-sm">{$_('lottery.status_rollover')}</p>
 											{/if}
 											<Badge
-												variant={item.status === 'DRAWN' ? 'success' : item.status === 'ROLLED_OVER' ? 'secondary' : 'outline'}
+												variant={item.status === 'DRAWN'
+													? 'success'
+													: item.status === 'ROLLED_OVER'
+														? 'secondary'
+														: 'outline'}
 												class="mt-1 text-xs"
 											>
-												{item.status === 'DRAWN' ? $_('lottery.status_won') : $_('lottery.status_rollover')}
+												{item.status === 'DRAWN'
+													? $_('lottery.status_won')
+													: $_('lottery.status_rollover')}
 											</Badge>
 										</div>
 									</div>

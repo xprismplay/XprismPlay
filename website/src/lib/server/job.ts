@@ -54,8 +54,8 @@ export async function resolveExpiredQuestions() {
 				);
 				console.log('Resolution result:', resolution);
 				if (env.DISCORD_WEBHOOK_URL) {
-			// Formatting it exactly like your console output
-				const discordMessage = `\`\`\`text
+					// Formatting it exactly like your console output
+					const discordMessage = `\`\`\`text
 Resolving question: ${question.question}
 Resolution result: {
   resolution: ${resolution.resolution},
@@ -63,16 +63,16 @@ Resolution result: {
   reasoning: "${resolution.reasoning}"
 }
 \`\`\``;
-				try {
-				await fetch(env.DISCORD_WEBHOOK_URL, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ content: discordMessage })
-				});
-				} catch (err) {
-					console.error('Failed to send Hopium resolution to Discord:', err);
+					try {
+						await fetch(env.DISCORD_WEBHOOK_URL, {
+							method: 'POST',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({ content: discordMessage })
+						});
+					} catch (err) {
+						console.error('Failed to send Hopium resolution to Discord:', err);
+					}
 				}
-			}
 
 				if (resolution.confidence < 50) {
 					console.log(

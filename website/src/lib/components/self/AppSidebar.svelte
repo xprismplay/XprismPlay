@@ -73,13 +73,29 @@
 			{ title: $_('page_names.lottery'), url: '/lottery', icon: Money01Icon },
 			{ title: $_('page_names.leaderboard'), url: '/leaderboard', icon: ChampionIcon },
 			{ title: $_('page_names.shop'), url: '/shop', icon: ShoppingBasket01Icon },
-			{ title: $_('page_names.achievements') || 'Achievements', url: '/achievements', icon: Award05Icon },
+			{
+				title: $_('page_names.achievements') || 'Achievements',
+				url: '/achievements',
+				icon: Award05Icon
+			},
 			{ title: $_('page_names.groups') || 'Groups', url: '/groups', icon: UserGroupIcon },
 			{ title: $_('page_names.chat') || 'Chat', url: '/chat?channel=1', icon: Message01Icon },
-			{ title: $_('page_names.portfolio') || 'Portfolio', url: '/portfolio', icon: Briefcase01Icon },
+			{
+				title: $_('page_names.portfolio') || 'Portfolio',
+				url: '/portfolio',
+				icon: Briefcase01Icon
+			},
 			{ title: $_('page_names.treemap') || 'Treemap', url: '/treemap', icon: Analytics01Icon },
-			{ title: $_('page_names.create_coin') || 'Create Coin', url: '/coin/create', icon: Coins02Icon },
-			{ title: $_('page_names.notifications') || 'Notifications', url: '/notifications', icon: Notification01Icon },
+			{
+				title: $_('page_names.create_coin') || 'Create Coin',
+				url: '/coin/create',
+				icon: Coins02Icon
+			},
+			{
+				title: $_('page_names.notifications') || 'Notifications',
+				url: '/notifications',
+				icon: Notification01Icon
+			},
 			{ title: $_('page_names.about') || 'About', url: '/about', icon: InformationCircleIcon }
 		]
 	};

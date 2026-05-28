@@ -123,16 +123,12 @@ export const coinStakingPool = pgTable('coin_staking_pool', {
 	coinId: integer('coin_id')
 		.primaryKey()
 		.references(() => coin.id, { onDelete: 'cascade' }),
-	totalStaked: decimal('total_staked', { precision: 30, scale: 8 })
-		.notNull()
-		.default('0.00000000'),
+	totalStaked: decimal('total_staked', { precision: 30, scale: 8 }).notNull().default('0.00000000'),
 	// Standard accumulator tracking for hyper-efficient rewards calculation
 	rewardPerShare: decimal('reward_per_share', { precision: 30, scale: 18 })
 		.notNull()
 		.default('0.000000000000000000'),
-	lastEpochAt: timestamp('last_epoch_at', { withTimezone: true })
-		.notNull()
-		.defaultNow(),
+	lastEpochAt: timestamp('last_epoch_at', { withTimezone: true }).notNull().defaultNow(),
 	// The % of remaining pool tokens distributed every 4 hours (e.g., '0.0100' = 1%)
 	distributionRate4h: decimal('distribution_rate_4h', { precision: 6, scale: 4 })
 		.notNull()
@@ -148,9 +144,7 @@ export const userStake = pgTable(
 		coinId: integer('coin_id')
 			.notNull()
 			.references(() => coin.id, { onDelete: 'cascade' }),
-		amount: decimal('amount', { precision: 30, scale: 8 })
-			.notNull()
-			.default('0.00000000'),
+		amount: decimal('amount', { precision: 30, scale: 8 }).notNull().default('0.00000000'),
 		rewardDebt: decimal('reward_debt', { precision: 30, scale: 18 })
 			.notNull()
 			.default('0.000000000000000000'),
@@ -718,7 +712,9 @@ export const lotteryDraw = pgTable(
 		drawDate: timestamp('draw_date', { withTimezone: true }).notNull(),
 		prizePool: decimal('prize_pool', { precision: 30, scale: 8 }).notNull().default('0'),
 		ticketRevenue: decimal('ticket_revenue', { precision: 30, scale: 8 }).notNull().default('0'),
-		bankContribution: decimal('bank_contribution', { precision: 30, scale: 8 }).notNull().default('0'),
+		bankContribution: decimal('bank_contribution', { precision: 30, scale: 8 })
+			.notNull()
+			.default('0'),
 		donations: decimal('donations', { precision: 30, scale: 8 }).notNull().default('0'),
 		rolloverAmount: decimal('rollover_amount', { precision: 30, scale: 8 }).notNull().default('0'),
 		totalTickets: integer('total_tickets').notNull().default(0),
@@ -739,8 +735,12 @@ export const lotteryTicket = pgTable(
 	'lottery_ticket',
 	{
 		id: serial('id').primaryKey(),
-		drawId: integer('draw_id').notNull().references(() => lotteryDraw.id, { onDelete: 'cascade' }),
-		userId: integer('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+		drawId: integer('draw_id')
+			.notNull()
+			.references(() => lotteryDraw.id, { onDelete: 'cascade' }),
+		userId: integer('user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
 		quantity: integer('quantity').notNull().default(1),
 		purchasedAt: timestamp('purchased_at', { withTimezone: true }).notNull().defaultNow()
 	},
@@ -852,11 +852,7 @@ export const chatChannel = pgTable(
 		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 	},
 	(table) => ({
-		uniqueDirect: unique('chat_channel_direct_unique').on(
-			table.type,
-			table.user1Id,
-			table.user2Id
-		),
+		uniqueDirect: unique('chat_channel_direct_unique').on(table.type, table.user1Id, table.user2Id),
 		checkOrder: check(
 			'chat_channel_user_order_check',
 			sql`user1_id < user2_id OR (user1_id IS NULL AND user2_id IS NULL)`

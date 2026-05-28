@@ -73,7 +73,7 @@
 			if (res.ok) {
 				const d = await res.json();
 				const targetId = profileData.profile.id;
-				
+
 				if (d.friends?.some((f: any) => f.id === targetId)) {
 					friendshipStatus = 'FRIENDS';
 				} else if (d.pendingRequests?.some((r: any) => r.senderId === targetId)) {
@@ -98,9 +98,13 @@
 			});
 			if (res.ok) {
 				toast.success(
-					action === 'SEND' ? 'Friend request sent' : 
-					action === 'ACCEPT' ? 'Friend request accepted' : 
-					action === 'DECLINE' ? 'Friend request declined' : 'Friend removed'
+					action === 'SEND'
+						? 'Friend request sent'
+						: action === 'ACCEPT'
+							? 'Friend request accepted'
+							: action === 'DECLINE'
+								? 'Friend request declined'
+								: 'Friend removed'
 				);
 				await checkFriendshipStatus();
 			} else {
@@ -574,7 +578,7 @@
 						</div>
 					</div>
 					{#if $USER_DATA && !isOwnProfile}
-						<div class="ml-auto self-start flex gap-2">
+						<div class="ml-auto flex gap-2 self-start">
 							{#if friendshipStatus === 'FRIENDS'}
 								<Button variant="secondary" onclick={startChat} class="gap-2">
 									<HugeiconsIcon icon={Message01Icon} class="h-4 w-4" />
@@ -583,7 +587,12 @@
 								<Tooltip.Provider>
 									<Tooltip.Root>
 										<Tooltip.Trigger>
-											<Button variant="outline" size="icon" onclick={() => handleFriendAction('REMOVE')} disabled={friendActionLoading}>
+											<Button
+												variant="outline"
+												size="icon"
+												onclick={() => handleFriendAction('REMOVE')}
+												disabled={friendActionLoading}
+											>
 												<HugeiconsIcon icon={UserRemove01Icon} class="h-4 w-4" />
 											</Button>
 										</Tooltip.Trigger>
@@ -591,19 +600,31 @@
 									</Tooltip.Root>
 								</Tooltip.Provider>
 							{:else if friendshipStatus === 'PENDING_RECEIVED'}
-								<Button variant="default" onclick={() => handleFriendAction('ACCEPT')} disabled={friendActionLoading} class="gap-2">
+								<Button
+									variant="default"
+									onclick={() => handleFriendAction('ACCEPT')}
+									disabled={friendActionLoading}
+									class="gap-2"
+								>
 									<HugeiconsIcon icon={UserCheck01Icon} class="h-4 w-4" />
 									Accept Request
 								</Button>
-								<Button variant="outline" onclick={() => handleFriendAction('DECLINE')} disabled={friendActionLoading}>
+								<Button
+									variant="outline"
+									onclick={() => handleFriendAction('DECLINE')}
+									disabled={friendActionLoading}
+								>
 									Decline
 								</Button>
 							{:else if friendshipStatus === 'PENDING_SENT'}
-								<Button variant="secondary" disabled class="gap-2">
-									Request Sent
-								</Button>
+								<Button variant="secondary" disabled class="gap-2">Request Sent</Button>
 							{:else if !isBlocked}
-								<Button variant="default" onclick={() => handleFriendAction('SEND')} disabled={friendActionLoading} class="gap-2">
+								<Button
+									variant="default"
+									onclick={() => handleFriendAction('SEND')}
+									disabled={friendActionLoading}
+									class="gap-2"
+								>
 									<HugeiconsIcon icon={UserAdd01Icon} class="h-4 w-4" />
 									Add Friend
 								</Button>

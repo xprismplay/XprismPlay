@@ -16,9 +16,9 @@ export const CHAT_MESSAGES = writable<Record<number, ChatMessage[]>>({});
 export function addChatMessage(message: ChatMessage) {
 	CHAT_MESSAGES.update((messages) => {
 		const channelMessages = messages[message.channelId] || [];
-		
+
 		// Prevent duplicates
-		if (channelMessages.some(m => m.id === message.id)) {
+		if (channelMessages.some((m) => m.id === message.id)) {
 			return messages;
 		}
 

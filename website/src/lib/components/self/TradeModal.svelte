@@ -38,7 +38,7 @@
 
 	let numericAmount = $derived(parseFloat(amount) || 0);
 	let currentPrice = $derived(coin.currentPrice || 0);
-	
+
 	let maxSellableAmount = $derived(
 		type === 'SELL' && coin
 			? Math.min(userHolding, Math.floor(Number(coin.poolCoinAmount) * 0.995))
@@ -63,10 +63,10 @@
 			? calculateEstimate(effectiveSellCoinAmount(), type, currentPrice)
 			: calculateEstimate(numericAmount, type, currentPrice)
 	);
-	
+
 	let hasValidAmount = $derived(numericAmount > 0);
 	let userBalance = $derived($PORTFOLIO_SUMMARY ? $PORTFOLIO_SUMMARY.baseCurrencyBalance : 0);
-	
+
 	// Dynamic constraint logic mapping across all platform wallet mechanics
 	let hasEnoughFunds = $derived(() => {
 		if (type === 'BUY') return numericAmount <= userBalance;
@@ -76,11 +76,12 @@
 		if (sellByDollar) return effectiveSellCoinAmount() <= userHolding;
 		return numericAmount <= userHolding;
 	});
-	
+
 	let canTrade = $derived(hasValidAmount && hasEnoughFunds() && !loading);
 
 	function calculateEstimate(amount: number, tradeType: string, price: number) {
-		if (!amount || !price || !coin || ['STAKE', 'UNSTAKE', 'BURN'].includes(tradeType)) return { result: 0 };
+		if (!amount || !price || !coin || ['STAKE', 'UNSTAKE', 'BURN'].includes(tradeType))
+			return { result: 0 };
 		const poolCoin = Number(coin.poolCoinAmount);
 		const poolBase = Number(coin.poolBaseCurrencyAmount);
 
@@ -111,7 +112,9 @@
 
 		// Dynamically fork the route and structure parameters depending on context action
 		const isStakingAction = ['STAKE', 'UNSTAKE'].includes(type);
-		const targetUrl = isStakingAction ? `/api/coin/${coin.symbol}/stake` : `/api/coin/${coin.symbol}/trade`;
+		const targetUrl = isStakingAction
+			? `/api/coin/${coin.symbol}/stake`
+			: `/api/coin/${coin.symbol}/trade`;
 		const tradeAmount = type === 'SELL' && sellByDollar ? effectiveSellCoinAmount() : numericAmount;
 
 		try {
@@ -125,9 +128,15 @@
 			if (!response.ok) throw new Error(result.message || 'Transaction context failed');
 
 			haptic.trigger('success');
-			
+
 			// Dynamic visual feedback notifications matching your exact system structures
-			const actionLabels = { BUY: 'Bought', SELL: 'Sold', BURN: 'Burned', STAKE: 'Staked', UNSTAKE: 'Unstaked' };
+			const actionLabels = {
+				BUY: 'Bought',
+				SELL: 'Sold',
+				BURN: 'Burned',
+				STAKE: 'Staked',
+				UNSTAKE: 'Unstaked'
+			};
 			const descriptions = {
 				BUY: `Purchased ${result.coinsBought?.toFixed(6)} ${coin.symbol} for $${result.totalCost?.toFixed(6)}`,
 				SELL: `Sold ${result.coinsSold?.toFixed(6)} ${coin.symbol} for $${result.totalReceived?.toFixed(6)}`,
@@ -239,19 +248,23 @@
 							{/key}
 						</Button>
 					{/if}
-					<Button variant="outline" size="sm" class="h-9 shrink-0" onclick={setMaxAmount}>Max</Button>
+					<Button variant="outline" size="sm" class="h-9 shrink-0" onclick={setMaxAmount}
+						>Max</Button
+					>
 				</div>
 
 				{#if type === 'SELL' || type === 'BURN' || type === 'STAKE'}
 					<p class="text-muted-foreground text-xs">
-						Available in wallet: {userHolding.toFixed(6)} {coin.symbol}
+						Available in wallet: {userHolding.toFixed(6)}
+						{coin.symbol}
 						{#if type === 'SELL' && maxSellableAmount < userHolding}
 							<br />Max sellable: {maxSellableAmount.toFixed(0)} {coin.symbol} (pool limit)
 						{/if}
 					</p>
 				{:else if type === 'UNSTAKE'}
 					<p class="text-muted-foreground text-xs">
-						Active Staked Deposit: {userStaked.toFixed(6)} {coin.symbol}
+						Active Staked Deposit: {userStaked.toFixed(6)}
+						{coin.symbol}
 					</p>
 				{:else if $PORTFOLIO_SUMMARY}
 					<p class="text-muted-foreground text-xs">
@@ -264,7 +277,11 @@
 				<div class="bg-muted/50 rounded-lg p-3">
 					<div class="flex items-center justify-between">
 						<span class="text-sm font-medium">
-							{type === 'BUY' ? `${coin.symbol} you'll get:` : sellByDollar ? `${coin.symbol} to sell:` : "You'll receive:"}
+							{type === 'BUY'
+								? `${coin.symbol} you'll get:`
+								: sellByDollar
+									? `${coin.symbol} to sell:`
+									: "You'll receive:"}
 						</span>
 						<span class="font-bold">
 							{#if type === 'BUY'}
@@ -300,7 +317,8 @@
 					<HugeiconsIcon icon={Loading03Icon} class="h-4 w-4 animate-spin" />
 					Processing...
 				{:else}
-					{#if type === 'BUY'}Buy{:else if type === 'SELL'}Sell{:else if type === 'STAKE'}Stake{:else if type === 'UNSTAKE'}Unstake{:else}Burn{/if} {coin.symbol}
+					{#if type === 'BUY'}Buy{:else if type === 'SELL'}Sell{:else if type === 'STAKE'}Stake{:else if type === 'UNSTAKE'}Unstake{:else}Burn{/if}
+					{coin.symbol}
 				{/if}
 			</Button>
 		</Dialog.Footer>

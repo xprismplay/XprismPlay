@@ -11,9 +11,7 @@ export const MAX_DRAW_CHANCE = 0.5;
 export const SCALE_POOL = 1_000_000;
 
 export function calcDrawChance(prizePool: number): number {
-	const raw =
-		MIN_DRAW_CHANCE +
-		(prizePool / SCALE_POOL) * (MAX_DRAW_CHANCE - MIN_DRAW_CHANCE);
+	const raw = MIN_DRAW_CHANCE + (prizePool / SCALE_POOL) * (MAX_DRAW_CHANCE - MIN_DRAW_CHANCE);
 	return Math.min(raw, MAX_DRAW_CHANCE);
 }
 
@@ -41,11 +39,7 @@ async function executeExpiredDraws() {
 export async function getOrCreateActiveDraw() {
 	await executeExpiredDraws();
 
-	const rows = await db
-		.select()
-		.from(lotteryDraw)
-		.where(eq(lotteryDraw.status, 'ACTIVE'))
-		.limit(1);
+	const rows = await db.select().from(lotteryDraw).where(eq(lotteryDraw.status, 'ACTIVE')).limit(1);
 
 	if (rows[0]) return rows[0];
 
@@ -130,9 +124,17 @@ export async function executeLotteryDraw(drawId: number) {
 			.where(eq(lotteryDraw.id, drawId));
 
 		const prevDate = new Date(draw.drawDate);
-           const nextDate = new Date(
-           Date.UTC(prevDate.getUTCFullYear(), prevDate.getUTCMonth(), prevDate.getUTCDate() + 1, 23, 59, 59, 0)
-       );
+		const nextDate = new Date(
+			Date.UTC(
+				prevDate.getUTCFullYear(),
+				prevDate.getUTCMonth(),
+				prevDate.getUTCDate() + 1,
+				23,
+				59,
+				59,
+				0
+			)
+		);
 		const nextChance = calcDrawChance(nextRollover);
 
 		await tx.insert(lotteryDraw).values({
